@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>⚽ Subasta Futbolera</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="subasta_futbol.css">
+
+</head>
+<body>
+
+<div id="app">
+  <nav class="tab-bar">
+    <button class="tab-btn active" data-tab="lobby">⚙ Inicio</button>
+    <button class="tab-btn" data-tab="auction" id="btn-auction" disabled>⚽ Subasta</button>
+    <button class="tab-btn" data-tab="formations" id="btn-formations" disabled>🏟 Formaciones</button>
+  </nav>
+
+  <!-- ══ LOBBY ══ -->
+  <div class="tab-panel active" id="tab-lobby">
+    <div class="lobby-header">
+      <h1>SUBASTA <span>FUTBOLERA</span></h1>
+      <p>Armá el mejor equipo con 100M — 11 Posiciones</p>
+    </div>
+
+    <div class="config-row">
+      <div class="field-group">
+        <label>Cantidad de jugadores</label>
+        <select id="num-players-select">
+          <option value="2">2 jugadores</option>
+          <option value="3" selected>3 jugadores</option>
+          <option value="4">4 jugadores</option>
+          <option value="5">5 jugadores</option>
+        </select>
+      </div>
+
+    </div>
+
+    <div id="players-setup" class="players-grid"></div>
+
+    <button class="btn-primary" id="start-btn" disabled>CARGAR JUGADORES Y COMENZAR</button>
+    <div id="loading-msg" style="text-align:center;margin-top:16px;color:var(--muted);font-size:0.85rem;display:none;"></div>
+  </div>
+
+  <!-- ══ AUCTION ══ -->
+  <div class="tab-panel" id="tab-auction">
+    <div class="auction-layout">
+      <div class="auction-sidebar">
+        <div class="sidebar-card">
+          <h4>💰 Presupuesto</h4>
+          <div class="balance-list" id="balance-list"></div>
+        </div>
+        <div class="sidebar-card">
+          <h4>📋 Pool restante</h4>
+          <div class="pool-remaining" id="pool-remaining-display"></div>
+        </div>
+        <div class="sidebar-card">
+          <h4>📜 Historial</h4>
+          <div class="log-list" id="log-list"></div>
+        </div>
+      </div>
+
+      <div class="auction-main">
+        <div class="auction-header-row">
+          <div>
+            <div class="position-badge" id="curr-pos-badge">⬤ PORTEROS</div>
+            <div class="pool-info" id="pool-info-text" style="margin-top:6px;"></div>
+          </div>
+          <div class="timer-ring" id="timer-ring">
+            <svg width="56" height="56" viewBox="0 0 56 56">
+              <circle class="ring-bg" cx="28" cy="28" r="22"/>
+              <circle class="ring-prog" id="ring-prog" cx="28" cy="28" r="22"
+                stroke-dasharray="138.2" stroke-dashoffset="0"/>
+            </svg>
+            <div class="ring-text" id="timer-text">20</div>
+          </div>
+        </div>
+
+        <div class="silhouette-stage">
+          <div class="silhouette-wrap" id="sil-wrap">
+            <div class="silhouette-placeholder" id="sil-placeholder">👤</div>
+          </div>
+          <div class="price-display">
+            <div class="price-label">Precio actual</div>
+            <div class="price-value"><span id="curr-price-display">--</span>M</div>
+          </div>
+          <div class="player-revealed" id="player-revealed">
+            <div class="p-name" id="rev-name"></div>
+            <div class="p-club" id="rev-club"></div>
+            <div class="p-rating" id="rev-rating"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="auction-right">
+        <div class="bid-section">
+          <h3>Pujar por este jugador</h3>
+          <div class="bidders-list" id="bidders-list"></div>
+          <button class="skip-btn" id="skip-btn">⏭ Saltar jugador (nadie oferta)</button>
+          <button id="extend-btn"> ⏱ +15s (2 usos) </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ FORMATIONS ══ -->
+  <div class="tab-panel" id="tab-formations">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;flex-wrap:wrap;gap:12px;">
+      <div>
+        <h2 style="font-family:var(--font-display);font-size:2rem;">FORMACIONES EN VIVO</h2>
+        <p style="color:var(--muted);font-size:0.85rem;margin-top:4px;">Cada equipo con 11 posiciones específicas — se actualiza tras cada subasta</p>
+      </div>
+      <button class="btn-sm" id="back-to-auction">← Volver a subasta</button>
+    </div>
+    <div class="formations-grid" id="formations-grid"></div>
+  </div>
+</div>
+
+<!-- REVEAL OVERLAY -->
+<div class="reveal-overlay" id="reveal-overlay">
+  <div class="reveal-box">
+    <div class="confetti" id="rev-confetti">🏆</div>
+    <div class="winner-label">¡GANÓ LA SUBASTA!</div>
+    <div class="winner-name" id="rev-winner"></div>
+    <div class="player-photo-placeholder" id="rev-photo-wrap">⚽</div>
+    <div class="p-big-name" id="rev-player-name"></div>
+    <div class="p-meta" id="rev-player-meta"></div>
+    <div class="p-price-paid" id="rev-price-paid"></div>
+  </div>
+  <button class="reveal-continue-btn" id="reveal-continue">SIGUIENTE JUGADOR →</button>
+</div>
+
+<!-- FINISH OVERLAY -->
+<div class="finish-overlay" id="finish-overlay">
+  <div class="finish-content">
+    <div style="text-align:center;font-size:3rem;margin-bottom:12px;">🏆</div>
+    <h1>¡SUBASTA TERMINADA!</h1>
+    <p class="finish-sub">Así quedaron los equipos finales — elegí cuál te pareció el mejor armado</p>
+    <div id="vote-section"></div>
+    <div id="vote-actions" style="display:none;text-align:center;margin:24px 0;">
+      <button class="btn-primary" id="vote-submit-btn">Enviar votos y ver resultados</button>
+    </div>
+    <div id="voting-results" style="display:none;">
+      <div class="voting-summary" id="voting-summary"></div>
+    </div>
+    <div class="ranking-list" id="ranking-list" style="display:none;"></div>
+    <div class="formations-grid" id="finish-formations-grid" style="display:none;"></div>
+    <button class="play-again-btn" id="play-again-btn" style="display:none;">⚽ JUGAR DE NUEVO</button>
+  </div>
+</div>
+
+<!-- TRADE MODAL -->
+<div class="trade-modal" id="trade-modal" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.85);z-index:1000;align-items:center;justify-content:center;">
+  <div style="background:var(--bg);border-radius:12px;padding:32px;max-width:900px;width:90%;max-height:90vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,0.5);">
+    <h2 id="trade-round-title" style="font-family:var(--font-display);font-size:1.8rem;margin-bottom:20px;text-align:center;">Intercambio de Jugadores</h2>
+    <div id="trade-content" style="display:grid;gap:20px;"></div>
+    <div style="display:flex;gap:12px;justify-content:center;margin-top:24px;">
+      <button class="btn-primary" id="trade-done-btn">✓ Completar Intercambios</button>
+    </div>
+  </div>
+</div>
+
+<!-- NOTIFICATION -->
+<div class="notif" id="notif"></div>
+
+<script src="js/config.js"></script>
+<script src="js/state.js"></script>
+<script src="js/data.js"></script>
+<script src="js/ui.js"></script>
+<script src="js/lobby.js"></script>
+<script src="js/auction.js"></script>
+<script src="js/trade.js"></script>
+<script src="js/formations.js"></script>
+<script src="js/endgame.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>
