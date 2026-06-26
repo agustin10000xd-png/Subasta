@@ -1,0 +1,1046 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<style>
+html { font-size: 16px; }
+body {
+  font-family: var(--font-body);
+  background: var(--pitch);
+  color: var(--white);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+</style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>⚽ Subasta Futbolera</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="subasta_futbol.css">
+
+html { font-size: 16px; }
+body {
+  font-family: var(--font-body);
+  background: var(--pitch);
+  color: var(--white);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+/* Pitch pattern */
+body::before {
+  content: '';
+  position: fixed; inset: 0;
+  background-image:
+    repeating-linear-gradient(0deg, transparent, transparent 60px, rgba(255,255,255,0.018) 60px, rgba(255,255,255,0.018) 61px),
+    repeating-linear-gradient(90deg, transparent, transparent 80px, rgba(255,255,255,0.012) 80px, rgba(255,255,255,0.012) 81px);
+  pointer-events: none; z-index: 0;
+}
+
+/* ── TABS ── */
+.tab-bar {
+  display: flex; gap: 4px;
+  padding: 20px 0 0;
+  border-bottom: 1px solid var(--card-border);
+  margin-bottom: 32px;
+}
+.tab-btn {
+  font-family: var(--font-display); font-size: 1.1rem; letter-spacing: 0.05em;
+  padding: 10px 24px; border: none; cursor: pointer;
+  background: transparent; color: var(--muted);
+  border-bottom: 3px solid transparent; margin-bottom: -1px;
+  transition: all 0.2s;
+}
+
+/* ── LOBBY ── */
+.lobby-header h1 { font-family: var(--font-display); font-size: 4rem; letter-spacing: 0.04em; line-height: 1; }
+.lobby-header h1 span { color: var(--green); }
+.lobby-header p { color: var(--muted); margin-top: 8px; font-size: 1rem; }
+
+.field-group label { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); }
+.field-group select, .field-group input[type=text] {
+  background: var(--card); border: 1px solid var(--card-border);
+  color: var(--white); border-radius: 8px; padding: 10px 14px;
+  font-family: var(--font-body); font-size: 0.95rem;
+  outline: none; transition: border-color 0.2s;
+  min-width: 120px;
+}
+.field-group select option { background: #1a3a25; }
+
+.api-section h3 { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); margin-bottom: 12px; }
+.api-row input {
+  flex: 1; background: rgba(0,0,0,0.3); border: 1px solid var(--card-border);
+  color: var(--white); border-radius: 8px; padding: 10px 14px;
+  font-family: var(--font-body); font-size: 0.9rem; outline: none;
+  transition: border-color 0.2s;
+}
+.api-hint a { color: var(--green); text-decoration: none; }
+
+.player-card-setup {
+  background: var(--card); border: 1px solid var(--card-border); border-radius: var(--radius);
+  padding: 16px; display: flex; flex-direction: column; gap: 10px;
+}
+.player-card-setup input[type=text] { min-width: unset; }
+.color-row label { font-size: 0.75rem; color: var(--muted); }
+.color-swatch {
+  width: 28px; height: 28px; border-radius: 50%; cursor: pointer;
+  border: 2px solid transparent; transition: all 0.15s; flex-shrink: 0;
+}
+
+.btn-primary {
+  display: block; width: 100%; padding: 16px;
+  background: var(--green); color: #000; font-family: var(--font-display);
+  font-size: 1.4rem; letter-spacing: 0.08em; border: none; border-radius: var(--radius);
+  cursor: pointer; transition: all 0.2s;
+}
+
+.btn-sm {
+  padding: 8px 18px; background: transparent; border: 1px solid var(--card-border);
+  color: var(--white); font-family: var(--font-body); font-size: 0.85rem;
+  border-radius: 8px; cursor: pointer; transition: all 0.2s; white-space: nowrap;
+}
+
+/* ── AUCTION ── */
+
+.position-badge {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: var(--gold-soft); border: 1px solid rgba(255,214,0,0.3);
+  padding: 6px 16px; border-radius: 99px;
+  font-size: 0.8rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--gold);
+}
+
+.silhouette-stage {
+  background: var(--card); border: 1px solid var(--card-border);
+  border-radius: 20px; padding: 40px 20px;
+  display: flex; flex-direction: column; align-items: center; gap: 20px;
+  min-height: 340px; justify-content: center; position: relative; overflow: hidden;
+}
+.silhouette-stage::before {
+  content: ''; position: absolute; inset: 0;
+  background: radial-gradient(ellipse at 50% 100%, rgba(0,200,83,0.06) 0%, transparent 70%);
+}
+.silhouette-img {
+  width: 180px; height: 220px; object-fit: cover;
+  filter: brightness(0) invert(0);
+  transition: filter 0.6s ease;
+}
+.silhouette-placeholder {
+  width: 180px; height: 220px;
+  background: linear-gradient(180deg, rgba(0,200,83,0.15) 0%, rgba(0,200,83,0.05) 100%);
+  border-radius: 12px; display: flex; align-items: center; justify-content: center;
+  font-size: 5rem;
+}
+
+.player-revealed {
+  text-align: center; display: none;
+  animation: popIn 0.5s cubic-bezier(0.34,1.56,0.64,1);
+}
+.player-revealed .p-rating {
+  display: inline-block; margin-top: 8px;
+  background: var(--green); color: #000; font-family: var(--font-display);
+  font-size: 1.4rem; padding: 2px 16px; border-radius: 6px;
+}
+
+.price-display .price-value span { color: var(--green); }
+
+/* Timer */
+.timer-ring svg { transform: rotate(-90deg); }
+
+
+/* Bid buttons */
+.bid-section h3 { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); margin-bottom: 14px; }
+.bidder-row {
+  display: flex; align-items: center; gap: 12px;
+  background: rgba(0,0,0,0.2); border-radius: 10px; padding: 10px 14px;
+  border: 1px solid transparent; transition: border-color 0.2s;
+}
+.bidder-bid-btn {
+  padding: 6px 14px; border-radius: 8px; cursor: pointer;
+  font-family: var(--font-body); font-size: 0.85rem; font-weight: 600;
+  border: none; transition: all 0.15s;
+}
+.bidder-bid-btn:not(:disabled) { background: var(--green); color: #000; }
+
+.skip-btn {
+  width: 100%; padding: 12px;
+  background: transparent; border: 1px dashed rgba(255,255,255,0.15);
+  color: var(--muted); font-family: var(--font-body); font-size: 0.85rem;
+  border-radius: var(--radius); cursor: pointer; margin-top: 12px;
+  transition: all 0.2s;
+}
+
+/* Sidebar */
+.sidebar-card {
+  background: var(--card); border: 1px solid var(--card-border);
+  border-radius: var(--radius); padding: 16px;
+}
+.sidebar-card h4 { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); margin-bottom: 12px; }
+
+
+.log-item strong { color: var(--white); }
+
+/* ── FORMATIONS ── */
+.formation-card {
+  background: var(--card); border: 1px solid var(--card-border);
+  border-radius: 20px; overflow: hidden;
+}
+.formation-header {
+  padding: 14px 18px 10px;
+  display: flex; align-items: center; gap: 10px;
+}
+.formation-header .p-budget {
+  font-size: 0.78rem; color: var(--muted);
+  background: rgba(0,0,0,0.2); padding: 3px 10px; border-radius: 99px;
+}
+
+.pitch-visual {
+  position: relative; margin: 0 12px 14px;
+  background: var(--pitch-mid); border-radius: 12px; overflow: hidden;
+  height: 320px;
+}
+.pitch-visual::before {
+  content: ''; position: absolute; inset: 0;
+  background-image:
+    linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+  background-size: 40px 40px;
+}
+/* Pitch markings */
+.pitch-visual::after {
+  content: '';  position: absolute;
+  left: 50%; top: 50%; transform: translate(-50%,-50%);
+  width: 80px; height: 80px; border-radius: 50%;
+  border: 1px solid rgba(255,255,255,0.08);
+}
+.pitch-center-line {
+  position: absolute; left: 0; right: 0; top: 50%; height: 1px;
+  background: rgba(255,255,255,0.06);
+}
+
+.pos-slot {
+  position: absolute; transform: translate(-50%, -50%);
+  display: flex; flex-direction: column; align-items: center; gap: 3px;
+  text-align: center; width: 64px;
+}
+.pos-slot .slot-circle {
+  width: 36px; height: 36px; border-radius: 50%;
+  border: 2px solid rgba(255,255,255,0.2);
+  background: rgba(255,255,255,0.05);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.65rem; color: var(--muted); transition: all 0.3s;
+  overflow: hidden;
+}
+.pos-slot .slot-circle.filled {
+  border-color: var(--player-color, var(--green));
+  background: rgba(0,200,83,0.15);
+}
+.pos-slot .slot-circle img { width: 100%; height: 100%; object-fit: cover; filter: brightness(0) invert(1); }
+
+/* ── REVEAL OVERLAY ── */
+.reveal-overlay {
+  position: fixed; inset: 0; z-index: 100;
+  background: rgba(0,20,10,0.92);
+  display: none; align-items: center; justify-content: center;
+  flex-direction: column; gap: 20px;
+}
+.reveal-box {
+  background: var(--pitch-mid); border: 1px solid var(--green);
+  border-radius: 24px; padding: 48px 64px; text-align: center;
+  box-shadow: 0 0 60px rgba(0,200,83,0.25);
+  animation: popIn 0.5s cubic-bezier(0.34,1.56,0.64,1);
+  max-width: 480px; width: 90%;
+}
+.reveal-continue-btn {
+  padding: 14px 48px; background: var(--green); color: #000;
+  font-family: var(--font-display); font-size: 1.4rem; letter-spacing: 0.06em;
+  border: none; border-radius: var(--radius); cursor: pointer; transition: all 0.2s;
+}
+
+/* ── FINISH OVERLAY ── */
+.finish-overlay {
+  position: fixed; inset: 0; z-index: 100;
+  background: rgba(0,20,10,0.96);
+  display: none; align-items: flex-start; justify-content: center;
+  overflow-y: auto; padding: 40px 20px;
+}
+.finish-content h1 { font-family: var(--font-display); font-size: 3rem; text-align: center; margin-bottom: 8px; color: var(--gold); }
+.ranking-item {
+  background: var(--card); border: 1px solid var(--card-border);
+  border-radius: var(--radius); padding: 16px 20px;
+  display: flex; align-items: center; gap: 14px;
+}
+.play-again-btn {
+  display: block; width: 100%; padding: 16px;
+  background: var(--green); color: #000; font-family: var(--font-display);
+  font-size: 1.4rem; letter-spacing: 0.08em; border: none; border-radius: var(--radius);
+  cursor: pointer; transition: all 0.2s;
+}
+
+/* Notifications */
+.notif {
+  position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(80px);
+  background: var(--pitch-mid); border: 1px solid var(--green);
+  padding: 12px 24px; border-radius: 99px; font-size: 0.88rem;
+  transition: transform 0.3s ease; z-index: 200; white-space: nowrap;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+}
+
+/* Scrollbar */
+</head>
+<body>
+
+<div id="app">
+  <nav class="tab-bar">
+    <button class="tab-btn active" data-tab="lobby">⚙ Inicio</button>
+    <button class="tab-btn" data-tab="auction" id="btn-auction" disabled>⚽ Subasta</button>
+    <button class="tab-btn" data-tab="formations" id="btn-formations" disabled>🏟 Formaciones</button>
+  </nav>
+
+  <!-- ══ LOBBY ══ -->
+  <div class="tab-panel active" id="tab-lobby">
+    <div class="lobby-header">
+      <h1>SUBASTA <span>FUTBOLERA</span></h1>
+      <p>Armá el mejor equipo con 100M — Formación 4-3-3</p>
+    </div>
+
+    <div class="config-row">
+      <div class="field-group">
+        <label>Cantidad de jugadores</label>
+        <select id="num-players-select">
+          <option value="2">2 jugadores</option>
+          <option value="3" selected>3 jugadores</option>
+          <option value="4">4 jugadores</option>
+          <option value="5">5 jugadores</option>
+        </select>
+      </div>
+    </div>
+
+    <div id="players-setup" class="players-grid"></div>
+
+    <button class="btn-primary" id="start-btn">CARGAR JUGADORES Y COMENZAR</button>
+    <div id="loading-msg" style="text-align:center;margin-top:16px;color:var(--muted);font-size:0.85rem;display:none;"></div>
+  </div>
+
+  <!-- ══ AUCTION ══ -->
+  <div class="tab-panel" id="tab-auction">
+    <div class="auction-layout">
+      <div class="auction-main">
+        <div class="auction-header-row">
+          <div>
+            <div class="position-badge" id="curr-pos-badge">⬤ PORTEROS</div>
+            <div class="pool-info" id="pool-info-text" style="margin-top:6px;"></div>
+          </div>
+          <div class="timer-ring" id="timer-ring">
+            <svg width="56" height="56" viewBox="0 0 56 56">
+              <circle class="ring-bg" cx="28" cy="28" r="22"/>
+              <circle class="ring-prog" id="ring-prog" cx="28" cy="28" r="22"
+                stroke-dasharray="138.2" stroke-dashoffset="0"/>
+            </svg>
+            <div class="ring-text" id="timer-text">20</div>
+          </div>
+        </div>
+
+        <div class="silhouette-stage">
+          <div class="silhouette-wrap" id="sil-wrap">
+            <div class="silhouette-placeholder" id="sil-placeholder">👤</div>
+          </div>
+          <div class="price-display">
+            <div class="price-label">Precio actual</div>
+            <div class="price-value"><span id="curr-price-display">--</span>M</div>
+          </div>
+          <div class="player-revealed" id="player-revealed">
+            <div class="p-name" id="rev-name"></div>
+            <div class="p-club" id="rev-club"></div>
+            <div class="p-rating" id="rev-rating"></div>
+          </div>
+        </div>
+
+        <div class="bid-section">
+          <h3>Pujar por este jugador</h3>
+          <div class="bidders-list" id="bidders-list"></div>
+          <button class="skip-btn" id="skip-btn">⏭ Saltar jugador (nadie oferta)</button>
+        </div>
+      </div>
+
+      <div class="auction-sidebar">
+        <div class="sidebar-card">
+          <h4>💰 Presupuesto</h4>
+          <div class="balance-list" id="balance-list"></div>
+        </div>
+        <div class="sidebar-card">
+          <h4>📋 Pool restante</h4>
+          <div class="pool-remaining" id="pool-remaining-display"></div>
+        </div>
+        <div class="sidebar-card">
+          <h4>📜 Historial</h4>
+          <div class="log-list" id="log-list"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ FORMATIONS ══ -->
+  <div class="tab-panel" id="tab-formations">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;flex-wrap:wrap;gap:12px;">
+      <div>
+        <h2 style="font-family:var(--font-display);font-size:2rem;">FORMACIONES EN VIVO</h2>
+        <p style="color:var(--muted);font-size:0.85rem;margin-top:4px;">Cada equipo en 4-3-3 — se actualiza tras cada subasta</p>
+      </div>
+      <button class="btn-sm" id="back-to-auction">← Volver a subasta</button>
+    </div>
+    <div class="formations-grid" id="formations-grid"></div>
+  </div>
+</div>
+
+<!-- REVEAL OVERLAY -->
+<div class="reveal-overlay" id="reveal-overlay">
+  <div class="reveal-box">
+    <div class="confetti" id="rev-confetti">🏆</div>
+    <div class="winner-label">¡GANÓ LA SUBASTA!</div>
+    <div class="winner-name" id="rev-winner"></div>
+    <div class="player-photo-placeholder" id="rev-photo-wrap">⚽</div>
+    <div class="p-big-name" id="rev-player-name"></div>
+    <div class="p-meta" id="rev-player-meta"></div>
+    <div class="p-price-paid" id="rev-price-paid"></div>
+  </div>
+  <button class="reveal-continue-btn" id="reveal-continue">SIGUIENTE JUGADOR →</button>
+</div>
+
+<!-- FINISH OVERLAY -->
+<div class="finish-overlay" id="finish-overlay">
+  <div class="finish-content">
+    <div style="text-align:center;font-size:3rem;margin-bottom:12px;">🏆</div>
+    <h1>¡SUBASTA TERMINADA!</h1>
+    <p class="finish-sub">Así quedaron los equipos finales</p>
+    <div class="ranking-list" id="ranking-list"></div>
+    <button class="play-again-btn" id="play-again-btn">⚽ JUGAR DE NUEVO</button>
+  </div>
+</div>
+
+<!-- NOTIFICATION -->
+<div class="notif" id="notif"></div>
+
+<script>
+// ══════════════════════════════════════════
+// CONFIG & STATE
+// ══════════════════════════════════════════
+const PLAYER_COLORS = ['#00c853','#2979ff','#ff6d00','#d500f9','#ff1744'];
+const COLOR_NAMES = ['Verde','Azul','Naranja','Violeta','Rojo'];
+const POSITIONS_433 = [
+  { key: 'GK', label: 'Portero', count: 1, pitchY: 88, pitchXs: [50] },
+  { key: 'DEF', label: 'Defensa', count: 4, pitchY: 68, pitchXs: [15,38,62,85] },
+  { key: 'MID', label: 'Mediocampista', count: 3, pitchY: 45, pitchXs: [20,50,80] },
+  { key: 'FWD', label: 'Delantero', count: 3, pitchY: 18, pitchXs: [20,50,80] }
+];
+const BUDGET = 100;
+const TIMER_SECS = 20;
+const CIRCUMFERENCE = 2 * Math.PI * 22;
+
+// Demo players fallback
+const DEMO_PLAYERS = {
+  GK: [
+    {id:1,name:'Alisson Becker',club:'Liverpool',nationality:'Brasil',rating:89,photo:'imagenes/arqueros/Alisson Becker - FootyRenders.png'},
+    {id:2,name:'Ederson',club:'Man City',nationality:'Brasil',rating:88,photo:'imagenes/arqueros/Emiliano Martinez - FootyRenders.png'},
+    {id:3,name:'Ter Stegen',club:'Barcelona',nationality:'Alemania',rating:87,photo:'imagenes/arqueros/Manuel Neuer - FootyRenders.png'},
+    {id:4,name:'Donnarumma',club:'PSG',nationality:'Italia',rating:87,photo:'imagenes/arqueros/Gianluigi Donnarumma - FootyRenders.png'},
+    {id:5,name:'Courtois',club:'Real Madrid',nationality:'Bélgica',rating:90,photo:'imagenes/arqueros/Bernd Leno - FootyRenders.png'},
+  ],
+  DEF: [
+    {id:6,name:'Rúben Dias',club:'Man City',nationality:'Portugal',rating:87,photo:''},
+    {id:7,name:'Virgil van Dijk',club:'Liverpool',nationality:'Holanda',rating:88,photo:''},
+    {id:8,name:'Marquinhos',club:'PSG',nationality:'Brasil',rating:86,photo:''},
+    {id:9,name:'Militão',club:'Real Madrid',nationality:'Brasil',rating:85,photo:''},
+    {id:10,name:'Koulibaly',club:'Chelsea',nationality:'Senegal',rating:84,photo:''},
+    {id:11,name:'Theo Hernández',club:'AC Milan',nationality:'Francia',rating:84,photo:''},
+    {id:12,name:'Cancelo',club:'Barcelona',nationality:'Portugal',rating:85,photo:''},
+    {id:13,name:'Alexander-Arnold',club:'Liverpool',nationality:'Inglaterra',rating:87,photo:''},
+    {id:14,name:'Achraf Hakimi',club:'PSG',nationality:'Marruecos',rating:85,photo:''},
+    {id:15,name:'Antonio Rüdiger',club:'Real Madrid',nationality:'Alemania',rating:84,photo:''},
+  ],
+  MID: [
+    {id:16,name:'Kevin De Bruyne',club:'Man City',nationality:'Bélgica',rating:91,photo:''},
+    {id:17,name:'Luka Modrić',club:'Real Madrid',nationality:'Croacia',rating:87,photo:''},
+    {id:18,name:'Pedri',club:'Barcelona',nationality:'España',rating:87,photo:''},
+    {id:19,name:'Bellingham',club:'Real Madrid',nationality:'Inglaterra',rating:88,photo:''},
+    {id:20,name:'Camavinga',club:'Real Madrid',nationality:'Francia',rating:84,photo:''},
+    {id:21,name:'Verratti',club:'PSG',nationality:'Italia',rating:85,photo:''},
+    {id:22,name:'Joshua Kimmich',club:'Bayern',nationality:'Alemania',rating:87,photo:''},
+    {id:23,name:'Gündoğan',club:'Barcelona',nationality:'Alemania',rating:85,photo:''},
+    {id:24,name:'Frenkie de Jong',club:'Barcelona',nationality:'Holanda',rating:86,photo:''},
+    {id:25,name:'Declan Rice',club:'Arsenal',nationality:'Inglaterra',rating:85,photo:''},
+  ],
+  FWD: [
+    {id:26,name:'Kylian Mbappé',club:'Real Madrid',nationality:'Francia',rating:91,photo:''},
+    {id:27,name:'Erling Haaland',club:'Man City',nationality:'Noruega',rating:91,photo:''},
+    {id:28,name:'Vinicius Jr.',club:'Real Madrid',nationality:'Brasil',rating:90,photo:''},
+    {id:29,name:'Bukayo Saka',club:'Arsenal',nationality:'Inglaterra',rating:87,photo:''},
+    {id:30,name:'Raphinha',club:'Barcelona',nationality:'Brasil',rating:85,photo:''},
+    {id:31,name:'Leroy Sané',club:'Bayern',nationality:'Alemania',rating:85,photo:''},
+    {id:32,name:'Phil Foden',club:'Man City',nationality:'Inglaterra',rating:88,photo:''},
+    {id:33,name:'Bernardo Silva',club:'Man City',nationality:'Portugal',rating:87,photo:''},
+    {id:34,name:'Rafael Leão',club:'AC Milan',nationality:'Portugal',rating:86,photo:''},
+    {id:35,name:'Dembélé',club:'PSG',nationality:'Francia',rating:85,photo:''},
+  ]
+};
+
+// Base prices by rating
+function basePrice(rating) {
+  if (!rating) return 10;
+  if (rating >= 90) return 35;
+  if (rating >= 88) return 25;
+  if (rating >= 86) return 18;
+  if (rating >= 84) return 13;
+  return 10;
+}
+
+// ── STATE ──
+let state = {
+  numPlayers: 3,
+  players: [], // [{name, color, balance, team:{GK:[],DEF:[],MID:[],FWD:[]}}]
+  pool: { GK: [], DEF: [], MID: [], FWD: [] },
+  positionOrder: ['GK','DEF','MID','FWD'],
+  currentPosIdx: 0,
+  currentPlayerIdx: 0,
+  currentBid: 0,
+  currentLeader: null, // index
+  timerInterval: null,
+  timerLeft: TIMER_SECS,
+  auctionLog: [],
+  auctionFinished: false,
+};
+
+// ══════════════════════════════════════════
+// UI HELPERS
+// ══════════════════════════════════════════
+function showNotif(msg, duration=2500) {
+  const el = document.getElementById('notif');
+  el.textContent = msg; el.classList.add('show');
+  setTimeout(() => el.classList.remove('show'), duration);
+}
+
+function switchTab(name) {
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.dataset.tab === name));
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.getElementById(`tab-${name}`).classList.add('active');
+  if(name === 'formations') renderFormations();
+}
+document.querySelectorAll('.tab-btn').forEach(btn => {
+  btn.addEventListener('click', () => { if(!btn.disabled) switchTab(btn.dataset.tab); });
+});
+document.getElementById('back-to-auction').addEventListener('click', () => switchTab('auction'));
+
+// ══════════════════════════════════════════
+// LOBBY SETUP
+// ══════════════════════════════════════════
+function renderPlayerSetup() {
+  const n = parseInt(document.getElementById('num-players-select').value);
+  state.numPlayers = n;
+  const grid = document.getElementById('players-setup');
+  grid.innerHTML = '';
+  for(let i=0;i<n;i++) {
+    const card = document.createElement('div');
+    card.className = 'player-card-setup';
+    const usedColors = [];
+    card.innerHTML = `
+      <div class="num">${i+1}</div>
+      <div class="field-group">
+        <label>Nombre</label>
+        <input type="text" id="p-name-${i}" placeholder="Jugador ${i+1}" value="Jugador ${i+1}" />
+      </div>
+      <div class="color-row">
+        <label>Color:</label>
+        ${PLAYER_COLORS.map((c,ci) => `
+          <div class="color-swatch ${ci===i?'selected':''}" 
+               style="background:${c}" 
+               data-player="${i}" data-color="${ci}"
+               title="${COLOR_NAMES[ci]}"></div>
+        `).join('')}
+      </div>`;
+    grid.appendChild(card);
+  }
+  grid.querySelectorAll('.color-swatch').forEach(sw => {
+    sw.addEventListener('click', () => {
+      const pi = sw.dataset.player;
+      grid.querySelectorAll(`.color-swatch[data-player="${pi}"]`).forEach(s=>s.classList.remove('selected'));
+      sw.classList.add('selected');
+    });
+  });
+  updateStartBtn();
+}
+
+function updateStartBtn() {
+  // Always enabled - uses local database
+}
+
+document.getElementById('num-players-select').addEventListener('change', renderPlayerSetup);
+
+document.getElementById('start-btn').addEventListener('click', startGame);
+
+// ══════════════════════════════════════════
+// LOCAL DATABASE
+// ══════════════════════════════════════════
+function shuffleArray(arr) {
+  const a = [...arr];
+  for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}
+  return a;
+}
+
+async function startGame() {
+  const n = state.numPlayers;
+  const needed = n + 2; // pool size per position
+
+  // Build players
+  const setupGrid = document.getElementById('players-setup');
+  state.players = [];
+  for(let i=0;i<n;i++) {
+    const name = document.getElementById(`p-name-${i}`).value.trim() || `Jugador ${i+1}`;
+    const selSwatch = setupGrid.querySelector(`.color-swatch[data-player="${i}"].selected`);
+    const colorIdx = selSwatch ? parseInt(selSwatch.dataset.color) : i;
+    state.players.push({
+      name, color: PLAYER_COLORS[colorIdx], balance: BUDGET,
+      team: { GK:[], DEF:[], MID:[], FWD:[] }
+    });
+  }
+
+  const loadMsg = document.getElementById('loading-msg');
+  const startBtn = document.getElementById('start-btn');
+  startBtn.disabled = true;
+  loadMsg.style.display = 'block';
+
+  if(state.demoMode) {
+    // Use demo data
+    loadMsg.textContent = 'Cargando jugadores de demo...';
+    state.pool = {};
+    for(const pos of state.positionOrder) {
+      const all = shuffleArray([...DEMO_PLAYERS[pos]]);
+      state.pool[pos] = all.slice(0, needed).map(p => ({...p, basePrice: basePrice(p.rating)}));
+    }
+    loadMsg.textContent = '✓ ¡Listo!';
+    setTimeout(() => { loadMsg.style.display='none'; launchAuction(); }, 400);
+  } else {
+    // Real API
+    state.apiKey = apiKey;
+    state.pool = {};
+    let failed = false;
+    for(const pos of state.positionOrder) {
+      loadMsg.textContent = `Cargando ${pos === 'GK' ? 'porteros' : pos === 'DEF' ? 'defensas' : pos === 'MID' ? 'mediocampistas' : 'delanteros'}...`;
+      try {
+        const players = await fetchPlayersFromAPI(pos, leagueId, season, apiKey, needed);
+        if(players.length === 0) throw new Error('No players returned');
+        state.pool[pos] = players.map(p => ({...p, basePrice: basePrice(p.rating)}));
+      } catch(e) {
+        console.error(e);
+        failed = true;
+        showNotif('Error con la API — usando datos de demo', 3000);
+        // fallback
+        const all = shuffleArray([...DEMO_PLAYERS[pos]]);
+        state.pool[pos] = all.slice(0, needed).map(p => ({...p, basePrice: basePrice(p.rating)}));
+      }
+    }
+    loadMsg.textContent = failed ? '⚠ Usando demo por error de API' : '✓ Jugadores cargados';
+    setTimeout(() => { loadMsg.style.display='none'; launchAuction(); }, 600);
+  }
+}
+
+// ══════════════════════════════════════════
+// AUCTION LOGIC
+// ══════════════════════════════════════════
+function launchAuction() {
+  state.currentPosIdx = 0;
+  state.currentPlayerIdx = 0;
+  state.auctionLog = [];
+  state.auctionFinished = false;
+
+  document.getElementById('btn-auction').disabled = false;
+  document.getElementById('btn-formations').disabled = false;
+  switchTab('auction');
+  loadNextPlayer();
+}
+
+function currentPos() { return state.positionOrder[state.currentPosIdx]; }
+function currentPool() { return state.pool[currentPos()] || []; }
+function currentPlayerData() { return currentPool()[state.currentPlayerIdx]; }
+
+function getPosLabel(pos) {
+  return { GK:'Portero', DEF:'Defensa', MID:'Mediocampista', FWD:'Delantero' }[pos];
+}
+
+function loadNextPlayer() {
+  const pos = currentPos();
+  const posInfo = POSITIONS_433.find(p=>p.key===pos);
+  const spotsNeeded = posInfo.count;
+
+  // Check if everyone has filled this position
+  const allFilled = state.players.every(p => p.team[pos].length >= spotsNeeded);
+  if(allFilled) {
+    // Move to next position
+    state.currentPosIdx++;
+    state.currentPlayerIdx = 0;
+    if(state.currentPosIdx >= state.positionOrder.length) {
+      endAuction(); return;
+    }
+    loadNextPlayer(); return;
+  }
+
+  // Check if pool is exhausted
+  const pool = currentPool();
+  if(state.currentPlayerIdx >= pool.length) {
+    // Skip to next position
+    state.currentPosIdx++;
+    state.currentPlayerIdx = 0;
+    if(state.currentPosIdx >= state.positionOrder.length) {
+      endAuction(); return;
+    }
+    loadNextPlayer(); return;
+  }
+
+  const player = currentPlayerData();
+  state.currentBid = player.basePrice;
+  state.currentLeader = null;
+
+  renderAuction();
+  startTimer();
+}
+
+function startTimer() {
+  clearInterval(state.timerInterval);
+  state.timerLeft = TIMER_SECS;
+  updateTimerUI();
+  state.timerInterval = setInterval(() => {
+    state.timerLeft--;
+    updateTimerUI();
+    if(state.timerLeft <= 0) {
+      clearInterval(state.timerInterval);
+      resolveAuction();
+    }
+  }, 1000);
+}
+
+function updateTimerUI() {
+  const t = state.timerLeft;
+  const prog = document.getElementById('ring-prog');
+  const text = document.getElementById('timer-text');
+  if(!prog || !text) return;
+  const offset = CIRCUMFERENCE * (1 - t / TIMER_SECS);
+  prog.style.strokeDashoffset = offset;
+  prog.style.stroke = t <= 5 ? 'var(--red)' : t <= 10 ? 'var(--gold)' : 'var(--green)';
+  text.textContent = t;
+  text.style.color = t <= 5 ? 'var(--red)' : 'var(--white)';
+}
+
+function renderAuction() {
+  const pos = currentPos();
+  const player = currentPlayerData();
+  const pool = currentPool();
+  const posInfo = POSITIONS_433.find(p=>p.key===pos);
+
+  // Position badge
+  document.getElementById('curr-pos-badge').textContent = `⬤ ${getPosLabel(pos).toUpperCase()}S`;
+  document.getElementById('pool-info-text').textContent =
+    `Jugador ${state.currentPlayerIdx+1} de ${pool.length} disponibles`;
+
+  // Silhouette
+  const silWrap = document.getElementById('sil-wrap');
+  silWrap.innerHTML = '';
+  const placeholder = document.createElement('div');
+  placeholder.className = 'silhouette-placeholder';
+  if(player.photo) {
+    const img = document.createElement('img');
+    img.src = player.photo; img.className = 'silhouette-img';
+    img.alt = 'Silueta';
+    img.onerror = () => { silWrap.innerHTML = '<div class="silhouette-placeholder">👤</div>'; };
+    silWrap.appendChild(img);
+  } else {
+    placeholder.textContent = pos === 'GK' ? '🧤' : pos === 'DEF' ? '🛡' : pos === 'MID' ? '⚡' : '⚽';
+    silWrap.appendChild(placeholder);
+  }
+
+  // Price
+  document.getElementById('curr-price-display').textContent = state.currentBid;
+  document.getElementById('player-revealed').classList.remove('show');
+
+  // Skip button
+  const skipBtn = document.getElementById('skip-btn');
+  skipBtn.disabled = false;
+
+  // Pool remaining
+  renderPoolRemaining();
+  renderBidders();
+  renderBalances();
+  renderLog();
+}
+
+function renderBidders() {
+  const list = document.getElementById('bidders-list');
+  list.innerHTML = '';
+  const nextBid = state.currentLeader !== null ? state.currentBid + 5 : state.currentBid;
+
+  state.players.forEach((p, i) => {
+    const pos = currentPos();
+    const posInfo = POSITIONS_433.find(pp=>pp.key===pos);
+    // Check if already has this position filled
+    const alreadyFilled = p.team[pos].length >= posInfo.count;
+    // Check if can afford (need to leave enough for remaining empty slots)
+    const remainingSlots = state.positionOrder.slice(state.currentPosIdx).reduce((acc, pk) => {
+      const pi = POSITIONS_433.find(pp=>pp.key===pk);
+      const filled = p.team[pk].length;
+      return acc + Math.max(0, pi.count - filled);
+    }, 0);
+    const minNeeded = Math.max(0, remainingSlots - 1) * 5; // rough minimum
+    const canAfford = p.balance - nextBid >= minNeeded;
+    const isLeader = state.currentLeader === i;
+    const cantBid = alreadyFilled || !canAfford || (isLeader); // can't outbid yourself
+
+    const row = document.createElement('div');
+    row.className = `bidder-row${isLeader ? ' leading' : ''}${(!canAfford || alreadyFilled) ? ' cant-afford' : ''}`;
+    row.innerHTML = `
+      <div class="bidder-dot" style="background:${p.color}"></div>
+      <div class="bidder-name">${p.name}${alreadyFilled ? ' <span style="font-size:0.7rem;color:var(--muted)">(posición llena)</span>' : ''}</div>
+      <div class="bidder-balance">${p.balance}M</div>
+      <div class="bidder-current-bid">${isLeader ? `${state.currentBid}M <span class="leading-crown">👑</span>` : ''}</div>
+      <button class="buy-now-btn" data-idx="${i}"
+        ${alreadyFilled || p.balance < (isLeader ? state.currentBid : state.currentBid + BUY_NOW_PREMIUM) ? 'disabled' : ''}>
+        ${isLeader
+          ? `✓ Confirmar ${state.currentBid}M`
+          : `⚡ Comprar ${state.currentBid + BUY_NOW_PREMIUM}M`}
+      </button>
+    `;
+    list.appendChild(row);
+  });
+
+  list.querySelectorAll('.bidder-bid-btn:not(:disabled)').forEach(btn => {
+    btn.addEventListener('click', () => placeBid(parseInt(btn.dataset.idx)));
+  });
+}
+
+function placeBid(playerIdx) {
+  const pos = currentPos();
+  const nextBid = state.currentLeader !== null ? state.currentBid + 5 : state.currentBid;
+  const player = state.players[playerIdx];
+
+  if(player.balance < nextBid) { showNotif('¡No tenés suficiente presupuesto!'); return; }
+
+  state.currentBid = nextBid;
+  state.currentLeader = playerIdx;
+
+  // Reset timer on bid
+  clearInterval(state.timerInterval);
+  state.timerLeft = TIMER_SECS;
+  updateTimerUI();
+  state.timerInterval = setInterval(() => {
+    state.timerLeft--;
+    updateTimerUI();
+    if(state.timerLeft <= 0) { clearInterval(state.timerInterval); resolveAuction(); }
+  }, 1000);
+
+  document.getElementById('curr-price-display').textContent = state.currentBid;
+  state.auctionLog.unshift({ type:'bid', player: player.name, amount: state.currentBid, color: player.color });
+
+  renderBidders();
+  renderLog();
+  showNotif(`${player.name} oferta ${state.currentBid}M`);
+}
+
+function resolveAuction() {
+  clearInterval(state.timerInterval);
+  const playerData = currentPlayerData();
+
+  if(state.currentLeader === null) {
+    // No one bid — skip
+    addLog({ type:'skip', playerName: playerData.name });
+    showNotif(`${playerData.name} saltado — nadie ofertó`);
+    state.currentPlayerIdx++;
+    setTimeout(loadNextPlayer, 600);
+    return;
+  }
+
+  // Winner gets the player
+  const winner = state.players[state.currentLeader];
+  const pos = currentPos();
+  winner.team[pos].push({ ...playerData, pricePaid: state.currentBid });
+  winner.balance -= state.currentBid;
+
+  addLog({ type:'won', winner: winner.name, playerName: playerData.name, amount: state.currentBid, color: winner.color });
+
+  // Show reveal overlay
+  showReveal(winner, playerData, state.currentBid, () => {
+    state.currentPlayerIdx++;
+    state.currentLeader = null;
+    loadNextPlayer();
+  });
+}
+
+function showReveal(winner, playerData, price, callback) {
+  const overlay = document.getElementById('reveal-overlay');
+  document.getElementById('rev-winner').textContent = winner.name;
+  document.getElementById('rev-winner').style.color = winner.color;
+  document.getElementById('rev-player-name').textContent = playerData.name;
+  document.getElementById('rev-player-meta').textContent = `${playerData.club} · ${playerData.nationality}`;
+  document.getElementById('rev-price-paid').textContent = `${price}M pagados`;
+
+  const wrap = document.getElementById('rev-photo-wrap');
+  wrap.innerHTML = '';
+  if(playerData.photo) {
+    const img = document.createElement('img');
+    img.src = playerData.photo; img.className = 'player-photo'; img.alt = playerData.name;
+    img.onerror = () => { wrap.textContent = '⚽'; wrap.className = 'player-photo-placeholder'; };
+    wrap.className = ''; wrap.appendChild(img);
+  } else {
+    wrap.className = 'player-photo-placeholder'; wrap.textContent = '⚽';
+  }
+
+  overlay.classList.add('show');
+  const btn = document.getElementById('reveal-continue');
+  const handler = () => { overlay.classList.remove('show'); btn.removeEventListener('click', handler); callback(); };
+  btn.addEventListener('click', handler);
+}
+
+function addLog(entry) {
+  state.auctionLog.unshift(entry);
+  renderLog();
+}
+
+function renderLog() {
+  const list = document.getElementById('log-list');
+  list.innerHTML = state.auctionLog.slice(0, 20).map(e => {
+    if(e.type === 'won') return `<div class="log-item won"><strong style="color:${e.color}">${e.winner}</strong> ganó a <strong>${e.playerName}</strong> por ${e.amount}M</div>`;
+    if(e.type === 'bid') return `<div class="log-item"><strong style="color:${e.color}">${e.player}</strong> ofertó ${e.amount}M</div>`;
+    if(e.type === 'skip') return `<div class="log-item">${e.playerName} → saltado</div>`;
+    return '';
+  }).join('');
+}
+
+function renderBalances() {
+  const list = document.getElementById('balance-list');
+  list.innerHTML = state.players.map(p => `
+    <div class="balance-item">
+      <div class="bidder-dot" style="background:${p.color};width:10px;height:10px;border-radius:50%;flex-shrink:0;"></div>
+      <div class="b-name">${p.name}</div>
+      <div class="balance-bar-wrap"><div class="balance-bar" style="width:${p.balance}%"></div></div>
+      <div class="b-val">${p.balance}M</div>
+    </div>`).join('');
+}
+
+function renderPoolRemaining() {
+  const display = document.getElementById('pool-remaining-display');
+  display.innerHTML = state.positionOrder.map((pos,i) => {
+    const pool = state.pool[pos] || [];
+    const used = state.currentPosIdx > i ? pool.length : (state.currentPosIdx === i ? state.currentPlayerIdx : 0);
+    const remaining = pool.length - (state.currentPosIdx === i ? state.currentPlayerIdx : (state.currentPosIdx > i ? pool.length : 0));
+    const isCurr = state.currentPosIdx === i;
+    return `<div class="pool-pos-row${isCurr ? ' current-pos' : ''}">
+      <span class="pos-label">${getPosLabel(pos)}s</span>
+      <span class="pos-count">${Math.max(0,remaining)} restantes</span>
+    </div>`;
+  }).join('');
+}
+
+// Skip button
+document.getElementById('skip-btn').addEventListener('click', () => {
+  if(state.currentLeader !== null) {
+    showNotif('Ya hay una oferta activa — el timer continúa');
+    return;
+  }
+  clearInterval(state.timerInterval);
+  const player = currentPlayerData();
+  if(!player) return;
+  addLog({ type:'skip', playerName: player.name });
+  showNotif(`${player.name} saltado`);
+  state.currentPlayerIdx++;
+  setTimeout(loadNextPlayer, 400);
+});
+
+// ══════════════════════════════════════════
+// FORMATIONS RENDER
+// ══════════════════════════════════════════
+function renderFormations() {
+  const grid = document.getElementById('formations-grid');
+  grid.innerHTML = '';
+  state.players.forEach((p, pi) => {
+    const card = document.createElement('div');
+    card.className = 'formation-card';
+    const spent = BUDGET - p.balance;
+    card.innerHTML = `
+      <div class="formation-header">
+        <div class="p-dot" style="background:${p.color}"></div>
+        <div class="p-name-h">${p.name}</div>
+        <div class="p-budget">💰 ${p.balance}M restantes</div>
+      </div>
+      <div class="pitch-visual" id="pitch-${pi}">
+        <div class="pitch-center-line"></div>
+      </div>`;
+    grid.appendChild(card);
+
+    const pitch = document.getElementById(`pitch-${pi}`);
+
+    POSITIONS_433.forEach(posInfo => {
+      const teamSlots = p.team[posInfo.key] || [];
+      posInfo.pitchXs.forEach((xPct, slotIdx) => {
+        const yPct = posInfo.pitchY;
+        const filled = teamSlots[slotIdx];
+
+        const slot = document.createElement('div');
+        slot.className = 'pos-slot';
+        slot.style.left = `${xPct}%`;
+        slot.style.top = `${yPct}%`;
+
+        if(filled) {
+          slot.innerHTML = `
+            <div class="slot-circle filled" style="--player-color:${p.color}">
+              ${filled.photo ? `<img src="${filled.photo}" alt="${filled.name}" onerror="this.parentElement.textContent='⚽'">` : '⚽'}
+            </div>
+            <div class="slot-name filled-name" title="${filled.name}">${filled.name.split(' ').pop()}</div>
+            <div class="slot-price">${filled.pricePaid}M</div>`;
+        } else {
+          slot.innerHTML = `
+            <div class="slot-circle">
+              <span style="font-size:0.7rem">${posInfo.key}</span>
+            </div>
+            <div class="slot-name">Libre</div>`;
+        }
+        pitch.appendChild(slot);
+      });
+    });
+  });
+}
+
+// ══════════════════════════════════════════
+// END GAME
+// ══════════════════════════════════════════
+function endAuction() {
+  clearInterval(state.timerInterval);
+  state.auctionFinished = true;
+
+  // Build ranking by total value of players
+  const ranked = state.players.map(p => {
+    const totalSpent = BUDGET - p.balance;
+    const totalPlayers = Object.values(p.team).flat().length;
+    return { ...p, totalSpent, totalPlayers };
+  }).sort((a,b) => b.totalPlayers - a.totalPlayers || a.totalSpent - b.totalSpent);
+
+  const overlay = document.getElementById('finish-overlay');
+  const rankList = document.getElementById('ranking-list');
+  rankList.innerHTML = ranked.map((p, i) => `
+    <div class="ranking-item ${i===0?'rank-1':''}">
+      <div class="rank-num ${i===0?'gold':''}">${i===0?'🏆':i+1}</div>
+      <div class="rank-dot" style="background:${p.color}"></div>
+      <div class="rank-info">
+        <div class="rank-name">${p.name}</div>
+        <div class="rank-detail">${p.totalPlayers} jugadores · ${p.balance}M sobraron</div>
+      </div>
+      <div class="rank-spent">${p.totalSpent}M gastados</div>
+    </div>`).join('');
+
+  overlay.classList.add('show');
+}
+
+document.getElementById('play-again-btn').addEventListener('click', () => {
+  document.getElementById('finish-overlay').classList.remove('show');
+  location.reload();
+});
+
+// ══════════════════════════════════════════
+// INIT
+// ══════════════════════════════════════════
+renderPlayerSetup();
+</script>
+</body>
+</html>
