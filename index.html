@@ -67,14 +67,6 @@
             <div class="position-badge" id="curr-pos-badge">⬤ PORTEROS</div>
             <div class="pool-info" id="pool-info-text" style="margin-top:6px;"></div>
           </div>
-          <div class="timer-ring" id="timer-ring">
-            <svg width="56" height="56" viewBox="0 0 56 56">
-              <circle class="ring-bg" cx="28" cy="28" r="22"/>
-              <circle class="ring-prog" id="ring-prog" cx="28" cy="28" r="22"
-                stroke-dasharray="138.2" stroke-dashoffset="0"/>
-            </svg>
-            <div class="ring-text" id="timer-text">20</div>
-          </div>
         </div>
 
         <div class="silhouette-stage">
@@ -98,7 +90,7 @@
           <h3>Pujar por este jugador</h3>
           <div class="bidders-list" id="bidders-list"></div>
           <button class="skip-btn" id="skip-btn">⏭ Saltar jugador (nadie oferta)</button>
-          <button id="extend-btn"> ⏱ +15s (2 usos) </button>
+          <button class="skip-btn" id="advance-position-btn" style="margin-top:8px;display:none;">⏭ Saltar a la siguiente posición</button>
         </div>
       </div>
     </div>

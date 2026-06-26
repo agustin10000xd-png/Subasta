@@ -11,14 +11,7 @@ function switchTab(name) {
   document.getElementById(`tab-${name}`).classList.add('active');
 
   if (name === 'formations') {
-    // Pausar timer al ir a formaciones
-    state.timerPaused = true;
-    clearInterval(state.timerInterval);
     renderFormations();
-  } else if (name === 'auction' && state.timerPaused && !state.auctionFinished) {
-    // Reanudar timer al volver a subasta
-    state.timerPaused = false;
-    startTimer();
   }
 }
 

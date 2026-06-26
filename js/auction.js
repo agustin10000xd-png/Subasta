@@ -65,7 +65,6 @@ function loadNextPlayer() {
   state.extensionsUsed = 0;
 
   renderAuction();
-  startTimer();
 }
 
 function advancePosition() {
@@ -79,44 +78,40 @@ function advancePosition() {
 
 function startTimer() {
   clearInterval(state.timerInterval);
-  state.timerLeft = TIMER_SECS;
-  updateTimerUI();
-  state.timerInterval = setInterval(() => {
-    state.timerLeft--;
-    updateTimerUI();
-    if (state.timerLeft <= 0) {
-      clearInterval(state.timerInterval);
-      resolveAuction();
-    }
-  }, 1000);
 }
 
 function updateTimerUI() {
-  const t    = state.timerLeft;
-  const prog = document.getElementById('ring-prog');
-  const text = document.getElementById('timer-text');
-  if (!prog || !text) return;
-
-  const offset = CIRCUMFERENCE * (1 - t / TIMER_SECS);
-  prog.style.strokeDashoffset = offset;
-  prog.style.stroke = t <= 5 ? 'var(--red)' : t <= 10 ? 'var(--gold)' : 'var(--green)';
-  text.textContent  = t;
-  text.style.color  = t <= 5 ? 'var(--red)' : 'var(--white)';
+  return;
 }
 
 // ── Render de la vista de subasta ──
+
+function canAnyoneAffordCurrentPlayer() {
+  const pos = currentPos();
+  if (!pos) return false;
+
+  const currentPrice = state.currentLeader !== null ? state.currentBid : state.currentBid;
+
+  return state.players.some(player => {
+    const posInfo = POSITIONS_433.find(pp => pp.key === pos);
+    if (!posInfo) return false;
+    if (player.team[pos].length >= posInfo.count) return false;
+    if (player.balance <= 0) return false;
+
+    return player.balance >= currentPrice;
+  });
+}
+
+function getAdvancePositionLabel() {
+  return state.currentPosIdx >= state.positionOrder.length - 1
+    ? '🏁 Terminar subasta'
+    : '⏭ Saltar a la siguiente posición';
+}
 
 function renderAuction() {
   const pos     = currentPos();
   const player  = currentPlayerData();
   const pool    = currentPool();
-  const extBtn  = document.getElementById('extend-btn');
-  const extsLeft = MAX_EXTENSIONS - state.extensionsUsed;
-
-  extBtn.disabled  = extsLeft <= 0;
-  extBtn.textContent = extsLeft > 0
-    ? `⏱ +${EXTEND_SECS}s (${extsLeft} uso${extsLeft !== 1 ? 's' : ''})`
-    : 'Sin tiempos extra';
 
   document.getElementById('curr-pos-badge').textContent =
     `⬤ ${getPosLabel(pos).toUpperCase()}S`;
@@ -144,11 +139,17 @@ function renderAuction() {
 
   // Botón skip
   const skipBtn  = document.getElementById('skip-btn');
+  const advanceBtn = document.getElementById('advance-position-btn');
   const skipCount = state.positionSkips[pos] || 0;
+  const noOneCanAfford = !!player && !canAnyoneAffordCurrentPlayer();
+
   skipBtn.disabled    = state.currentLeader !== null || !player || skipCount >= 2;
   skipBtn.textContent = skipCount >= 2
     ? 'Límite de saltos alcanzado'
     : '⏭ Saltar jugador (nadie oferta)';
+
+  advanceBtn.style.display = noOneCanAfford && state.currentLeader === null ? 'block' : 'none';
+  advanceBtn.textContent = getAdvancePositionLabel();
 
   renderPoolRemaining();
   renderBidders();
@@ -166,15 +167,10 @@ function renderBidders() {
     const posInfo  = POSITIONS_433.find(pp => pp.key === pos);
     const alreadyFilled = p.team[pos].length >= posInfo.count;
 
-    const remainingSlots = state.positionOrder.slice(state.currentPosIdx).reduce((acc, pk) => {
-      const pi     = POSITIONS_433.find(pp => pp.key === pk);
-      const filled = p.team[pk].length;
-      return acc + Math.max(0, pi.count - filled);
-    }, 0);
-    const minNeeded = Math.max(0, remainingSlots - 1) * 5;
-    const canAfford = p.balance - nextBid >= minNeeded;
+    const canAfford = p.balance > 0 && p.balance >= nextBid;
     const isLeader  = state.currentLeader === i;
     const cantBid   = alreadyFilled || !canAfford || isLeader;
+    const buyPrice  = isLeader ? state.currentBid : nextBid;
 
     const row = document.createElement('div');
     row.className = `bidder-row${isLeader ? ' leading' : ''}${(!canAfford || alreadyFilled) ? ' cant-afford' : ''}`;
@@ -183,14 +179,23 @@ function renderBidders() {
       <div class="bidder-name">${p.name}${alreadyFilled ? ' <span style="font-size:0.7rem;color:var(--muted)">(posición llena)</span>' : ''}</div>
       <div class="bidder-balance">${p.balance}M</div>
       <div class="bidder-current-bid">${isLeader ? `${state.currentBid}M <span class="leading-crown">👑</span>` : ''}</div>
-      <button class="bidder-bid-btn" data-idx="${i}" ${cantBid ? 'disabled' : ''}>
-        ${isLeader ? 'Líder' : `Pujar ${nextBid}M`}
-      </button>`;
+      <div class="bidder-actions">
+        <button class="bidder-bid-btn" data-idx="${i}" ${cantBid ? 'disabled' : ''}>
+          ${isLeader ? 'Líder' : `Pujar ${nextBid}M`}
+        </button>
+        <button class="buy-now-btn" data-buy-idx="${i}" ${alreadyFilled || p.balance < buyPrice ? 'disabled' : ''}>
+          Comprar ${buyPrice}M
+        </button>
+      </div>`;
     list.appendChild(row);
   });
 
   list.querySelectorAll('.bidder-bid-btn:not(:disabled)').forEach(btn => {
     btn.addEventListener('click', () => placeBid(parseInt(btn.dataset.idx)));
+  });
+
+  list.querySelectorAll('.buy-now-btn:not(:disabled)').forEach(btn => {
+    btn.addEventListener('click', () => buyNow(parseInt(btn.dataset.buyIdx)));
   });
 }
 
@@ -204,15 +209,6 @@ function placeBid(playerIdx) {
   state.currentBid    = nextBid;
   state.currentLeader = playerIdx;
 
-  clearInterval(state.timerInterval);
-  state.timerLeft = TIMER_SECS;
-  updateTimerUI();
-  state.timerInterval = setInterval(() => {
-    state.timerLeft--;
-    updateTimerUI();
-    if (state.timerLeft <= 0) { clearInterval(state.timerInterval); resolveAuction(); }
-  }, 1000);
-
   document.getElementById('curr-price-display').textContent = state.currentBid;
   state.auctionLog.unshift({ type: 'bid', player: player.name, amount: state.currentBid, color: player.color });
   renderBidders();
@@ -222,12 +218,10 @@ function placeBid(playerIdx) {
 
 function buyNow(playerIdx) {
   const player    = state.players[playerIdx];
-  const buyPrice  = state.currentBid + BUY_NOW_PREMIUM;
-  const finalPrice = state.currentLeader === playerIdx ? state.currentBid : buyPrice;
+  const finalPrice = state.currentLeader === playerIdx ? state.currentBid : (state.currentLeader !== null ? state.currentBid + 5 : state.currentBid);
 
   if (player.balance < finalPrice) { showNotif('No tenés presupuesto para la compra directa'); return; }
 
-  clearInterval(state.timerInterval);
   state.currentBid    = finalPrice;
   state.currentLeader = playerIdx;
   resolveAuction();
@@ -257,7 +251,19 @@ function resolveAuction() {
     // Límite de saltos: asignar automáticamente
     const posInfo     = POSITIONS_433.find(p => p.key === pos);
     const eligible    = state.players.filter(p => p.team[pos].length < posInfo.count);
-    const winner      = eligible.find(p => p.balance >= playerData.basePrice) || eligible[0] || state.players[0];
+    const winner      = eligible.find(p => p.balance >= playerData.basePrice);
+
+    if (!winner) {
+      addLog({ type: 'skip', playerName: playerData.name });
+      showNotif(`${playerData.name} se salta porque nadie puede pagar su precio base.`);
+      showReveal(null, playerData, 0, () => {
+        state.currentPlayerIdx++;
+        state.currentLeader = null;
+        loadNextPlayer();
+      }, true);
+      return;
+    }
+
     winner.team[pos].push({ ...playerData, pricePaid: playerData.basePrice });
     winner.balance -= playerData.basePrice;
     addLog({ type: 'auto', winner: winner.name, playerName: playerData.name, amount: playerData.basePrice, color: winner.color });
@@ -270,6 +276,17 @@ function resolveAuction() {
   }
 
   const winner = state.players[state.currentLeader];
+  if (winner.balance < state.currentBid) {
+    addLog({ type: 'skip', playerName: playerData.name });
+    showNotif(`${winner.name} no tiene suficiente presupuesto. Se salta este jugador.`);
+    showReveal(null, playerData, 0, () => {
+      state.currentPlayerIdx++;
+      state.currentLeader = null;
+      loadNextPlayer();
+    }, true);
+    return;
+  }
+
   winner.team[pos].push({ ...playerData, pricePaid: state.currentBid });
   winner.balance -= state.currentBid;
   addLog({ type: 'won', winner: winner.name, playerName: playerData.name, amount: state.currentBid, color: winner.color });
@@ -390,11 +407,19 @@ document.getElementById('skip-btn').addEventListener('click', () => {
   }, true);
 });
 
-document.getElementById('extend-btn').addEventListener('click', () => {
-  if (state.extensionsUsed >= MAX_EXTENSIONS) { showNotif('Ya se usaron todos los tiempos extra'); return; }
-  state.timerLeft += EXTEND_SECS;
-  state.extensionsUsed++;
-  const remaining = MAX_EXTENSIONS - state.extensionsUsed;
-  showNotif(`+${EXTEND_SECS}s agregados (${remaining} uso${remaining !== 1 ? 's' : ''} restante${remaining !== 1 ? 's' : ''})`);
-  renderAuction();
+document.getElementById('advance-position-btn').addEventListener('click', () => {
+  const pos = currentPos();
+  const player = currentPlayerData();
+  if (!player) return;
+  if (state.currentLeader !== null) { showNotif('Ya hay una oferta activa'); return; }
+
+  state.positionSkips[pos] = (state.positionSkips[pos] || 0) + 1;
+  addLog({ type: 'skip', playerName: player.name });
+  showReveal(null, player, 0, () => {
+    if (state.currentPosIdx >= state.positionOrder.length - 1) {
+      endAuction();
+    } else {
+      advancePosition();
+    }
+  }, true);
 });
