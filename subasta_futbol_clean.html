@@ -298,7 +298,6 @@ body::before {
   <div class="tab-panel active" id="tab-lobby">
     <div class="lobby-header">
       <h1>SUBASTA <span>FUTBOLERA</span></h1>
-      <p>Armá el mejor equipo con 100M — Formación 4-3-3</p>
     </div>
 
     <div class="config-row">
@@ -325,7 +324,7 @@ body::before {
       <div class="auction-main">
         <div class="auction-header-row">
           <div>
-            <div class="position-badge" id="curr-pos-badge">⬤ PORTEROS</div>
+            <div class="position-badge" id="curr-pos-badge">⬤ ARQUEROS</div>
             <div class="pool-info" id="pool-info-text" style="margin-top:6px;"></div>
           </div>
           <div class="timer-ring" id="timer-ring">
@@ -379,12 +378,9 @@ body::before {
 
   <!-- ══ FORMATIONS ══ -->
   <div class="tab-panel" id="tab-formations">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;flex-wrap:wrap;gap:12px;">
-      <div>
-        <h2 style="font-family:var(--font-display);font-size:2rem;">FORMACIONES EN VIVO</h2>
-        <p style="color:var(--muted);font-size:0.85rem;margin-top:4px;">Cada equipo en 4-3-3 — se actualiza tras cada subasta</p>
-      </div>
-      <button class="btn-sm" id="back-to-auction">← Volver a subasta</button>
+    <div style="margin-bottom:24px;">
+      <h2 style="font-family:var(--font-display);font-size:2rem;">FORMACIONES EN VIVO</h2>
+      <p style="color:var(--muted);font-size:0.85rem;margin-top:4px;">Cada equipo en 4-3-3 — se actualiza tras cada subasta</p>
     </div>
     <div class="formations-grid" id="formations-grid"></div>
   </div>
@@ -425,7 +421,7 @@ body::before {
 const PLAYER_COLORS = ['#00c853','#2979ff','#ff6d00','#d500f9','#ff1744'];
 const COLOR_NAMES = ['Verde','Azul','Naranja','Violeta','Rojo'];
 const POSITIONS_433 = [
-  { key: 'GK', label: 'Portero', count: 1, pitchY: 88, pitchXs: [50] },
+  { key: 'GK', label: 'Arquero', count: 1, pitchY: 88, pitchXs: [50] },
   { key: 'DEF', label: 'Defensa', count: 4, pitchY: 68, pitchXs: [15,38,62,85] },
   { key: 'MID', label: 'Mediocampista', count: 3, pitchY: 45, pitchXs: [20,50,80] },
   { key: 'FWD', label: 'Delantero', count: 3, pitchY: 18, pitchXs: [20,50,80] }
@@ -525,7 +521,6 @@ function switchTab(name) {
 document.querySelectorAll('.tab-btn').forEach(btn => {
   btn.addEventListener('click', () => { if(!btn.disabled) switchTab(btn.dataset.tab); });
 });
-document.getElementById('back-to-auction').addEventListener('click', () => switchTab('auction'));
 
 // ══════════════════════════════════════════
 // LOBBY SETUP
@@ -621,7 +616,7 @@ async function startGame() {
     state.pool = {};
     let failed = false;
     for(const pos of state.positionOrder) {
-      loadMsg.textContent = `Cargando ${pos === 'GK' ? 'porteros' : pos === 'DEF' ? 'defensas' : pos === 'MID' ? 'mediocampistas' : 'delanteros'}...`;
+      loadMsg.textContent = `Cargando ${pos === 'GK' ? 'arqueros' : pos === 'DEF' ? 'defensas' : pos === 'MID' ? 'mediocampistas' : 'delanteros'}...`;
       try {
         const players = await fetchPlayersFromAPI(pos, leagueId, season, apiKey, needed);
         if(players.length === 0) throw new Error('No players returned');
@@ -660,7 +655,7 @@ function currentPool() { return state.pool[currentPos()] || []; }
 function currentPlayerData() { return currentPool()[state.currentPlayerIdx]; }
 
 function getPosLabel(pos) {
-  return { GK:'Portero', DEF:'Defensa', MID:'Mediocampista', FWD:'Delantero' }[pos];
+  return { GK:'Arquero', DEF:'Defensa', MID:'Mediocampista', FWD:'Delantero' }[pos];
 }
 
 function loadNextPlayer() {

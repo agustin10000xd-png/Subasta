@@ -7,7 +7,7 @@ const DEMO_PLAYERS = {
   // ══════════════════════════════════════════
   // ARQUEROS
   // ══════════════════════════════════════════
-  GK: [
+  Arquero: [
     { id:1,  name:'David Raya',              club:'Arsenal',           nat:'España',          rat:84, liga:'Premier League', tipo:'Actual',  photo:'Jugadores/Arqueros/David Raya.png' },
     { id:2,  name:'Kepa Arrizabalaga',       club:'Arsenal',           nat:'España',          rat:82, liga:'Premier League', tipo:'Actual',  photo:'Jugadores/Arqueros/Kepa Arrizabalaga.png' },
     { id:3,  name:'Emiliano Martinez',       club:'Aston Villa',       nat:'Argentina',       rat:86, liga:'Premier League', tipo:'Actual',  photo:'Jugadores/Arqueros/Emiliano Martinez.png' },
@@ -74,7 +74,7 @@ const DEMO_PLAYERS = {
   // ══════════════════════════════════════════
   // LATERAL DERECHO
   // ══════════════════════════════════════════
-  RB: [
+  LateralDerecho: [
     { id:200, name:'Jurriën Timber',          club:'Arsenal',           nat:'Holanda',         rat:84, liga:'Premier League', tipo:'Actual',  photo:'Jugadores/Lateral Derecho/Jurriën Timber.png' },
     { id:201, name:'Ben White',               club:'Arsenal',           nat:'Inglaterra',      rat:81, liga:'Premier League', tipo:'Actual',  photo:'Jugadores/Lateral Derecho/Ben White.png' },
     { id:202, name:'Matty Cash',              club:'Aston Villa',       nat:'Polonia',         rat:81, liga:'Premier League', tipo:'Actual',  photo:'Jugadores/Lateral Derecho/Matty Cash.png' },
@@ -127,7 +127,7 @@ const DEMO_PLAYERS = {
   // ══════════════════════════════════════════
   // CENTRAL DERECHO
   // ══════════════════════════════════════════
-  RCB: [
+  CentralDerecho: [
     { id:100, name:'William Saliba',          club:'Arsenal',           nat:'Francia',         rat:87, liga:'Premier League', tipo:'Actual',  photo:'Jugadores/Central Derecho/William Saliba.png' },
     { id:101, name:'Cristhian Mosquera',      club:'Arsenal',           nat:'España',          rat:81, liga:'Premier League', tipo:'Actual',  photo:'Jugadores/Central Derecho/Cristhian Mosquera.png' },
     { id:102, name:'Victor Lindelof',         club:'Aston Villa',       nat:'Suecia',          rat:81, liga:'Premier League', tipo:'Actual',  photo:'Jugadores/Central Derecho/Victor Lindelof.png' },
@@ -196,7 +196,7 @@ const DEMO_PLAYERS = {
   // ══════════════════════════════════════════
   // CENTRAL IZQUIERDO
   // ══════════════════════════════════════════
-  LCB: [
+  CentralIzquierdo: [
     { id:300, name:'Piero Hincapié',          club:'Arsenal',           nat:'Ecuador',         rat:81, liga:'Premier League', tipo:'Actual',  photo:'Jugadores/Central Izquierdo/Piero Hincapié.png' },
     { id:301, name:'Gabriel Magalhaes',       club:'Arsenal',           nat:'Brasil',          rat:86, liga:'Premier League', tipo:'Actual',  photo:'Jugadores/Central Izquierdo/Gabriel Magalhaes.png' },
     { id:302, name:'Pau Torres',              club:'Aston Villa',       nat:'España',          rat:81, liga:'Premier League', tipo:'Actual',  photo:'Jugadores/Central Izquierdo/Pau Torres.png' },
@@ -234,7 +234,7 @@ const DEMO_PLAYERS = {
   // ══════════════════════════════════════════
   // LATERAL IZQUIERDO
   // ══════════════════════════════════════════
-  LB: [
+  LateralIzquierdo: [
     { id:400, name:'Myles Lewis-Skelly',      club:'Arsenal',           nat:'Inglaterra',      rat:81, liga:'Premier League', tipo:'Actual',  photo:'Jugadores/Lateral Izquierdo/Myles Lewis-Skelly.png' },
     { id:401, name:'Riccardo Calafiori',      club:'Arsenal',           nat:'Italia',          rat:81, liga:'Premier League', tipo:'Actual',  photo:'Jugadores/Lateral Izquierdo/Riccardo Calafiori.png' },
     { id:402, name:'Lucas Digne',             club:'Aston Villa',       nat:'Francia',         rat:81, liga:'Premier League', tipo:'Actual',  photo:'Jugadores/Lateral Izquierdo/Lucas Digne.png' },
@@ -283,7 +283,7 @@ const DEMO_PLAYERS = {
   // ══════════════════════════════════════════
   // MEDIOCAMPISTA IZQUIERDO
   // ══════════════════════════════════════════
-  MedioI: [
+  MediocampistaIzquierdo: [
     { id:500, name:'Myles Lewis-Skelly',      club:'Arsenal',           nat:'Inglaterra',      rat:77, liga:'Premier League', tipo:'Actual',  photo:'Jugadores/Mediocampista Izquierdo/Myles Lewis-Skelly.png' },
     { id:501, name:'Curtis Jones',            club:'Liverpool',         nat:'Inglaterra',      rat:81, liga:'Premier League', tipo:'Actual',  photo:'Jugadores/Mediocampista Izquierdo/Curtis Jones.png' },
     { id:502, name:'Mason Mount',             club:'Manchester United', nat:'Inglaterra',      rat:78, liga:'Premier League', tipo:'Actual',  photo:'Jugadores/Mediocampista Izquierdo/Mason Mount.png' },
@@ -298,7 +298,7 @@ const DEMO_PLAYERS = {
   // ══════════════════════════════════════════
   // MEDIOCAMPISTA CENTRO
   // ══════════════════════════════════════════
-  MedioC: [
+  MediocampistaC: [
     { id:600, name:'Declan Rice',             club:'Arsenal',           nat:'Inglaterra',      rat:86, liga:'Premier League', tipo:'Actual',  photo:'Jugadores/Mediocampista Centro/Declan Rice.png' },
     { id:601, name:'Mikel Merino',            club:'Arsenal',           nat:'España',          rat:80, liga:'Premier League', tipo:'Actual',  photo:'Jugadores/Mediocampista Centro/Mikel Merino.png' },
     { id:602, name:'Youri Tielemans',         club:'Aston Villa',       nat:'Belgica',         rat:79, liga:'Premier League', tipo:'Actual',  photo:'Jugadores/Mediocampista Centro/Youri Tielemans.png' },
@@ -383,7 +383,7 @@ const DEMO_PLAYERS = {
   // ══════════════════════════════════════════
   // MEDIOCAMPISTA DERECHO
   // ══════════════════════════════════════════
-  MedioD: [
+  MediocampistaD: [
     { id:550, name:'Martin Ødegaard',         club:'Arsenal',           nat:'Noruega',         rat:88, liga:'Premier League', tipo:'Actual',  photo:'Jugadores/Mediocampista Derecho/Martin Ødegaard.png' },
     { id:551, name:'Ethan Nwaneri',           club:'Arsenal',           nat:'Inglaterra',      rat:78, liga:'Premier League', tipo:'Actual',  photo:'Jugadores/Mediocampista Derecho/Ethan Nwaneri.png' },
     { id:552, name:'Eberechi Eze',            club:'Crystal Palace',    nat:'Inglaterra',      rat:83, liga:'Premier League', tipo:'Actual',  photo:'Jugadores/Mediocampista Derecho/Eberechi Eze.png' },
@@ -413,7 +413,7 @@ const DEMO_PLAYERS = {
   // ══════════════════════════════════════════
   // EXTREMO DERECHO
   // ══════════════════════════════════════════
-  RW: [
+  ExtremoDerecho: [
     { id:900, name:'Bukayo Saka',             club:'Arsenal',           nat:'Inglaterra',      rat:88, liga:'Premier League', tipo:'Actual',  photo:'Jugadores/Extremo Derecho/Bukayo Saka.png' },
     { id:901, name:'Noni Madueke',            club:'Arsenal',           nat:'Inglaterra',      rat:81, liga:'Premier League', tipo:'Actual',  photo:'Jugadores/Extremo Derecho/Noni Madueke.png' },
     { id:902, name:'Estêvão',                 club:'Chelsea',           nat:'Brasil',          rat:81, liga:'Premier League', tipo:'Actual',  photo:'Jugadores/Extremo Derecho/Estêvão.png' },
@@ -462,7 +462,7 @@ const DEMO_PLAYERS = {
   // ══════════════════════════════════════════
   // EXTREMO IZQUIERDO
   // ══════════════════════════════════════════
-  LW: [
+  ExtremoIzquierdo: [
     { id:800, name:'Gabriel Martinelli',      club:'Arsenal',           nat:'Brasil',          rat:84, liga:'Premier League', tipo:'Actual',  photo:'Jugadores/Extremo Izquierdo/Gabriel Martinelli.png' },
     { id:801, name:'Leandro Trossard',        club:'Arsenal',           nat:'Belgica',         rat:81, liga:'Premier League', tipo:'Actual',  photo:'Jugadores/Extremo Izquierdo/Leandro Trossard.png' },
     { id:802, name:'Jadon Sancho',            club:'Aston Villa',       nat:'Inglaterra',      rat:81, liga:'Premier League', tipo:'Actual',  photo:'Jugadores/Extremo Izquierdo/Jadon Sancho.png' },
@@ -513,7 +513,7 @@ const DEMO_PLAYERS = {
   // ══════════════════════════════════════════
   // DELANTERO CENTRO
   // ══════════════════════════════════════════
-  ST: [
+  DelanteroC: [
     { id:700, name:'Kai Havertz',             club:'Arsenal',           nat:'Alemania',        rat:81, liga:'Premier League', tipo:'Actual',  photo:'Jugadores/Delantero Centro/Kai Havertz.png' },
     { id:701, name:'Viktor Gyökeres',         club:'Arsenal',           nat:'Suecia',          rat:87, liga:'Premier League', tipo:'Actual',  photo:'Jugadores/Delantero Centro/Viktor Gyökeres.png' },
     { id:702, name:'Gabriel Jesus',           club:'Arsenal',           nat:'Brasil',          rat:79, liga:'Premier League', tipo:'Actual',  photo:'Jugadores/Delantero Centro/Gabriel Jesus.png' },
@@ -610,7 +610,7 @@ function getDemoPlayersForPosition(positionType) {
     return DEMO_PLAYERS[positionType];
   }
   const nonGkPlayers = Object.keys(DEMO_PLAYERS)
-    .filter(key => key !== 'GK' && Array.isArray(DEMO_PLAYERS[key]))
+    .filter(key => key !== 'Arquero' && Array.isArray(DEMO_PLAYERS[key]))
     .reduce((acc, key) => acc.concat(DEMO_PLAYERS[key]), []);
   if (nonGkPlayers.length) return nonGkPlayers;
   return Object.values(DEMO_PLAYERS).reduce((acc, arr) => Array.isArray(arr) ? acc.concat(arr) : acc, []);
@@ -629,10 +629,10 @@ function shuffleArray(arr) {
 // ── Fetch desde API real ──
 async function fetchPlayersFromAPI(positionType, leagueId, season, apiKey, needed) {
   const posMap = {
-    GK: 'Goalkeeper',
-    RB: 'Defender', RCB: 'Defender', LCB: 'Defender', LB: 'Defender',
-    MedioI: 'Midfielder', MedioC: 'Midfielder', MedioD: 'Midfielder',
-    RW: 'Attacker', LW: 'Attacker', ST: 'Attacker',
+    Arquero: 'Goalkeeper',
+    LateralDerecho: 'Defender', CentralDerecho: 'Defender', CentralIzquierdo: 'Defender', LateralIzquierdo: 'Defender',
+    MediocampistaIzquierdo: 'Midfielder', MediocampistaC: 'Midfielder', MediocampistaD: 'Midfielder',
+    ExtremoDerecho: 'Attacker', ExtremoIzquierdo: 'Attacker', DelanteroC: 'Attacker',
   };
   const pos = posMap[positionType];
   const leagues = leagueId === 'all' ? [39, 140, 135, 78, 61] : [parseInt(leagueId)];
@@ -652,7 +652,7 @@ async function fetchPlayersFromAPI(positionType, leagueId, season, apiKey, neede
         name: p.player.name,
         club: p.statistics[0]?.team?.name || '',
         nat: p.player.nationality || '',
-        rat: Math.round(parseFloat(p.statistics[0]?.games?.rating) * 10) || (positionType === 'GK' ? 80 : 78),
+        rat: Math.round(parseFloat(p.statistics[0]?.games?.rating) * 10) || (positionType === 'Arquero' ? 80 : 78),
         photo: p.player.photo || '',
       })).filter(p => p.rat > 0);
       allPlayers = allPlayers.concat(mapped);

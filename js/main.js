@@ -22,7 +22,5 @@ document.querySelectorAll('.tab-btn').forEach(btn => {
   });
 });
 
-document.getElementById('back-to-auction').addEventListener('click', () => switchTab('auction'));
-
 // ── Boot ───────────────────────────────────
 renderPlayerSetup();

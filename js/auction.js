@@ -8,19 +8,24 @@ function currentPos()        { return state.positionOrder[state.currentPosIdx]; 
 function currentPool()       { return state.pool[currentPos()] || []; }
 function currentPlayerData() { return currentPool()[state.currentPlayerIdx]; }
 
+function isLastPlayerOfAuction() {
+  const pool = currentPool();
+  return state.currentPosIdx >= state.positionOrder.length - 1 && state.currentPlayerIdx >= pool.length - 1;
+}
+
 function getPosLabel(pos) {
   return {
-    GK:     'Portero',
-    RB:     'Lateral Derecho',
-    RCB:    'Central Derecho',
-    LCB:    'Central Izquierdo',
-    LB:     'Lateral Izquierdo',
-    MedioI: 'Mediocampista Izquierdo',
-    MedioC: 'Mediocampista Centro',
-    MedioD: 'Mediocampista Derecho',
-    RW:     'Extremo Derecho',
-    LW:     'Extremo Izquierdo',
-    ST:     'Delantero Centro',
+    Arquero:                'Arquero',
+    LateralDerecho:         'Lateral Derecho',
+    CentralDerecho:         'Central Derecho',
+    CentralIzquierdo:       'Central Izquierdo',
+    LateralIzquierdo:       'Lateral Izquierdo',
+    MediocampistaIzquierdo: 'Mediocampista Izquierdo',
+    MediocampistaC:         'Mediocampista Centro',
+    MediocampistaD:         'Mediocampista Derecho',
+    ExtremoDerecho:         'Extremo Derecho',
+    ExtremoIzquierdo:       'Extremo Izquierdo',
+    DelanteroC:             'Delantero Centro',
   }[pos];
 }
 
@@ -129,8 +134,8 @@ function renderAuction() {
   } else {
     const ph = document.createElement('div');
     ph.className = 'silhouette-placeholder';
-    ph.textContent = { GK:'🧤', RB:'🛡', RCB:'🛡', LCB:'🛡', LB:'🛡',
-      MedioI:'⚡', MedioC:'⚡', MedioD:'⚡', RW:'⚽', LW:'⚽', ST:'⚽' }[pos];
+    ph.textContent = { Arquero:'🧤', LateralDerecho:'🛡', CentralDerecho:'🛡', CentralIzquierdo:'🛡', LateralIzquierdo:'🛡',
+      MediocampistaIzquierdo:'⚡', MediocampistaC:'⚡', MediocampistaD:'⚡', ExtremoDerecho:'⚽', ExtremoIzquierdo:'⚽', DelanteroC:'⚽' }[pos];
     silWrap.appendChild(ph);
   }
 
@@ -174,8 +179,11 @@ function renderBidders() {
 
     const row = document.createElement('div');
     row.className = `bidder-row${isLeader ? ' leading' : ''}${(!canAfford || alreadyFilled) ? ' cant-afford' : ''}`;
+    const iconMarkup = p.icon
+      ? `<div class="bidder-icon"><img src="${p.icon}" alt="${p.name}" /></div>`
+      : `<div class="bidder-dot" style="background:${p.color}"></div>`;
     row.innerHTML = `
-      <div class="bidder-dot" style="background:${p.color}"></div>
+      ${iconMarkup}
       <div class="bidder-name">${p.name}${alreadyFilled ? ' <span style="font-size:0.7rem;color:var(--muted)">(posición llena)</span>' : ''}</div>
       <div class="bidder-balance">${p.balance}M</div>
       <div class="bidder-current-bid">${isLeader ? `${state.currentBid}M <span class="leading-crown">👑</span>` : ''}</div>
@@ -300,7 +308,19 @@ function resolveAuction() {
 
 // ── Reveal overlay ──
 
+function getPlayerMetaText(playerData) {
+  const club = playerData?.club || '';
+  const country = playerData?.nationality || playerData?.nat || playerData?.country || playerData?.pais || '';
+  const parts = [club, country].filter(Boolean);
+  return parts.length ? parts.join(' · ') : 'Sin información';
+}
+
 function showReveal(winner, playerData, price, callback, skipped = false) {
+  if (isLastPlayerOfAuction()) {
+    callback();
+    return;
+  }
+
   const overlay      = document.getElementById('reveal-overlay');
   const label        = document.querySelector('.reveal-box .winner-label');
   const revWinner    = document.getElementById('rev-winner');
@@ -313,7 +333,7 @@ function showReveal(winner, playerData, price, callback, skipped = false) {
     label.style.color = 'var(--muted)';
     revWinner.textContent = '';
     revPlayerName.textContent = playerData.name;
-    revMeta.textContent  = `${playerData.club} · ${playerData.nationality}`;
+    revMeta.textContent  = getPlayerMetaText(playerData);
     revPrice.textContent = 'Nadie ofertó';
   } else {
     label.textContent = '¡GANÓ LA SUBASTA!';
@@ -321,7 +341,7 @@ function showReveal(winner, playerData, price, callback, skipped = false) {
     revWinner.textContent = winner.name;
     revWinner.style.color = winner.color;
     revPlayerName.textContent = playerData.name;
-    revMeta.textContent  = `${playerData.club} · ${playerData.nationality}`;
+    revMeta.textContent  = getPlayerMetaText(playerData);
     revPrice.textContent = `${price}M pagados`;
   }
 
@@ -366,7 +386,9 @@ function renderBalances() {
   const list = document.getElementById('balance-list');
   list.innerHTML = state.players.map(p => `
     <div class="balance-item">
-      <div class="bidder-dot" style="background:${p.color};width:10px;height:10px;border-radius:50%;flex-shrink:0;"></div>
+      ${p.icon
+        ? `<div class="balance-icon"><img src="${p.icon}" alt="${p.name}" /></div>`
+        : `<div class="bidder-dot" style="background:${p.color};width:10px;height:10px;border-radius:50%;flex-shrink:0;"></div>`}
       <div class="b-name">${p.name}</div>
       <div class="balance-bar-wrap"><div class="balance-bar" style="width:${p.balance}%"></div></div>
       <div class="b-val">${p.balance}M</div>

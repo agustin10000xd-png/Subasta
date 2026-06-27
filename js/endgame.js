@@ -15,16 +15,19 @@ function endAuction() {
 }
 
 function getPositionCandidates(pos) {
-  return state.players.map((player, teamIndex) => {
-    const candidate = (player.team[pos] || [])[0] || { name: 'Sin jugador', club: '', pricePaid: 0, photo: '' };
-    return {
-      teamIndex,
-      teamName: player.name,
-      teamColor: player.color,
-      player,
-      candidate,
-    };
-  });
+  return state.players
+    .map((player, teamIndex) => {
+      const candidate = (player.team[pos] || [])[0];
+      if (!candidate || !candidate.name || candidate.name === 'Sin jugador') return null;
+      return {
+        teamIndex,
+        teamName: player.name,
+        teamColor: player.color,
+        player,
+        candidate,
+      };
+    })
+    .filter(Boolean);
 }
 
 function buildVoteSection() {
@@ -57,13 +60,26 @@ function buildVoteSection() {
     state.players.forEach((voter, voterIdx) => {
       const row = document.createElement('div');
       row.className = 'vote-row';
+      const accentColor = voter.color || 'var(--green)';
+      row.style.setProperty('--row-accent', accentColor);
+      row.style.borderLeftColor = accentColor;
+      row.style.background = `linear-gradient(90deg, ${accentColor}22 0%, rgba(255,255,255,0.04) 100%)`;
+      row.style.boxShadow = `inset 0 0 0 1px ${accentColor}22`;
       const label = document.createElement('label');
       label.textContent = `Voto de ${voter.name}`;
+      label.style.color = accentColor;
       const optionsWrap = document.createElement('div');
       optionsWrap.className = 'vote-options';
 
-      if (typeof state.votes[pos][voterIdx] !== 'number') {
-        state.votes[pos][voterIdx] = candidates[0]?.teamIndex ?? 0;
+      if (typeof state.votes[pos][voterIdx] !== 'number' || !candidates.some(c => c.teamIndex === state.votes[pos][voterIdx])) {
+        state.votes[pos][voterIdx] = candidates[0]?.teamIndex ?? -1;
+      }
+
+      if (!candidates.length) {
+        const emptyState = document.createElement('div');
+        emptyState.className = 'vote-empty-state';
+        emptyState.textContent = 'No hay jugadores disponibles para este puesto.';
+        optionsWrap.appendChild(emptyState);
       }
 
       candidates.forEach(c => {
@@ -71,7 +87,11 @@ function buildVoteSection() {
         optionBtn.type = 'button';
         optionBtn.className = 'vote-option-btn';
         optionBtn.dataset.teamIndex = c.teamIndex;
-        if (state.votes[pos][voterIdx] === c.teamIndex) optionBtn.classList.add('selected');
+        optionBtn.style.setProperty('--team-color', accentColor);
+        if (state.votes[pos][voterIdx] === c.teamIndex) {
+          optionBtn.classList.add('selected');
+          optionBtn.style.boxShadow = `inset 0 0 0 1px ${accentColor}`;
+        }
 
         const photoMarkup = c.candidate.photo
           ? `<img src="${c.candidate.photo}" alt="${c.candidate.name}" onerror="this.parentElement.innerHTML='<div class=\'vote-option-placeholder\'>⚽</div>'">`
@@ -87,7 +107,9 @@ function buildVoteSection() {
         optionBtn.addEventListener('click', () => {
           state.votes[pos][voterIdx] = c.teamIndex;
           optionsWrap.querySelectorAll('.vote-option-btn').forEach(btn => {
-            btn.classList.toggle('selected', parseInt(btn.dataset.teamIndex, 10) === c.teamIndex);
+            const isSelected = parseInt(btn.dataset.teamIndex, 10) === c.teamIndex;
+            btn.classList.toggle('selected', isSelected);
+            btn.style.boxShadow = isSelected ? `inset 0 0 0 1px ${btn.style.getPropertyValue('--team-color') || 'var(--green)'}` : '';
           });
         });
 
@@ -152,6 +174,7 @@ function renderVotingResults() {
 
   voteSection.style.display = 'none';
   voteActions.style.display = 'none';
+  document.getElementById('finish-overlay').scrollIntoView({ behavior: 'smooth', block: 'start' });
   votingResults.style.display = 'block';
   votingSummary.innerHTML = `
     <div class="voting-result-card">

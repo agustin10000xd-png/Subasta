@@ -2,8 +2,17 @@
 // LOBBY.JS — Setup de jugadores y arranque
 // ══════════════════════════════════════════
 
+function updatePlayerCountDisplay() {
+  const valueEl = document.getElementById('num-players-value');
+  const minusBtn = document.getElementById('count-minus');
+  const plusBtn = document.getElementById('count-plus');
+  if (valueEl) valueEl.textContent = state.numPlayers;
+  if (minusBtn) minusBtn.disabled = state.numPlayers <= 2;
+  if (plusBtn) plusBtn.disabled = state.numPlayers >= 5;
+}
+
 function renderPlayerSetup() {
-  const n = parseInt(document.getElementById('num-players-select').value);
+  const n = state.numPlayers;
   state.numPlayers = n;
   const grid = document.getElementById('players-setup');
   grid.innerHTML = '';
@@ -18,12 +27,13 @@ function renderPlayerSetup() {
         <input type="text" id="p-name-${i}" placeholder="Jugador ${i + 1}" value="Jugador ${i + 1}" />
       </div>
       <div class="color-row">
-        <label>Color:</label>
-        ${PLAYER_COLORS.map((c, ci) => `
+        <label>Icono:</label>
+        ${PLAYER_ICONS.map((iconPath, ci) => `
           <div class="color-swatch ${ci === i ? 'selected' : ''}"
-               style="background:${c}"
-               data-player="${i}" data-color="${ci}"
-               title="${COLOR_NAMES[ci]}"></div>
+               data-player="${i}" data-icon="${ci}"
+               title="${COLOR_NAMES[ci]}">
+            <img src="${iconPath}" alt="${COLOR_NAMES[ci]}" />
+          </div>
         `).join('')}
       </div>`;
     grid.appendChild(card);
@@ -37,6 +47,7 @@ function renderPlayerSetup() {
     });
   });
 
+  updatePlayerCountDisplay();
   updateStartBtn();
 }
 
@@ -62,15 +73,16 @@ async function startGame() {
   for (let i = 0; i < n; i++) {
     const name     = document.getElementById(`p-name-${i}`).value.trim() || `Jugador ${i + 1}`;
     const selSwatch = setupGrid.querySelector(`.color-swatch[data-player="${i}"].selected`);
-    const colorIdx  = selSwatch ? parseInt(selSwatch.dataset.color) : i;
+    const colorIdx  = selSwatch ? parseInt(selSwatch.dataset.icon) : i;
     state.players.push({
       name,
       color: PLAYER_COLORS[colorIdx],
+      icon: PLAYER_ICONS[colorIdx],
       balance: BUDGET,
-      team: { GK: [], RB: [], RCB: [], LCB: [], LB: [], MedioI: [], MedioC: [], MedioD: [], RW: [], LW: [], ST: [] }
+      team: { Arquero: [], LateralDerecho: [], CentralDerecho: [], CentralIzquierdo: [], LateralIzquierdo: [], MediocampistaIzquierdo: [], MediocampistaC: [], MediocampistaD: [], ExtremoDerecho: [], ExtremoIzquierdo: [], DelanteroC: [] }
     });
   }
-  state.positionSkips = { GK: 0, RB: 0, RCB: 0, LCB: 0, LB: 0, MedioI: 0, MedioC: 0, MedioD: 0, RW: 0, LW: 0, ST: 0 };
+  state.positionSkips = { Arquero: 0, LateralDerecho: 0, CentralDerecho: 0, CentralIzquierdo: 0, LateralIzquierdo: 0, MediocampistaIzquierdo: 0, MediocampistaC: 0, MediocampistaD: 0, ExtremoDerecho: 0, ExtremoIzquierdo: 0, DelanteroC: 0 };
 
   const loadMsg  = document.getElementById('loading-msg');
   const startBtn = document.getElementById('start-btn');
@@ -112,5 +124,18 @@ async function startGame() {
 }
 
 // ── Event listeners de lobby ──
-document.getElementById('num-players-select').addEventListener('change', renderPlayerSetup);
+document.getElementById('count-minus').addEventListener('click', () => {
+  if (state.numPlayers > 2) {
+    state.numPlayers -= 1;
+    renderPlayerSetup();
+  }
+});
+
+document.getElementById('count-plus').addEventListener('click', () => {
+  if (state.numPlayers < 5) {
+    state.numPlayers += 1;
+    renderPlayerSetup();
+  }
+});
+
 document.getElementById('start-btn').addEventListener('click', startGame);

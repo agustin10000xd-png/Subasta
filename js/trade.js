@@ -3,15 +3,15 @@
 // ══════════════════════════════════════════
 
 function getTradeRoundLabel(round) {
-  return ['Porteros', 'Defensores', 'Mediocampistas', 'Delanteros'][round];
+  return ['Arqueros', 'Defensores', 'Mediocampistas', 'Delanteros'][round];
 }
 
 function getPositionsForTradeRound(round) {
   const roundGroups = [
-    ['GK'],
-    ['RB', 'RCB', 'LCB', 'LB'],
-    ['MedioI', 'MedioC', 'MedioD'],
-    ['RW', 'LW', 'ST'],
+    ['Arquero'],
+    ['LateralDerecho', 'CentralDerecho', 'CentralIzquierdo', 'LateralIzquierdo'],
+    ['MediocampistaIzquierdo', 'MediocampistaC', 'MediocampistaD'],
+    ['ExtremoDerecho', 'ExtremoIzquierdo', 'DelanteroC'],
   ];
   return roundGroups[round] || [];
 }
@@ -45,18 +45,21 @@ function openTradeModal() {
 
     if (playersByPos.length === 0) return;
 
-    html += `<div style="border:1px solid rgba(255,255,255,0.1);padding:16px;border-radius:8px;">
-      <h4 style="margin:0 0 12px 0;color:var(--green);">${posLabel}</h4>
-      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;">`;
+    html += `<div style="border:1px solid rgba(255,255,255,0.16);padding:18px;border-radius:14px;background:rgba(255,255,255,0.03);">
+      <h4 style="margin:0 0 12px 0;color:var(--green);font-size:1rem;">${posLabel}</h4>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;">`;
 
     playersByPos.forEach(pData => {
       pData.players.forEach((player, idx) => {
         html += `
-          <div style="background:rgba(255,255,255,0.05);padding:12px;border-radius:8px;text-align:center;">
-            <div style="font-weight:600;margin-bottom:4px;">${player.name}</div>
-            <div style="font-size:0.85rem;color:var(--muted);margin-bottom:8px;">${player.club}</div>
-            <div style="color:var(--green);font-family:var(--font-display);font-weight:600;margin-bottom:8px;">${player.pricePaid}M</div>
-            <button onclick="openTradeDialog('${pos}', ${pData.playerIdx}, ${idx})" class="btn-sm" style="width:100%;">Intercambiar</button>
+          <div style="background:rgba(255,255,255,0.06);padding:14px;border-radius:12px;text-align:left;border:1px solid rgba(255,255,255,0.08);">
+            <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:8px;">
+              <div style="font-weight:700;font-size:1rem;">${player.name}</div>
+              <div style="padding:4px 8px;border-radius:999px;background:rgba(0,200,83,0.14);color:var(--green);font-size:0.8rem;font-weight:600;white-space:nowrap;">${state.players[pData.playerIdx].name}</div>
+            </div>
+            <div style="font-size:0.9rem;color:var(--muted);margin-bottom:8px;">${player.club}</div>
+            <div style="color:var(--green);font-family:var(--font-display);font-weight:600;font-size:1.05rem;margin-bottom:10px;">${player.pricePaid}M</div>
+            <button onclick="openTradeDialog('${pos}', ${pData.playerIdx}, ${idx})" class="btn-sm" style="width:100%;padding:10px 12px;">Intercambiar</button>
           </div>`;
       });
     });
@@ -108,7 +111,7 @@ function openTradeDialog(position, playerAIdx, playerIdx) {
   modal.style.cssText = 'position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.9);z-index:1001;display:flex;align-items:center;justify-content:center;';
 
   const box = document.createElement('div');
-  box.style.cssText = 'background:var(--bg);border-radius:12px;padding:24px;max-width:600px;width:90%;';
+  box.style.cssText = 'background:var(--pitch-mid);border:1px solid rgba(255,255,255,0.14);border-radius:16px;padding:26px;max-width:760px;width:92%;box-shadow:0 20px 50px rgba(0,0,0,0.35);';
 
   const titleEl = document.createElement('h3');
   titleEl.style.marginTop = '0';
@@ -121,7 +124,7 @@ function openTradeDialog(position, playerAIdx, playerIdx) {
   box.appendChild(subtitle);
 
   const optionsContainer = document.createElement('div');
-  optionsContainer.style.cssText = 'display:grid;gap:12px;margin-bottom:20px;max-height:300px;overflow-y:auto;';
+  optionsContainer.style.cssText = 'display:grid;gap:12px;margin-bottom:20px;max-height:360px;overflow-y:auto;';
   box.appendChild(optionsContainer);
 
   otherPlayers.forEach(op => {
@@ -135,11 +138,14 @@ function openTradeDialog(position, playerAIdx, playerIdx) {
 
       const btn = document.createElement('button');
       btn.onclick = () => executeTrade(position, playerAIdx, playerIdx, op.idx, otherIdx);
-      btn.style.cssText = 'padding:12px;text-align:left;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:8px;cursor:pointer;color:var(--white);';
+      btn.style.cssText = 'padding:14px;text-align:left;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:12px;cursor:pointer;color:var(--white);';
       btn.innerHTML = `
-        <div style="font-weight:600;">${otherPlayer.name}</div>
-        <div style="font-size:0.85rem;color:var(--muted);">${otherPlayer.club} - ${otherPlayer.pricePaid}M</div>
-        <div style="font-size:0.85rem;color:var(--green);margin-top:4px;">${summary}</div>`;
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:6px;">
+          <div style="font-weight:700;font-size:1rem;">${otherPlayer.name}</div>
+          <div style="padding:4px 8px;border-radius:999px;background:rgba(0,200,83,0.14);color:var(--green);font-size:0.8rem;font-weight:600;">${op.player.name}</div>
+        </div>
+        <div style="font-size:0.9rem;color:var(--muted);">${otherPlayer.club} - ${otherPlayer.pricePaid}M</div>
+        <div style="font-size:0.9rem;color:var(--green);margin-top:6px;">${summary}</div>`;
       optionsContainer.appendChild(btn);
     });
   });
