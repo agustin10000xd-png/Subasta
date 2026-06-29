@@ -60,11 +60,10 @@ function buildPitchSlots(pitchEl, playerData, color) {
           .replace(/Centro/, '<br>Centro')
           .replace(/Derecho/, '<br>Derecho')
           .replace(/Izquierdo/, '<br>Izquierdo');
-        slot.innerHTML = `
-          <div class="slot-circle">
-            <span style="font-size:0.7rem">${labelFormatted}</span>
-          </div>
-          <div class="slot-name">Libre</div>`;
+          slot.innerHTML = `
+            <div class="slot-circle">
+              <span style="font-size:0.7rem">${labelFormatted}</span>
+            </div>`;
       }
       pitchEl.appendChild(slot);
     });

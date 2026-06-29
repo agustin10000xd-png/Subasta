@@ -1,0 +1,83 @@
+/* ── LOBBY ── */
+.lobby-header { text-align: center; padding: 48px 0 38px; }
+.lobby-header h1 { font-family: var(--font-display); font-size: 4.6rem; letter-spacing: 0.04em; line-height: 1; }
+.lobby-header h1 span { color: var(--green); }
+.lobby-header p { color: var(--muted); margin-top: 10px; font-size: 1.1rem; }
+
+.config-row {
+  display: flex; gap: 16px; align-items: flex-end;
+  margin-bottom: 32px; justify-content: center; flex-wrap: wrap;
+}
+
+.field-group {
+  display: flex; flex-direction: column;
+  gap: 6px; align-items: center; text-align: center;
+}
+.field-group label { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); }
+
+.player-count-picker {
+  display: inline-flex; align-items: center; justify-content: center;
+  gap: 8px; padding: 6px 10px;
+  border: 1px solid var(--card-border); border-radius: 999px;
+  background: rgba(255,255,255,0.04);
+  width: fit-content; max-width: 100%; box-sizing: border-box;
+}
+.count-btn {
+  width: 30px; height: 30px; border: none; border-radius: 50%;
+  background: var(--green); color: #000;
+  font-size: 1rem; font-weight: 700; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  line-height: 1; flex-shrink: 0;
+}
+.count-btn:hover { background: #00e060; }
+.count-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+.count-value {
+  min-width: 24px; text-align: center;
+  font-family: var(--font-display); font-size: 1rem;
+  color: var(--white); line-height: 1;
+}
+
+.field-group select, .field-group input[type=text] {
+  background: var(--card); border: 1px solid var(--card-border);
+  color: var(--white); border-radius: 8px; padding: 10px 14px;
+  font-family: var(--font-body); font-size: 0.95rem;
+  outline: none; transition: border-color 0.2s; min-width: 120px;
+}
+.field-group select:focus, .field-group input[type=text]:focus { border-color: var(--green); }
+.field-group select option { background: #1a3a25; }
+
+/* Cards de jugadores en setup */
+.players-grid {
+  display: flex; flex-wrap: wrap; gap: 24px;
+  margin: 0 auto 36px; justify-content: center;
+  align-items: stretch; max-width: 1600px;
+}
+.player-card-setup {
+  background: var(--card); border: 1px solid var(--card-border);
+  border-radius: var(--radius); padding: 26px;
+  display: flex; flex-direction: column; gap: 14px;
+  flex: 0 1 300px; max-width: 320px; min-width: 260px;
+  align-items: stretch; overflow: hidden;
+  font-family: 'DM Sans', sans-serif;
+}
+.player-card-setup .num { font-family: var(--font-display); font-size: 2rem; color: var(--green); line-height: 1; }
+.player-card-setup input[type=text] { min-width: unset; width: 100%; font-family: 'DM Sans', sans-serif; }
+
+.color-row {
+  display: flex; gap: 8px; align-items: center;
+  justify-content: center; width: 100%; flex-wrap: nowrap;
+}
+.color-row label { font-size: 0.75rem; color: var(--muted); flex-shrink: 0; }
+.color-swatch {
+  width: 32px; height: 32px; border-radius: 50%; cursor: pointer;
+  border: 2px solid transparent; transition: all 0.15s; flex-shrink: 0;
+  padding: 2px; background: rgba(255,255,255,0.06);
+  display: flex; align-items: center; justify-content: center; overflow: hidden;
+}
+.color-swatch img { width: 100%; height: 100%; object-fit: contain; pointer-events: none; display: block; }
+.color-swatch.selected { border-color: var(--green); transform: scale(1.08); box-shadow: 0 0 0 2px rgba(0,200,83,0.2); }
+
+/* Forzar DM Sans en el tab de auction también */
+.btn-primary,
+#tab-auction,
+#tab-auction * { font-family: 'DM Sans', sans-serif; }

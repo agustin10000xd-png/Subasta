@@ -153,7 +153,10 @@ function renderAuction() {
     ? 'Límite de saltos alcanzado'
     : '⏭ Saltar jugador (nadie oferta)';
 
-  advanceBtn.style.display = noOneCanAfford && state.currentLeader === null ? 'block' : 'none';
+  // Mostrar el botón de avanzar de posición SOLO cuando no haya nadie que pueda pagar
+  // Y además ya no queden saltos individuales posibles en esta posición (skipCount >= 2).
+  const noMorePlayerSkips = skipCount >= 2;
+  advanceBtn.style.display = (noOneCanAfford && state.currentLeader === null && noMorePlayerSkips) ? 'block' : 'none';
   advanceBtn.textContent = getAdvancePositionLabel();
 
   renderPoolRemaining();
@@ -416,7 +419,7 @@ function renderPoolRemaining() {
 document.getElementById('skip-btn').addEventListener('click', () => {
   const pos       = currentPos();
   const skipCount = state.positionSkips[pos] || 0;
-  if (state.currentLeader !== null) { showNotif('Ya hay una oferta activa — el timer continúa'); return; }
+  if (state.currentLeader !== null) { showNotif('Ya hay una subasta activa'); return; }
   if (skipCount >= 2)               { showNotif('Ya alcanzaste el límite de 2 saltos en esta posición'); return; }
   clearInterval(state.timerInterval);
   const player = currentPlayerData();

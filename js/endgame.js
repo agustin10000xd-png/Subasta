@@ -10,8 +10,22 @@ function endAuction() {
   state.votingFinished = false;
   state.finishRanking = [];
 
-  buildVoteSection();
-  document.getElementById('finish-overlay').classList.add('show');
+  document.getElementById('btn-formations').disabled = false;
+  switchTab('formations');
+
+  const formTab = document.getElementById('tab-formations');
+  let voteBtn = document.getElementById('go-to-vote-btn');
+  if (!voteBtn) {
+    voteBtn = document.createElement('button');
+    voteBtn.id = 'go-to-vote-btn';
+    voteBtn.className = 'btn-primary';
+    voteBtn.textContent = 'PASAR A VOTACIONES';
+    voteBtn.addEventListener('click', () => {
+      buildVoteSection();
+      document.getElementById('finish-overlay').classList.add('show');
+    });
+    formTab.insertBefore(voteBtn, formTab.firstChild);
+  }
 }
 
 function getPositionCandidates(pos) {

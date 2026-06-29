@@ -45,22 +45,22 @@ function openTradeModal() {
 
     if (playersByPos.length === 0) return;
 
-    html += `<div style="border:1px solid rgba(255,255,255,0.16);padding:18px;border-radius:14px;background:rgba(255,255,255,0.03);">
-      <h4 style="margin:0 0 12px 0;color:var(--green);font-size:1rem;">${posLabel}</h4>
-      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;">`;
+    html += `<div style="border:1px solid rgba(255,255,255,0.16);padding:24px;border-radius:16px;background:rgba(255,255,255,0.02);font-weight:300;">
+      <h4 style="margin:0 0 14px 0;color:var(--green);font-size:1.28rem;font-weight:300;">${posLabel}</h4>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));grid-auto-rows:1fr;gap:18px;align-items:stretch;">`;
 
     playersByPos.forEach(pData => {
       pData.players.forEach((player, idx) => {
         html += `
-          <div style="background:rgba(255,255,255,0.06);padding:14px;border-radius:12px;text-align:left;border:1px solid rgba(255,255,255,0.08);">
-            <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:8px;">
-              <div style="font-weight:700;font-size:1rem;">${player.name}</div>
-              <div style="padding:4px 8px;border-radius:999px;background:rgba(0,200,83,0.14);color:var(--green);font-size:0.8rem;font-weight:600;white-space:nowrap;">${state.players[pData.playerIdx].name}</div>
-            </div>
-            <div style="font-size:0.9rem;color:var(--muted);margin-bottom:8px;">${player.club}</div>
-            <div style="color:var(--green);font-family:var(--font-display);font-weight:600;font-size:1.05rem;margin-bottom:10px;">${player.pricePaid}M</div>
-            <button onclick="openTradeDialog('${pos}', ${pData.playerIdx}, ${idx})" class="btn-sm" style="width:100%;padding:10px 12px;">Intercambiar</button>
-          </div>`;
+          <div style="background:rgba(255,255,255,0.07);padding:20px;border-radius:14px;text-align:left;border:1px solid rgba(255,255,255,0.1);font-weight:300;height:100%;display:flex;flex-direction:column;justify-content:space-between;box-sizing:border-box;">
+                <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px;">
+                  <div style="font-weight:300;font-size:1.4rem;word-break:break-word;overflow-wrap:break-word;white-space:normal;">${player.name}</div>
+                  <div style="padding:6px 10px;border-radius:999px;background:rgba(0,200,83,0.16);color:var(--green);font-size:1.4rem;font-weight:300;white-space:nowrap;">${state.players[pData.playerIdx].name}</div>
+                </div>
+                <div style="font-size:1.05rem;color:var(--muted);margin-bottom:10px;">${player.club}</div>
+                <div style="color:var(--green);font-family:var(--font-display);font-weight:400;font-size:1.3rem;margin-bottom:12px;">${player.pricePaid}M</div>
+                <button onclick="openTradeDialog('${pos}', ${pData.playerIdx}, ${idx})" class="btn-sm" style="width:100%;padding:14px 16px;font-size:1.25rem;font-weight:500;margin-top:8px;">Intercambiar</button>
+              </div>`;
       });
     });
 
@@ -108,23 +108,25 @@ function openTradeDialog(position, playerAIdx, playerIdx) {
 
   const modal = document.createElement('div');
   modal.className = 'trade-dialog';
-  modal.style.cssText = 'position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.9);z-index:1001;display:flex;align-items:center;justify-content:center;';
+  modal.style.cssText = 'position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.98);z-index:1001;display:flex;align-items:center;justify-content:center;';
 
   const box = document.createElement('div');
-  box.style.cssText = 'background:var(--pitch-mid);border:1px solid rgba(255,255,255,0.14);border-radius:16px;padding:26px;max-width:760px;width:92%;box-shadow:0 20px 50px rgba(0,0,0,0.35);';
+  box.style.cssText = 'background:var(--pitch-mid);border:1px solid rgba(255,255,255,0.14);border-radius:20px;padding:44px;max-width:1100px;width:95%;box-shadow:0 40px 100px rgba(0,0,0,0.48);font-weight:300;';
 
   const titleEl = document.createElement('h3');
   titleEl.style.marginTop = '0';
+  titleEl.style.fontWeight = '300';
   titleEl.textContent = 'Intercambiar ' + selectedPlayer.name;
   box.appendChild(titleEl);
 
   const subtitle = document.createElement('p');
   subtitle.style.color = 'var(--muted)';
+  subtitle.style.fontWeight = '300';
   subtitle.textContent = 'Selecciona con quién deseas intercambiar:';
   box.appendChild(subtitle);
 
   const optionsContainer = document.createElement('div');
-  optionsContainer.style.cssText = 'display:grid;gap:12px;margin-bottom:20px;max-height:360px;overflow-y:auto;';
+  optionsContainer.style.cssText = 'display:grid;gap:16px;margin-bottom:20px;max-height:560px;overflow-y:auto;';
   box.appendChild(optionsContainer);
 
   otherPlayers.forEach(op => {
@@ -138,14 +140,14 @@ function openTradeDialog(position, playerAIdx, playerIdx) {
 
       const btn = document.createElement('button');
       btn.onclick = () => executeTrade(position, playerAIdx, playerIdx, op.idx, otherIdx);
-      btn.style.cssText = 'padding:14px;text-align:left;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:12px;cursor:pointer;color:var(--white);';
+      btn.style.cssText = 'padding:16px;text-align:left;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.12);border-radius:14px;cursor:pointer;color:var(--white);font-weight:300;';
       btn.innerHTML = `
         <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:6px;">
-          <div style="font-weight:700;font-size:1rem;">${otherPlayer.name}</div>
-          <div style="padding:4px 8px;border-radius:999px;background:rgba(0,200,83,0.14);color:var(--green);font-size:0.8rem;font-weight:600;">${op.player.name}</div>
+          <div style="font-weight:300;font-size:0.96rem;">${otherPlayer.name}</div>
+          <div style="padding:4px 8px;border-radius:999px;background:rgba(0,200,83,0.14);color:var(--green);font-size:1.5rem;font-weight:300;">${op.player.name}</div>
         </div>
-        <div style="font-size:0.9rem;color:var(--muted);">${otherPlayer.club} - ${otherPlayer.pricePaid}M</div>
-        <div style="font-size:0.9rem;color:var(--green);margin-top:6px;">${summary}</div>`;
+        <div style="font-size:0.84rem;color:var(--muted);">${otherPlayer.club} - ${otherPlayer.pricePaid}M</div>
+        <div style="font-size:0.84rem;color:var(--green);margin-top:6px;">${summary}</div>`;
       optionsContainer.appendChild(btn);
     });
   });

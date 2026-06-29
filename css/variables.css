@@ -1,0 +1,47 @@
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,wght@0,400;0,500;0,600;0,700&family=Google+Sans+Flex:opsz,wght@6..144,1..1000&family=Google+Sans:ital,opsz,wght@0,17..18,400..700;1,17..18,400..700&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
+
+:root {
+  --green: #2fd76b;
+  --green-dark: #1e8f4a;
+  --green-glow: rgba(47,215,107,0.24);
+  --pitch: #143a24;
+  --pitch-mid: #184c2d;
+  --pitch-light: #215d39;
+  --gold: #ffd600;
+  --gold-soft: rgba(255,214,0,0.15);
+  --red: #ff3d3d;
+  --white: #f4f9f5;
+  --muted: rgba(244,249,245,0.45);
+  --card: rgba(255,255,255,0.04);
+  --card-border: rgba(255,255,255,0.08);
+  --radius: 14px;
+  --font-display: 'Bebas Neue', 'Google Sans', 'Google Sans Flex', 'Inter', sans-serif;
+  --font-body: 'Bebas Neue', 'Google Sans', 'Google Sans Flex', 'Inter', sans-serif;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { font-size: 17px; }
+
+body {
+  font-family: var(--font-body);
+  font-size: 1.05rem;
+  font-weight: 300;
+  background: var(--pitch);
+  color: var(--white);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* Pitch pattern */
+body::before {
+  content: '';
+  position: fixed; inset: 0;
+  background-image:
+    repeating-linear-gradient(0deg, transparent, transparent 60px, rgba(255,255,255,0.018) 60px, rgba(255,255,255,0.018) 61px),
+    repeating-linear-gradient(90deg, transparent, transparent 80px, rgba(255,255,255,0.012) 80px, rgba(255,255,255,0.012) 81px);
+  pointer-events: none; z-index: 0;
+}
+
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--card-border); border-radius: 99px; }

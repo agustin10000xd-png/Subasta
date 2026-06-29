@@ -1,0 +1,42 @@
+/* ── ANIMACIONES ── */
+@keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes popIn { from { transform: scale(0.5); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+
+/* ── CONTENEDOR PRINCIPAL ── */
+#app {
+  position: relative; z-index: 1;
+  max-width: 100%; margin: 0 auto;
+  padding: 0 30px 70px;
+}
+
+/* ── BOTONES GLOBALES ── */
+.btn-primary {
+  display: block; width: min(240px, 100%); margin: 0 auto; padding: 14px 18px;
+  background: var(--green); color: #000; font-family: var(--font-display);
+  font-size: 1.15rem; font-weight: 700; letter-spacing: 0.06em;
+  border: none; border-radius: var(--radius);
+  cursor: pointer; transition: all 0.2s;
+}
+.btn-primary:hover { background: #00e060; transform: translateY(-1px); }
+.btn-primary:disabled { background: #1a3a25; color: var(--muted); cursor: not-allowed; transform: none; }
+
+.btn-sm {
+  padding: 8px 18px; background: transparent;
+  border: 1px solid var(--card-border);
+  color: var(--white); font-family: var(--font-body);
+  font-size: 0.85rem; font-weight: 700;
+  border-radius: 8px; cursor: pointer;
+  transition: all 0.2s; white-space: nowrap;
+}
+.btn-sm:hover { border-color: var(--green); color: var(--green); }
+
+/* Notificaciones */
+.notif {
+  position: fixed; bottom: 24px; left: 50%;
+  transform: translateX(-50%) translateY(80px);
+  background: var(--pitch-mid); border: 1px solid var(--green);
+  padding: 12px 24px; border-radius: 99px; font-size: 0.88rem;
+  transition: transform 0.3s ease; z-index: 200; white-space: nowrap;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+}
+.notif.show { transform: translateX(-50%) translateY(0); }

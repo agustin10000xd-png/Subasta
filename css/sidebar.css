@@ -1,0 +1,42 @@
+/* ── AUCTION SIDEBAR ── */
+.auction-sidebar { display: flex; flex-direction: column; gap: 14px; }
+
+.sidebar-card {
+  background: var(--card); border: 1px solid var(--card-border);
+  border-radius: var(--radius); padding: 18px 18px 14px;
+}
+.sidebar-card h4 {
+  display: inline-flex; align-items: center; gap: 10px;
+  font-size: 0.9rem; text-transform: uppercase;
+  letter-spacing: 0.12em; color: var(--muted); margin-bottom: 12px;
+  font-weight: 600;
+}
+.sidebar-card h4 svg { width: 18px; height: 18px; flex-shrink: 0; opacity: 0.95; }
+.sidebar-card h4 span { display: inline-flex; align-items: center; }
+
+/* Balances */
+.balance-list { display: flex; flex-direction: column; gap: 8px; }
+.balance-item { display: flex; align-items: center; gap: 8px; }
+.balance-icon {
+  width: 18px; height: 18px; display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0; border-radius: 50%; overflow: hidden; background: rgba(255,255,255,0.06);
+}
+.balance-icon img { width: 100%; height: 100%; object-fit: contain; display: block; }
+.balance-item .b-name { flex: 1; font-size: 0.98rem; }
+.balance-bar-wrap { width: 90px; height: 6px; background: rgba(255,255,255,0.06); border-radius: 99px; overflow: hidden; }
+.balance-bar { height: 100%; background: var(--green); border-radius: 99px; transition: width 0.45s ease; }
+.balance-item .b-val { font-family: var(--font-display); font-size: 1rem; min-width: 44px; text-align: right; color: var(--green); font-weight: 700; }
+
+/* Pool de posiciones */
+.pool-remaining { display: flex; flex-direction: column; gap: 6px; }
+.pool-pos-row { display: flex; justify-content: space-between; align-items: center; font-size: 0.9rem; }
+.pool-pos-row .pos-label { color: var(--muted); }
+.pool-pos-row .pos-count { font-family: var(--font-display); color: var(--white); }
+.pool-pos-row.current-pos .pos-label { color: var(--green); font-weight: 700; }
+.pool-pos-row.current-pos .pos-count { color: var(--green); }
+
+/* Log de eventos */
+.log-list { display: flex; flex-direction: column; gap: 6px; max-height: 160px; overflow-y: auto; }
+.log-item { font-size: 0.78rem; color: var(--muted); line-height: 1.4; }
+.log-item strong { color: var(--white); }
+.log-item.won { color: var(--gold); }

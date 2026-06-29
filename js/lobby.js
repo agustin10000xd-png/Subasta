@@ -96,7 +96,7 @@ async function startGame() {
       const all = shuffleArray([...getDemoPlayersForPosition(pos)]);
       state.pool[pos] = all.slice(0, needed).map(p => ({ ...p, basePrice: basePrice() }));
     }
-    loadMsg.textContent = '✓ ¡Listo!';
+    loadMsg.textContent = 'Jugadores cargados';
     setTimeout(() => { loadMsg.style.display = 'none'; launchAuction(); }, 400);
   } else {
     state.apiKey = apiKey;

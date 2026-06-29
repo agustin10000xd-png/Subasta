@@ -1,0 +1,51 @@
+/* ── VOTING ── */
+#vote-section { display: grid; gap: 18px; margin-top: 24px; }
+
+.vote-card {
+  background: var(--card); border: 1px solid var(--card-border);
+  border-radius: 18px; padding: 20px;
+}
+.vote-card h3 { margin: 0 0 12px; color: var(--gold); font-family: var(--font-display); font-size: 1.05rem; }
+
+.vote-grid { display: grid; gap: 12px; }
+.vote-row {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 12px; align-items: start;
+  padding: 14px 14px 14px 16px;
+  border: 1px solid rgba(255,255,255,0.08);
+  border-left: 4px solid var(--row-accent, var(--green));
+  border-radius: 14px; background: rgba(255,255,255,0.03);
+}
+.vote-row:not(:last-child) { border-bottom: 1px solid rgba(255,255,255,0.12); padding-bottom: 14px; }
+.vote-row label { font-size: 0.88rem; color: var(--muted); padding-top: 10px; font-weight: 600; }
+
+.vote-options { display: grid; gap: 8px; }
+.vote-option-btn {
+  display: flex; align-items: center; gap: 10px;
+  width: 100%; text-align: left; padding: 10px 12px;
+  border-radius: 14px; border: 1px solid var(--card-border);
+  background: rgba(255,255,255,0.04); color: var(--white); cursor: pointer;
+}
+.vote-option-btn.selected {
+  border-color: var(--team-color, var(--green));
+  background: rgba(255,255,255,0.06);
+  box-shadow: inset 0 0 0 1px var(--team-color, var(--green));
+}
+.vote-option-btn.selected .vote-option-team { color: var(--team-color, var(--green)); }
+.vote-option-btn:hover { border-color: var(--team-color, var(--green)); }
+
+.vote-option-photo {
+  width: 52px; height: 52px; border-radius: 12px; overflow: hidden;
+  background: rgba(255,255,255,0.08);
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+}
+.vote-option-photo img { width: 100%; height: 100%; object-fit: contain; object-position: center center; }
+.vote-option-placeholder { font-size: 1.2rem; }
+
+.vote-option-meta { min-width: 0; }
+.vote-option-team { font-weight: 600; font-size: 0.9rem; }
+.vote-option-player { font-size: 0.8rem; color: var(--muted); margin-top: 2px; }
+
+.voting-summary { margin-top: 20px; display: grid; gap: 14px; }
+.voting-result-card { background: var(--card); border: 1px solid var(--card-border); border-radius: 18px; padding: 18px; }
+.voting-result-card strong { color: var(--green); }
+.vote-note { color: var(--muted); font-size: 0.88rem; margin-top: 6px; }
