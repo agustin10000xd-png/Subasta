@@ -9,23 +9,15 @@ function endAuction() {
   state.votePoints = state.players.map(() => 0);
   state.votingFinished = false;
   state.finishRanking = [];
+  state.currentVotePositionIdx = 0;
 
-  document.getElementById('btn-formations').disabled = false;
+  buildVoteSection();
   switchTab('formations');
+}
 
-  const formTab = document.getElementById('tab-formations');
-  let voteBtn = document.getElementById('go-to-vote-btn');
-  if (!voteBtn) {
-    voteBtn = document.createElement('button');
-    voteBtn.id = 'go-to-vote-btn';
-    voteBtn.className = 'btn-primary';
-    voteBtn.textContent = 'PASAR A VOTACIONES';
-    voteBtn.addEventListener('click', () => {
-      buildVoteSection();
-      document.getElementById('finish-overlay').classList.add('show');
-    });
-    formTab.insertBefore(voteBtn, formTab.firstChild);
-  }
+function startVoting() {
+  document.getElementById('finish-overlay').classList.add('show');
+  switchTab('endgame');
 }
 
 function getPositionCandidates(pos) {
@@ -57,92 +49,147 @@ function buildVoteSection() {
   rankingList.style.display = 'none';
   finishGrid.style.display = 'none';
   playAgain.style.display = 'none';
-  voteActions.style.display = 'block';
+  voteActions.style.display = 'none';
 
-  state.positionOrder.forEach(pos => {
-    const posLabel = POSITIONS_433.find(p => p.key === pos).label;
-    const card = document.createElement('div');
-    card.className = 'vote-card';
-    card.innerHTML = `<h3>Votación por puesto: ${posLabel}</h3>`;
+  renderCurrentVotePosition();
+}
 
-    const rows = document.createElement('div');
-    rows.className = 'vote-grid';
+function renderCurrentVotePosition() {
+  const voteSection = document.getElementById('vote-section');
+  const voteActions = document.getElementById('vote-actions');
+  const pos = state.positionOrder[state.currentVotePositionIdx];
+  const posLabel = POSITIONS_433.find(p => p.key === pos).label;
+  
+  voteSection.innerHTML = '';
+  
+  const headerDiv = document.createElement('div');
+  headerDiv.innerHTML = `
+    <div style="text-align:center;margin-bottom:20px;">
+      <div style="font-size:0.85rem;color:var(--muted);margin-bottom:8px;">
+        Posición ${state.currentVotePositionIdx + 1} de ${state.positionOrder.length}
+      </div>
+      <h3 style="font-family:var(--font-display);font-size:1.8rem;margin:0;">${posLabel.toUpperCase()}</h3>
+    </div>
+  `;
+  voteSection.appendChild(headerDiv);
 
-    const candidates = getPositionCandidates(pos);
-    if (!state.votes[pos]) state.votes[pos] = {};
+  const card = document.createElement('div');
+  card.className = 'vote-card';
 
-    state.players.forEach((voter, voterIdx) => {
-      const row = document.createElement('div');
-      row.className = 'vote-row';
-      const accentColor = voter.color || 'var(--green)';
-      row.style.setProperty('--row-accent', accentColor);
-      row.style.borderLeftColor = accentColor;
-      row.style.background = `linear-gradient(90deg, ${accentColor}22 0%, rgba(255,255,255,0.04) 100%)`;
-      row.style.boxShadow = `inset 0 0 0 1px ${accentColor}22`;
-      const label = document.createElement('label');
-      label.textContent = `Voto de ${voter.name}`;
-      label.style.color = accentColor;
-      const optionsWrap = document.createElement('div');
-      optionsWrap.className = 'vote-options';
+  const rows = document.createElement('div');
+  rows.className = 'vote-grid';
 
-      if (typeof state.votes[pos][voterIdx] !== 'number' || !candidates.some(c => c.teamIndex === state.votes[pos][voterIdx])) {
-        state.votes[pos][voterIdx] = candidates[0]?.teamIndex ?? -1;
+  const candidates = getPositionCandidates(pos);
+  if (!state.votes[pos]) state.votes[pos] = {};
+
+  state.players.forEach((voter, voterIdx) => {
+    const row = document.createElement('div');
+    row.className = 'vote-row';
+    const accentColor = voter.color || 'var(--green)';
+    row.style.setProperty('--row-accent', accentColor);
+    row.style.borderLeftColor = accentColor;
+    row.style.background = `linear-gradient(90deg, ${accentColor}22 0%, rgba(255,255,255,0.04) 100%)`;
+    row.style.boxShadow = `inset 0 0 0 1px ${accentColor}22`;
+    const label = document.createElement('label');
+    label.textContent = `Voto de ${voter.name}`;
+    label.style.color = accentColor;
+    const optionsWrap = document.createElement('div');
+    optionsWrap.className = 'vote-options';
+
+    if (typeof state.votes[pos][voterIdx] !== 'number' || !candidates.some(c => c.teamIndex === state.votes[pos][voterIdx])) {
+      state.votes[pos][voterIdx] = candidates[0]?.teamIndex ?? -1;
+    }
+
+    if (!candidates.length) {
+      const emptyState = document.createElement('div');
+      emptyState.className = 'vote-empty-state';
+      emptyState.textContent = 'No hay jugadores disponibles para este puesto.';
+      optionsWrap.appendChild(emptyState);
+    }
+
+    candidates.forEach(c => {
+      const optionBtn = document.createElement('button');
+      optionBtn.type = 'button';
+      optionBtn.className = 'vote-option-btn';
+      optionBtn.dataset.teamIndex = c.teamIndex;
+      optionBtn.style.setProperty('--team-color', accentColor);
+      if (state.votes[pos][voterIdx] === c.teamIndex) {
+        optionBtn.classList.add('selected');
+        optionBtn.style.boxShadow = `inset 0 0 0 1px ${accentColor}`;
       }
 
-      if (!candidates.length) {
-        const emptyState = document.createElement('div');
-        emptyState.className = 'vote-empty-state';
-        emptyState.textContent = 'No hay jugadores disponibles para este puesto.';
-        optionsWrap.appendChild(emptyState);
-      }
+      const photoMarkup = c.candidate.photo
+        ? `<img src="${c.candidate.photo}" alt="${c.candidate.name}" onerror="this.parentElement.innerHTML='<div class=\'vote-option-placeholder\'>⚽</div>'">`
+        : `<div class="vote-option-placeholder">⚽</div>`;
 
-      candidates.forEach(c => {
-        const optionBtn = document.createElement('button');
-        optionBtn.type = 'button';
-        optionBtn.className = 'vote-option-btn';
-        optionBtn.dataset.teamIndex = c.teamIndex;
-        optionBtn.style.setProperty('--team-color', accentColor);
-        if (state.votes[pos][voterIdx] === c.teamIndex) {
-          optionBtn.classList.add('selected');
-          optionBtn.style.boxShadow = `inset 0 0 0 1px ${accentColor}`;
-        }
+      optionBtn.innerHTML = `
+        <div class="vote-option-photo">${photoMarkup}</div>
+        <div class="vote-option-meta">
+          <div class="vote-option-team">${c.teamName}</div>
+          <div class="vote-option-player">${c.candidate.name}</div>
+        </div>`;
 
-        const photoMarkup = c.candidate.photo
-          ? `<img src="${c.candidate.photo}" alt="${c.candidate.name}" onerror="this.parentElement.innerHTML='<div class=\'vote-option-placeholder\'>⚽</div>'">`
-          : `<div class="vote-option-placeholder">⚽</div>`;
-
-        optionBtn.innerHTML = `
-          <div class="vote-option-photo">${photoMarkup}</div>
-          <div class="vote-option-meta">
-            <div class="vote-option-team">${c.teamName}</div>
-            <div class="vote-option-player">${c.candidate.name}</div>
-          </div>`;
-
-        optionBtn.addEventListener('click', () => {
-          state.votes[pos][voterIdx] = c.teamIndex;
-          optionsWrap.querySelectorAll('.vote-option-btn').forEach(btn => {
-            const isSelected = parseInt(btn.dataset.teamIndex, 10) === c.teamIndex;
-            btn.classList.toggle('selected', isSelected);
-            btn.style.boxShadow = isSelected ? `inset 0 0 0 1px ${btn.style.getPropertyValue('--team-color') || 'var(--green)'}` : '';
-          });
+      optionBtn.addEventListener('click', () => {
+        state.votes[pos][voterIdx] = c.teamIndex;
+        optionsWrap.querySelectorAll('.vote-option-btn').forEach(btn => {
+          const isSelected = parseInt(btn.dataset.teamIndex, 10) === c.teamIndex;
+          btn.classList.toggle('selected', isSelected);
+          btn.style.boxShadow = isSelected ? `inset 0 0 0 1px ${btn.style.getPropertyValue('--team-color') || 'var(--green)'}` : '';
         });
-
-        optionsWrap.appendChild(optionBtn);
       });
 
-      row.appendChild(label);
-      row.appendChild(optionsWrap);
-      rows.appendChild(row);
+      optionsWrap.appendChild(optionBtn);
     });
 
-    card.appendChild(rows);
-    voteSection.appendChild(card);
+    row.appendChild(label);
+    row.appendChild(optionsWrap);
+    rows.appendChild(row);
   });
 
-  document.getElementById('vote-submit-btn').onclick = () => {
-    collectVotes();
-    evaluateVotes();
-  };
+  card.appendChild(rows);
+  voteSection.appendChild(card);
+
+  // Navigation buttons
+  const navDiv = document.createElement('div');
+  navDiv.style.cssText = 'display:flex;gap:12px;justify-content:center;margin-top:24px;';
+  
+  if (state.currentVotePositionIdx > 0) {
+    const prevBtn = document.createElement('button');
+    prevBtn.className = 'btn-primary';
+    prevBtn.textContent = '← Posición anterior';
+    prevBtn.style.cssText = 'background:var(--green-dark);';
+    prevBtn.onclick = () => {
+      state.currentVotePositionIdx--;
+      renderCurrentVotePosition();
+    };
+    navDiv.appendChild(prevBtn);
+  }
+
+  if (state.currentVotePositionIdx < state.positionOrder.length - 1) {
+    const nextBtn = document.createElement('button');
+    nextBtn.className = 'btn-primary';
+    nextBtn.textContent = 'Siguiente posición →';
+    nextBtn.onclick = () => {
+      state.currentVotePositionIdx++;
+      renderCurrentVotePosition();
+    };
+    navDiv.appendChild(nextBtn);
+  } else {
+    // Última posición: mostrar botón de terminar votación
+    const finishBtn = document.createElement('button');
+    finishBtn.className = 'btn-primary';
+    finishBtn.textContent = 'Terminar votación';
+    finishBtn.onclick = () => {
+      collectVotes();
+      evaluateVotes();
+    };
+    navDiv.appendChild(finishBtn);
+  }
+
+  voteSection.appendChild(navDiv);
+  
+  // Ocultar el botón de "vote-submit-btn" original
+  voteActions.style.display = 'none';
 }
 
 function collectVotes() {
@@ -256,6 +303,15 @@ function renderFinishFormations() {
         <div class="p-budget">💰 ${p.balance}M restantes · ${totalPlayers} jug.</div>
       </div>
       <div class="pitch-visual" id="finish-pitch-${pi}">
+        <div class="pitch-markings">
+          <div class="outer-rect"></div>
+          <div class="half-line"></div>
+          <div class="center-circle"></div>
+          <div class="penalty-box top"></div>
+          <div class="penalty-box bottom"></div>
+          <div class="goal-box top"></div>
+          <div class="goal-box bottom"></div>
+        </div>
         <div class="pitch-center-line"></div>
       </div>`;
     grid.appendChild(card);

@@ -23,6 +23,7 @@ let state = {
   votes: {},
   votePoints: [],
   votingFinished: false,
+  currentVotePositionIdx: 0,
 };
 
 // Accesores

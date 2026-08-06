@@ -2,7 +2,7 @@
 .auction-layout {
   display: grid;
   grid-template-columns: minmax(300px, 400px) minmax(620px, 1fr) minmax(340px, 420px);
-  gap: 32px; align-items: stretch; width: 100%;
+  gap: 32px; align-items: start; width: 100%;
 }
 @media(max-width:1280px) { .auction-layout { grid-template-columns: 1fr; } }
 
@@ -16,12 +16,21 @@
   font-size: 0.8rem; letter-spacing: 0.08em;
   text-transform: uppercase; color: var(--gold);
 }
-.pool-info { font-size: 0.85rem; color: var(--muted); }
+.pool-info {
+  font-size: 0.85rem; color: var(--muted);
+  text-align: center;
+}
+.auction-header-row > div {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+}
 
 /* Cabecera de ronda */
 .auction-header-row {
   display: flex; align-items: center;
-  justify-content: space-between; gap: 16px; flex-wrap: wrap;
+  justify-content: center; gap: 16px; flex-wrap: wrap;
+  margin-bottom: 20px;
 }
 
 /* ── SILHOUETTE ── */
@@ -44,14 +53,15 @@
 .silhouette-img {
   width: 100%; max-width: 420px; max-height: 100%;
   object-fit: contain;
-  filter: brightness(0) invert(0);
+  filter: brightness(0) invert(1);
   transition: filter 0.6s ease;
 }
 .silhouette-img.revealed { filter: brightness(1) invert(0); }
 .silhouette-img[src*="imagenes/"] { filter: none; }
 .silhouette-placeholder {
   width: 100%; max-width: 420px; aspect-ratio: 4 / 5.5;
-  background: linear-gradient(180deg, rgba(0,200,83,0.15) 0%, rgba(0,200,83,0.05) 100%);
+  background: linear-gradient(180deg, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0.08) 100%);
+  color: #fff;
   border-radius: 12px; display: flex; align-items: center; justify-content: center;
   font-size: 6.5rem;
 }
@@ -83,7 +93,7 @@
 
 /* ── BID SECTION ── */
 .bid-section { background: var(--card); border: 1px solid var(--card-border); border-radius: var(--radius); padding: 20px; }
-.bid-section h3 { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); margin-bottom: 14px; }
+.bid-section h3 { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--white); margin-bottom: 14px; font-weight: 700; }
 
 .bidders-list { display: flex; flex-direction: column; gap: 10px; }
 .bidder-row {
@@ -131,11 +141,12 @@
 /* Botones skip/avanzar */
 .skip-btn {
   width: 100%; padding: 12px;
-  background: transparent; border: 1px dashed rgba(255,255,255,0.15);
-  color: var(--muted); font-family: var(--font-body); font-size: 0.85rem;
+  background: transparent; border: 1px dashed rgba(255,255,255,0.25);
+  color: var(--white); font-family: var(--font-body); font-size: 0.85rem;
   border-radius: var(--radius); cursor: pointer; margin-top: 12px;
   transition: all 0.2s;
   display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  font-weight: 600;
 }
 .skip-btn svg { width: 18px; height: 18px; flex-shrink: 0; }
 .skip-btn span { display: inline-flex; align-items: center; }

@@ -8,8 +8,8 @@
 .sidebar-card h4 {
   display: inline-flex; align-items: center; gap: 10px;
   font-size: 0.9rem; text-transform: uppercase;
-  letter-spacing: 0.12em; color: var(--muted); margin-bottom: 12px;
-  font-weight: 600;
+  letter-spacing: 0.12em; color: var(--white); margin-bottom: 12px;
+  font-weight: 700;
 }
 .sidebar-card h4 svg { width: 18px; height: 18px; flex-shrink: 0; opacity: 0.95; }
 .sidebar-card h4 span { display: inline-flex; align-items: center; }

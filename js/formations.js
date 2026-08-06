@@ -4,7 +4,23 @@
 
 function renderFormations() {
   const grid = document.getElementById('formations-grid');
+  const existingCta = document.getElementById('formations-voting-cta');
+  if (existingCta) existingCta.remove();
   grid.innerHTML = '';
+
+  if (state.auctionFinished) {
+    const votingCtaContainer = document.createElement('div');
+    votingCtaContainer.id = 'formations-voting-cta';
+    votingCtaContainer.style.cssText = 'text-align:center;margin-bottom:32px;padding:20px;background:rgba(47,215,107,0.1);border-radius:12px;border:1px solid rgba(47,215,107,0.3);';
+    votingCtaContainer.innerHTML = `
+      <h3 style="font-family:var(--font-display);font-size:1.6rem;margin-bottom:12px;color:var(--green);">¡La Subasta Terminó!</h3>
+      <p style="color:var(--muted);margin-bottom:20px;">Todos los equipos están listos. Ahora es tiempo de votar por el mejor armado.</p>
+      <button class="btn-primary" id="start-voting-btn" style="font-size:1rem;padding:12px 32px;">🗳️ Iniciar Votaciones</button>
+    `;
+    grid.parentElement.insertBefore(votingCtaContainer, grid);
+    
+    document.getElementById('start-voting-btn').addEventListener('click', startVoting);
+  }
 
   state.players.forEach((p, pi) => {
     const card = document.createElement('div');
@@ -27,6 +43,15 @@ function renderFormations() {
         </div>
       </div>
       <div class="pitch-visual" id="pitch-${pi}">
+        <div class="pitch-markings">
+          <div class="outer-rect"></div>
+          <div class="half-line"></div>
+          <div class="center-circle"></div>
+          <div class="penalty-box top"></div>
+          <div class="penalty-box bottom"></div>
+          <div class="goal-box top"></div>
+          <div class="goal-box bottom"></div>
+        </div>
         <div class="pitch-center-line"></div>
       </div>`;
     grid.appendChild(card);
@@ -60,10 +85,11 @@ function buildPitchSlots(pitchEl, playerData, color) {
           .replace(/Centro/, '<br>Centro')
           .replace(/Derecho/, '<br>Derecho')
           .replace(/Izquierdo/, '<br>Izquierdo');
-          slot.innerHTML = `
-            <div class="slot-circle">
-              <span style="font-size:0.7rem">${labelFormatted}</span>
-            </div>`;
+        slot.innerHTML = `
+          <div class="slot-circle">
+            <span style="font-size:0.7rem">${labelFormatted}</span>
+          </div>
+          <div class="slot-name">Libre</div>`;
       }
       pitchEl.appendChild(slot);
     });

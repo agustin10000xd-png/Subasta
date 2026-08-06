@@ -4,15 +4,11 @@
 
 // ── Tab switching ──────────────────────────
 function switchTab(name) {
-  document.querySelectorAll('.tab-btn').forEach(btn => {
-    btn.classList.toggle('active', btn.dataset.tab === name);
-  });
-
-  document.querySelectorAll('.tab-panel').forEach(panel => {
-    const isActive = panel.id === `tab-${name}`;
-    panel.classList.toggle('active', isActive);
-    panel.style.display = isActive ? 'block' : 'none';
-  });
+  document.querySelectorAll('.tab-btn').forEach(b =>
+    b.classList.toggle('active', b.dataset.tab === name)
+  );
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.getElementById(`tab-${name}`).classList.add('active');
 
   if (name === 'formations') {
     renderFormations();
@@ -27,5 +23,4 @@ document.querySelectorAll('.tab-btn').forEach(btn => {
 });
 
 // ── Boot ───────────────────────────────────
-switchTab('lobby');
 renderPlayerSetup();

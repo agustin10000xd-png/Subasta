@@ -108,9 +108,13 @@ function canAnyoneAffordCurrentPlayer() {
 }
 
 function getAdvancePositionLabel() {
-  return state.currentPosIdx >= state.positionOrder.length - 1
-    ? '🏁 Terminar subasta'
-    : '⏭ Saltar a la siguiente posición';
+  if (state.currentPosIdx >= state.positionOrder.length - 1) {
+    return '🏁 Terminar subasta';
+  }
+
+  const nextPos = state.positionOrder[state.currentPosIdx + 1];
+  const nextLabel = getPosLabel(nextPos);
+  return `⏭ Siguiente: ${nextLabel}`;
 }
 
 function renderAuction() {
@@ -119,27 +123,34 @@ function renderAuction() {
   const pool    = currentPool();
 
   document.getElementById('curr-pos-badge').textContent =
-    `⬤ ${getPosLabel(pos).toUpperCase()}S`;
+    `${getPosLabel(pos).toUpperCase()}`;
   document.getElementById('pool-info-text').textContent =
     `Jugador ${state.currentPlayerIdx + 1} de ${pool.length} disponibles`;
+  document.getElementById('price-note-pos').textContent =
+    getPosLabel(pos).toUpperCase();
 
   // Foto / silueta
   const silWrap = document.getElementById('sil-wrap');
   silWrap.innerHTML = '';
+  const placeholder = document.createElement('div');
+  placeholder.className = 'silhouette-placeholder';
+  placeholder.innerHTML = '<svg viewBox="0 0 64 80" xmlns="http://www.w3.org/2000/svg"><path d="M32 0c8.8 0 16 7.2 16 16s-7.2 16-16 16S16 24.8 16 16 23.2 0 32 0zm0 32c17.7 0 32 14.3 32 32v16H0V64c0-17.7 14.3-32 32-32z" fill="currentColor"/></svg>';
+  silWrap.appendChild(placeholder);
+
   if (player.photo) {
     const img = document.createElement('img');
-    img.src = player.photo; img.className = 'silhouette-img'; img.alt = 'Silueta';
-    img.onerror = () => { silWrap.innerHTML = '<div class="silhouette-placeholder">👤</div>'; };
-    silWrap.appendChild(img);
-  } else {
-    const ph = document.createElement('div');
-    ph.className = 'silhouette-placeholder';
-    ph.textContent = { Arquero:'🧤', LateralDerecho:'🛡', CentralDerecho:'🛡', CentralIzquierdo:'🛡', LateralIzquierdo:'🛡',
-      MediocampistaIzquierdo:'⚡', MediocampistaC:'⚡', MediocampistaD:'⚡', ExtremoDerecho:'⚽', ExtremoIzquierdo:'⚽', DelanteroC:'⚽' }[pos];
-    silWrap.appendChild(ph);
+    img.className = 'silhouette-img';
+    img.alt = 'Silueta';
+    img.onload = () => {
+      if (placeholder.parentElement) placeholder.replaceWith(img);
+    };
+    img.onerror = () => {
+      img.remove();
+    };
+    img.src = player.photo.split('/').map(encodeURIComponent).join('/');
   }
 
-  document.getElementById('curr-price-display').textContent = state.currentBid;
+  document.getElementById('curr-price-display').textContent = `${state.currentBid}M`;
   document.getElementById('player-revealed').classList.remove('show');
 
   // Botón skip
@@ -153,10 +164,7 @@ function renderAuction() {
     ? 'Límite de saltos alcanzado'
     : '⏭ Saltar jugador (nadie oferta)';
 
-  // Mostrar el botón de avanzar de posición SOLO cuando no haya nadie que pueda pagar
-  // Y además ya no queden saltos individuales posibles en esta posición (skipCount >= 2).
-  const noMorePlayerSkips = skipCount >= 2;
-  advanceBtn.style.display = (noOneCanAfford && state.currentLeader === null && noMorePlayerSkips) ? 'block' : 'none';
+  advanceBtn.style.display = noOneCanAfford && state.currentLeader === null ? 'block' : 'none';
   advanceBtn.textContent = getAdvancePositionLabel();
 
   renderPoolRemaining();
@@ -220,7 +228,7 @@ function placeBid(playerIdx) {
   state.currentBid    = nextBid;
   state.currentLeader = playerIdx;
 
-  document.getElementById('curr-price-display').textContent = state.currentBid;
+  document.getElementById('curr-price-display').textContent = `${state.currentBid}M`;
   state.auctionLog.unshift({ type: 'bid', player: player.name, amount: state.currentBid, color: player.color });
   renderBidders();
   renderLog();
@@ -311,6 +319,65 @@ function resolveAuction() {
 
 // ── Reveal overlay ──
 
+function encodeImagePath(...parts) {
+  return parts.map(part => part.split('/').map(encodeURIComponent).join('/')).join('/');
+}
+
+function getClubShieldPath(clubName) {
+  if (!clubName) return '';
+
+  const clubImageAliases = {
+    'Atletico de Madrid': 'Atlético de Madrid',
+    'AS Roma': 'Roma',
+    'AC Milan': 'Milan',
+    'A. C. Milan': 'Milan',
+    'Newcastle United': 'Newcastle',
+    'NewCastle': 'Newcastle',
+    'Porto': 'FC Porto',
+    'Dínamo de Moscú': 'Dinamo Moscú',
+    'Inter de Milan': 'Inter Milan',
+    'Inter': 'Inter Milan',
+    'Olympique Marsella': 'Olympique de Marsella',
+  };
+
+  const imageName = clubImageAliases[clubName] || clubName;
+  return encodeImagePath('Imagenes', 'Escudos', `${imageName}.png`);
+}
+
+function getCountryFlagPath(playerData) {
+  const country = playerData?.nationality || playerData?.nat || playerData?.country || playerData?.pais || '';
+  if (!country) return '';
+  return encodeImagePath('Imagenes', 'Banderas', `${country}.png`);
+}
+
+function getPlayerBrandingHtml(playerData) {
+  const clubName = playerData?.club || '';
+  const country = playerData?.nationality || playerData?.nat || playerData?.country || playerData?.pais || '';
+  const items = [];
+
+  if (clubName) {
+    const clubImg = getClubShieldPath(clubName);
+    items.push(`
+      <div class="player-info-item">
+        <div class="player-info-icon-wrap"><img src="${clubImg}" alt="${clubName} escudo" class="player-info-icon" onerror="this.closest('.player-info-item').classList.add('no-icon'); this.remove();" /></div>
+        <span>${clubName}</span>
+      </div>
+    `);
+  }
+
+  if (country) {
+    const countryImg = getCountryFlagPath(playerData);
+    items.push(`
+      <div class="player-info-item">
+        <div class="player-info-icon-wrap"><img src="${countryImg}" alt="${country} bandera" class="player-info-icon" onerror="this.closest('.player-info-item').classList.add('no-icon'); this.remove();" /></div>
+        <span>${country}</span>
+      </div>
+    `);
+  }
+
+  return items.join('');
+}
+
 function getPlayerMetaText(playerData) {
   const club = playerData?.club || '';
   const country = playerData?.nationality || playerData?.nat || playerData?.country || playerData?.pais || '';
@@ -326,27 +393,39 @@ function showReveal(winner, playerData, price, callback, skipped = false) {
 
   const overlay      = document.getElementById('reveal-overlay');
   const label        = document.querySelector('.reveal-box .winner-label');
-  const revWinner    = document.getElementById('rev-winner');
   const revPlayerName = document.getElementById('rev-player-name');
-  const revMeta      = document.getElementById('rev-player-meta');
+  const revPlayerLegend = document.getElementById('rev-player-legend');
+  const revBranding   = document.getElementById('rev-player-branding');
   const revPrice     = document.getElementById('rev-price-paid');
+  const revConfetti  = document.getElementById('rev-confetti');
+
+  const isLegend = playerData && typeof playerData.tipo === 'string' && playerData.tipo.toLowerCase() === 'leyenda';
+  revPlayerLegend.textContent = isLegend ? 'Leyenda' : '';
+  revPlayerLegend.style.display = isLegend ? 'block' : 'none';
 
   if (skipped) {
     label.textContent = 'Jugador saltado';
     label.style.color = 'var(--muted)';
-    revWinner.textContent = '';
     revPlayerName.textContent = playerData.name;
-    revMeta.textContent  = getPlayerMetaText(playerData);
+    revBranding.innerHTML = getPlayerBrandingHtml(playerData);
+    revBranding.style.display = revBranding.innerHTML ? 'flex' : 'none';
     revPrice.textContent = 'Nadie ofertó';
+    revConfetti.innerHTML = '<i data-lucide="chevron-last"></i>';
   } else {
     label.textContent = '¡GANÓ LA SUBASTA!';
     label.style.color = '';
-    revWinner.textContent = winner.name;
-    revWinner.style.color = winner.color;
     revPlayerName.textContent = playerData.name;
-    revMeta.textContent  = getPlayerMetaText(playerData);
+    revBranding.innerHTML = getPlayerBrandingHtml(playerData);
+    revBranding.style.display = revBranding.innerHTML ? 'flex' : 'none';
     revPrice.textContent = `${price}M pagados`;
+    revConfetti.innerHTML = '<i data-lucide="trophy"></i>';
   }
+
+  lucide.createIcons();
+
+  const branding = document.getElementById('rev-player-branding');
+  branding.innerHTML = getPlayerBrandingHtml(playerData);
+  branding.style.display = branding.innerHTML ? 'flex' : 'none';
 
   const wrap = document.getElementById('rev-photo-wrap');
   wrap.innerHTML = '';
@@ -408,8 +487,8 @@ function renderPoolRemaining() {
     );
     const isCurr = state.currentPosIdx === i;
     return `<div class="pool-pos-row${isCurr ? ' current-pos' : ''}">
-      <span class="pos-label">${getPosLabel(pos)}s</span>
-      <span class="pos-count">${Math.max(0, remaining)} restantes</span>
+      <span class="pos-label">${getPosLabel(pos)}</span>
+      <span class="pos-count">${Math.max(0, remaining)} ${remaining === 1 ? 'restante' : 'restantes'}</span>
     </div>`;
   }).join('');
 }
@@ -419,7 +498,7 @@ function renderPoolRemaining() {
 document.getElementById('skip-btn').addEventListener('click', () => {
   const pos       = currentPos();
   const skipCount = state.positionSkips[pos] || 0;
-  if (state.currentLeader !== null) { showNotif('Ya hay una subasta activa'); return; }
+  if (state.currentLeader !== null) { showNotif('Ya hay una oferta activa — el timer continúa'); return; }
   if (skipCount >= 2)               { showNotif('Ya alcanzaste el límite de 2 saltos en esta posición'); return; }
   clearInterval(state.timerInterval);
   const player = currentPlayerData();

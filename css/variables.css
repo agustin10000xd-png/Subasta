@@ -4,7 +4,7 @@
   --green: #2fd76b;
   --green-dark: #1e8f4a;
   --green-glow: rgba(47,215,107,0.24);
-  --pitch: #143a24;
+  --pitch: linear-gradient(135deg, #0f2f1d 0%, #1b5b33 45%, #2f8b4d 100%);
   --pitch-mid: #184c2d;
   --pitch-light: #215d39;
   --gold: #ffd600;
