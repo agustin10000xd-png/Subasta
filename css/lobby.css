@@ -53,23 +53,33 @@
   align-items: stretch; max-width: 1600px;
 }
 .player-card-setup {
-  background: linear-gradient(135deg, rgba(31, 95, 61, 0.4) 0%, rgba(24, 76, 45, 0.3) 100%);
-  border: 2px solid var(--green-glow);
-  border-radius: 16px;
-  padding: 32px 28px;
+  background: radial-gradient(circle at top, rgba(47, 215, 107, 0.14), transparent 42%),
+              linear-gradient(180deg, rgba(8, 16, 11, 0.98), rgba(14, 28, 18, 0.98));
+  border: none;
+  border-radius: 0;
+  clip-path: polygon(
+    24px 0, calc(100% - 24px) 0, 100% 24px,
+    100% calc(100% - 24px), calc(100% - 24px) 100%, 24px 100%,
+    0 calc(100% - 24px), 0 24px
+  );
+  padding: 28px 24px 24px;
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 18px;
   flex: 0 1 280px;
   max-width: 320px;
   min-width: 240px;
   align-items: stretch;
   overflow: hidden;
   font-family: 'DM Sans', sans-serif;
-  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(47, 215, 107, 0.15);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+  box-shadow:
+    inset 0 0 0 1.5px rgba(47, 215, 107, 0.5),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.03),
+    0 18px 48px rgba(0, 0, 0, 0.35);
   position: relative;
 }
+
 
 .player-card-setup::before {
   content: '';
@@ -78,23 +88,27 @@
   left: 0;
   right: 0;
   height: 2px;
-  background: linear-gradient(90deg, transparent, var(--green), transparent);
-  opacity: 0.6;
+  background: linear-gradient(90deg, transparent, rgba(47, 215, 107, 0.9), transparent);
+  opacity: 0.8;
 }
 
 .player-card-setup:hover {
-  transform: translateY(-8px);
-  border-color: var(--green);
-  box-shadow: 0 16px 48px rgba(47, 215, 107, 0.25), inset 0 1px 0 rgba(47, 215, 107, 0.25);
+  transform: translateY(-6px);
+  box-shadow:
+    inset 0 0 0 1.5px rgba(47, 215, 107, 0.85),
+    inset 0 0 0 1px rgba(47, 215, 107, 0.08),
+    0 22px 60px rgba(0, 0, 0, 0.45);
 }
 
 .player-card-setup .num {
   font-family: var(--font-display);
-  font-size: 3.2rem;
+  font-size: 3.4rem;
   color: var(--green);
   line-height: 1;
-  font-weight: 700;
-  letter-spacing: -0.02em;
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  text-align: center;
+  text-shadow: 0 0 20px rgba(47, 215, 107, 0.2);
 }
 
 .player-card-setup .field-group {
@@ -103,87 +117,97 @@
 }
 
 .player-card-setup .field-group label {
-  font-size: 0.7rem;
+  font-size: 0.72rem;
   text-transform: uppercase;
-  letter-spacing: 0.15em;
-  color: var(--muted);
-  font-weight: 600;
+  letter-spacing: 0.16em;
+  color: rgba(255, 255, 255, 0.65);
+  font-weight: 700;
 }
 
+.player-card-setup .card-num {
+  font-family: var(--font-display);
+  font-size: 3.4rem;
+  color: var(--green);
+  line-height: 1;
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  text-align: center;
+  text-shadow: 0 0 20px rgba(47, 215, 107, 0.2);
+}
+
+.player-card-setup .card-rule {
+  width: 36px;
+  height: 1.5px;
+  background: rgba(255, 255, 255, 0.12);
+  margin: 12px auto 20px;
+  box-shadow: 0 0 8px rgba(47, 215, 107, 0.25);
+}
+
+.player-card-setup .field-label {
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  color: rgba(255, 255, 255, 0.65);
+  font-weight: 700;
+}
+
+.player-card-setup .field-input,
 .player-card-setup input[type=text] {
   min-width: unset;
   width: 100%;
   font-family: 'DM Sans', sans-serif;
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid rgba(47, 215, 107, 0.2);
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.12);
   color: var(--white);
-  padding: 12px 16px;
-  border-radius: 10px;
+  padding: 16px 18px;
+  border-radius: 18px;
   font-size: 1rem;
-  font-weight: 500;
-  transition: all 0.2s;
+  font-weight: 600;
+  transition: all 0.2s ease;
   outline: none;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.03);
 }
 
+.player-card-setup .field-input::placeholder,
+.player-card-setup input[type=text]::placeholder {
+  color: rgba(255, 255, 255, 0.55);
+}
+
+.player-card-setup .field-input:focus,
 .player-card-setup input[type=text]:focus {
-  border-color: var(--green);
+  border-color: rgba(47, 215, 107, 0.4);
   background: rgba(47, 215, 107, 0.1);
-  box-shadow: 0 0 16px rgba(47, 215, 107, 0.2);
+  box-shadow: 0 0 20px rgba(47, 215, 107, 0.12);
 }
 
-.color-row {
+.player-card-setup .icons {
   display: flex;
-  gap: 12px;
-  align-items: center;
+  gap: 9px;
   justify-content: center;
-  width: 100%;
   flex-wrap: wrap;
 }
 
-.color-row label {
-  font-size: 0.7rem;
-  text-transform: uppercase;
-  letter-spacing: 0.15em;
-  color: var(--muted);
+.player-card-setup .icon-ball {
+  width: 32px !important;
+  height: 32px !important;
   flex-shrink: 0;
-  font-weight: 600;
-}
-
-.color-swatch {
-  width: 48px;
-  height: 48px;
-  border-radius: 10px;
-  cursor: pointer;
-  border: 2px solid transparent;
-  transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
-  flex-shrink: 0;
-  padding: 4px;
-  background: rgba(255, 255, 255, 0.06);
-  display: flex;
-  align-items: center;
-  justify-content: center;
   overflow: hidden;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
 
-.color-swatch:hover {
+.player-card-setup .icon-ball:hover {
   background: rgba(255, 255, 255, 0.12);
   transform: scale(1.05);
 }
 
-.color-swatch img {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-  pointer-events: none;
-  display: block;
+.player-card-setup .icon-ball.sel {
+  border: 1.5px solid var(--green);
+  box-shadow: 0 0 12px rgba(47, 215, 107, 0.4), 0 0 22px rgba(47, 215, 107, 0.2);
 }
 
-.color-swatch.selected {
-  border-color: var(--green);
-  background: rgba(47, 215, 107, 0.2);
-  transform: scale(1.15);
-  box-shadow: 0 0 0 3px rgba(47, 215, 107, 0.3), 0 8px 24px rgba(47, 215, 107, 0.4);
+.player-card-setup .icon-ball img {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: contain;
 }
 
 /* Forzar DM Sans en el tab de auction también */

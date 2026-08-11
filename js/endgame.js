@@ -61,98 +61,103 @@ function renderCurrentVotePosition() {
   const posLabel = POSITIONS_433.find(p => p.key === pos).label;
   
   voteSection.innerHTML = '';
-  
   const headerDiv = document.createElement('div');
+  headerDiv.className = 'wrap';
   headerDiv.innerHTML = `
-    <div style="text-align:center;margin-bottom:20px;">
-      <div style="font-size:0.85rem;color:var(--muted);margin-bottom:8px;">
-        Posición ${state.currentVotePositionIdx + 1} de ${state.positionOrder.length}
-      </div>
-      <h3 style="font-family:var(--font-display);font-size:1.8rem;margin:0;">${posLabel.toUpperCase()}</h3>
+    <div class="head">
+      <div class="trophy">🏆</div>
+      <h1>¡Subasta terminada!</h1>
+      <p>Así quedaron los equipos finales — elegí cuál te pareció el mejor armado</p>
     </div>
+    <div class="pos-progress">
+      <div class="pos-progress-bar"><div class="pos-progress-fill" style="width:${Math.round(((state.currentVotePositionIdx + 1) / state.positionOrder.length) * 100)}%"></div></div>
+      <div class="pos-progress-label"><span>Posición <b>${state.currentVotePositionIdx + 1}</b> de ${state.positionOrder.length}</span><span>${state.positionOrder.length - state.currentVotePositionIdx - 1} restantes</span></div>
+    </div>
+    <div class="position-title"><span>${posLabel}</span></div>
+    <div class="position-hint">Cada jugador toca <b>su propio ícono</b> sobre el jugador que le pareció mejor</div>
   `;
   voteSection.appendChild(headerDiv);
 
-  const card = document.createElement('div');
-  card.className = 'vote-card';
+  const legendEl = document.createElement('div');
+  legendEl.className = 'legend';
+  legendEl.innerHTML = state.players.map(player => `
+    <div class="legend-item"><span class="legend-dot" style="background:${player.color}"></span>${player.name}</div>
+  `).join('');
+  voteSection.appendChild(legendEl);
 
-  const rows = document.createElement('div');
-  rows.className = 'vote-grid';
+  const candidatesEl = document.createElement('div');
+  candidatesEl.className = 'candidates';
 
   const candidates = getPositionCandidates(pos);
   if (!state.votes[pos]) state.votes[pos] = {};
 
-  state.players.forEach((voter, voterIdx) => {
-    const row = document.createElement('div');
-    row.className = 'vote-row';
-    const accentColor = voter.color || 'var(--green)';
-    row.style.setProperty('--row-accent', accentColor);
-    row.style.borderLeftColor = accentColor;
-    row.style.background = `linear-gradient(90deg, ${accentColor}22 0%, rgba(255,255,255,0.04) 100%)`;
-    row.style.boxShadow = `inset 0 0 0 1px ${accentColor}22`;
-    const label = document.createElement('label');
-    label.textContent = `Voto de ${voter.name}`;
-    label.style.color = accentColor;
-    const optionsWrap = document.createElement('div');
-    optionsWrap.className = 'vote-options';
+  const counts = candidates.map(candidate =>
+    state.players.filter((_, voterIdx) => state.votes[pos][voterIdx] === candidate.teamIndex).length
+  );
+  const totalVotes = counts.reduce((sum, value) => sum + value, 0);
 
-    if (typeof state.votes[pos][voterIdx] !== 'number' || !candidates.some(c => c.teamIndex === state.votes[pos][voterIdx])) {
-      state.votes[pos][voterIdx] = candidates[0]?.teamIndex ?? -1;
-    }
+  candidates.forEach((candidate, index) => {
+    const owner = state.players[candidate.teamIndex];
+    const count = counts[index] || 0;
+    const maxCount = totalVotes ? Math.max(...counts) : 0;
+    const pct = totalVotes ? Math.round((count / totalVotes) * 100) : 0;
+    const isLeader = totalVotes > 0 && count === maxCount && count > 0;
 
-    if (!candidates.length) {
-      const emptyState = document.createElement('div');
-      emptyState.className = 'vote-empty-state';
-      emptyState.textContent = 'No hay jugadores disponibles para este puesto.';
-      optionsWrap.appendChild(emptyState);
-    }
+    const card = document.createElement('div');
+    card.className = `c-card${isLeader ? ' leader' : ''}`;
+    card.innerHTML = `
+      <div class="crown">👑</div>
+      <div class="c-card-inner">
+        <div class="c-owner-tag" style="color:${owner.color}">Elegido por ${owner.name}</div>
+        <div class="c-top">
+          <div class="c-photo">${candidate.candidate.name.split(' ').map(w => w[0]).slice(0, 2).join('')}</div>
+          <div>
+            <div class="c-name">${candidate.candidate.name}</div>
+            <div class="c-club">${candidate.candidate.club}</div>
+          </div>
+        </div>
+        <div class="c-bar"><div class="c-bar-fill" style="width:${pct}%"></div></div>
+        <div class="c-vote-row">
+          <div class="c-vote-label">${count} voto${count === 1 ? '' : 's'}</div>
+          <div class="voter-chips">
+            ${state.players.map((voter, voterIdx) => {
+              const active = state.votes[pos] && state.votes[pos][voterIdx] === candidate.teamIndex;
+              const imgPath = voter.photo && typeof encodeImagePath === 'function' ? encodeImagePath(voter.photo) : (voter.photo || '');
+              const style = active ? `background:${voter.color}; border-color:${voter.color}` : '';
+              const content = active && imgPath ? `<img src="${imgPath}" alt="${voter.name}">` : `${voter.name.slice(-1)}`;
+              const cls = `v-chip ${active ? 'active' : ''}`;
+              return `<div class="${cls}" style="${style}" data-voter="${voterIdx}" data-cand="${candidate.teamIndex}" title="${voter.name}">${content}</div>`;
+            }).join('')}
+          </div>
+        </div>
+      </div>
+    `;
 
-    candidates.forEach(c => {
-      const optionBtn = document.createElement('button');
-      optionBtn.type = 'button';
-      optionBtn.className = 'vote-option-btn';
-      optionBtn.dataset.teamIndex = c.teamIndex;
-      optionBtn.style.setProperty('--team-color', accentColor);
-      if (state.votes[pos][voterIdx] === c.teamIndex) {
-        optionBtn.classList.add('selected');
-        optionBtn.style.boxShadow = `inset 0 0 0 1px ${accentColor}`;
-      }
-
-      const photoMarkup = c.candidate.photo
-        ? `<img src="${c.candidate.photo}" alt="${c.candidate.name}" onerror="this.parentElement.innerHTML='<div class=\'vote-option-placeholder\'>⚽</div>'">`
-        : `<div class="vote-option-placeholder">⚽</div>`;
-
-      optionBtn.innerHTML = `
-        <div class="vote-option-photo">${photoMarkup}</div>
-        <div class="vote-option-meta">
-          <div class="vote-option-team">${c.teamName}</div>
-          <div class="vote-option-player">${c.candidate.name}</div>
-        </div>`;
-
-      optionBtn.addEventListener('click', () => {
-        state.votes[pos][voterIdx] = c.teamIndex;
-        optionsWrap.querySelectorAll('.vote-option-btn').forEach(btn => {
-          const isSelected = parseInt(btn.dataset.teamIndex, 10) === c.teamIndex;
-          btn.classList.toggle('selected', isSelected);
-          btn.style.boxShadow = isSelected ? `inset 0 0 0 1px ${btn.style.getPropertyValue('--team-color') || 'var(--green)'}` : '';
-        });
+    card.querySelectorAll('.v-chip').forEach(chip => {
+      chip.addEventListener('click', () => {
+        const voterIdx = parseInt(chip.dataset.voter, 10);
+        const teamIndex = parseInt(chip.dataset.cand, 10);
+        if (state.votes[pos][voterIdx] === teamIndex) {
+          delete state.votes[pos][voterIdx];
+        } else {
+          state.votes[pos][voterIdx] = teamIndex;
+        }
+        renderCurrentVotePosition();
       });
-
-      optionsWrap.appendChild(optionBtn);
     });
 
-    row.appendChild(label);
-    row.appendChild(optionsWrap);
-    rows.appendChild(row);
+    candidatesEl.appendChild(card);
   });
 
-  card.appendChild(rows);
-  voteSection.appendChild(card);
+  voteSection.appendChild(candidatesEl);
 
-  // Navigation buttons
+  // Navigation buttons (don't allow skipping until all players voted)
   const navDiv = document.createElement('div');
   navDiv.style.cssText = 'display:flex;gap:12px;justify-content:center;margin-top:24px;';
-  
+
+  const totalPlayers = state.players.length;
+  const votedCount = state.players.filter((_, i) => typeof state.votes[pos] !== 'undefined' && typeof state.votes[pos][i] !== 'undefined').length;
+
   if (state.currentVotePositionIdx > 0) {
     const prevBtn = document.createElement('button');
     prevBtn.className = 'btn-primary';
@@ -168,21 +173,35 @@ function renderCurrentVotePosition() {
   if (state.currentVotePositionIdx < state.positionOrder.length - 1) {
     const nextBtn = document.createElement('button');
     nextBtn.className = 'btn-primary';
-    nextBtn.textContent = 'Siguiente posición →';
-    nextBtn.onclick = () => {
-      state.currentVotePositionIdx++;
-      renderCurrentVotePosition();
-    };
+    if (votedCount < totalPlayers) {
+      nextBtn.textContent = `Esperando votos (${votedCount}/${totalPlayers})`;
+      nextBtn.disabled = true;
+      nextBtn.style.opacity = '0.6';
+      nextBtn.title = 'No puedes avanzar hasta que todos voten';
+    } else {
+      nextBtn.textContent = 'Siguiente posición →';
+      nextBtn.onclick = () => {
+        state.currentVotePositionIdx++;
+        renderCurrentVotePosition();
+      };
+    }
     navDiv.appendChild(nextBtn);
   } else {
     // Última posición: mostrar botón de terminar votación
     const finishBtn = document.createElement('button');
     finishBtn.className = 'btn-primary';
-    finishBtn.textContent = 'Terminar votación';
-    finishBtn.onclick = () => {
-      collectVotes();
-      evaluateVotes();
-    };
+    if (votedCount < totalPlayers) {
+      finishBtn.textContent = `Esperando votos (${votedCount}/${totalPlayers})`;
+      finishBtn.disabled = true;
+      finishBtn.style.opacity = '0.6';
+      finishBtn.title = 'No puedes terminar hasta que todos voten';
+    } else {
+      finishBtn.textContent = 'Terminar votación';
+      finishBtn.onclick = () => {
+        collectVotes();
+        evaluateVotes();
+      };
+    }
     navDiv.appendChild(finishBtn);
   }
 

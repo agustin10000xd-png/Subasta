@@ -23,4 +23,8 @@ document.querySelectorAll('.tab-btn').forEach(btn => {
 });
 
 // ── Boot ───────────────────────────────────
-renderPlayerSetup();
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', renderPlayerSetup);
+} else {
+  renderPlayerSetup();
+}

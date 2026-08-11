@@ -3,7 +3,6 @@
 // ══════════════════════════════════════════
 
 // ── Helpers de posición ──
-
 function currentPos()        { return state.positionOrder[state.currentPosIdx]; }
 function currentPool()       { return state.pool[currentPos()] || []; }
 function currentPlayerData() { return currentPool()[state.currentPlayerIdx]; }
@@ -358,7 +357,7 @@ function getPlayerBrandingHtml(playerData) {
   if (clubName) {
     const clubImg = getClubShieldPath(clubName);
     items.push(`
-      <div class="player-info-item">
+      <div class="player-info-item player-info-club">
         <div class="player-info-icon-wrap"><img src="${clubImg}" alt="${clubName} escudo" class="player-info-icon" onerror="this.closest('.player-info-item').classList.add('no-icon'); this.remove();" /></div>
         <span>${clubName}</span>
       </div>
@@ -368,7 +367,7 @@ function getPlayerBrandingHtml(playerData) {
   if (country) {
     const countryImg = getCountryFlagPath(playerData);
     items.push(`
-      <div class="player-info-item">
+      <div class="player-info-item player-info-country">
         <div class="player-info-icon-wrap"><img src="${countryImg}" alt="${country} bandera" class="player-info-icon" onerror="this.closest('.player-info-item').classList.add('no-icon'); this.remove();" /></div>
         <span>${country}</span>
       </div>
@@ -385,68 +384,137 @@ function getPlayerMetaText(playerData) {
   return parts.length ? parts.join(' · ') : 'Sin información';
 }
 
+// Normalize player.tipo values into canonical tiers: 'leyenda'|'actual'|'retirado'
+function tipoToTier(tipo){
+  if(!tipo) return 'leyenda';
+  const t = String(tipo).trim().toLowerCase();
+  if(t.includes('actual')) return 'actual';
+  if(t.includes('retir') || t.includes('retira')) return 'retirado';
+  if(t.includes('leyend') || t.includes('leyenda')) return 'leyenda';
+  return 'leyenda';
+}
+
+// Split text into spans for staggered letter animation
+function splitLetters(el, text){
+  if(!el) return;
+  el.innerHTML = '';
+  [...String(text)].forEach((ch, i) => {
+    const span = document.createElement('span');
+    span.textContent = ch === ' ' ? '\u00A0' : ch;
+    span.style.setProperty('--i', i);
+    el.appendChild(span);
+  });
+}
+
+// Simple count-up animation for numeric element (target is number)
+function countUp(el, target, duration = 900, delay = 350){
+  if(!el) return;
+  const start = performance.now() + delay;
+  function tick(now){
+    const t = Math.min(1, Math.max(0, (now - start) / duration));
+    const eased = 1 - Math.pow(1 - t, 3);
+    el.textContent = Math.round(eased * target) + 'M pagados';
+    if(t < 1) requestAnimationFrame(tick);
+  }
+  requestAnimationFrame(tick);
+}
+
 function showReveal(winner, playerData, price, callback, skipped = false) {
-  if (isLastPlayerOfAuction()) {
+  // Early exit if overlay elements are not present
+  const overlay = document.getElementById('reveal-overlay');
+  const revPlayerName = document.getElementById('rev-player-name');
+  const revBranding = document.getElementById('rev-player-branding');
+  const revPrice = document.getElementById('rev-price-paid');
+  const wrap = document.getElementById('rev-photo-wrap');
+  const btn = document.getElementById('reveal-continue');
+
+  if (!overlay || !revPlayerName || !revBranding || !revPrice || !wrap) {
     callback();
     return;
   }
 
-  const overlay      = document.getElementById('reveal-overlay');
-  const label        = document.querySelector('.reveal-box .winner-label');
-  const revPlayerName = document.getElementById('rev-player-name');
-  const revPlayerLegend = document.getElementById('rev-player-legend');
-  const revBranding   = document.getElementById('rev-player-branding');
-  const revPrice     = document.getElementById('rev-price-paid');
-  const revConfetti  = document.getElementById('rev-confetti');
+  const nameText = playerData?.name || 'Jugador desconocido';
+  const brandingHtml = playerData ? getPlayerBrandingHtml(playerData) : '';
+  const tier = playerData ? tipoToTier(playerData.tipo) : 'actual';
+  const revealClass = tier === 'retirado' ? 'reveal-retirado' : `reveal-${tier}`;
 
-  const isLegend = playerData && typeof playerData.tipo === 'string' && playerData.tipo.toLowerCase() === 'leyenda';
-  revPlayerLegend.textContent = isLegend ? 'Leyenda' : '';
-  revPlayerLegend.style.display = isLegend ? 'block' : 'none';
+  overlay.classList.remove('legend', 'actual', 'retirado', 'retired', 'reveal-actual', 'reveal-retirado', 'reveal-leyenda');
+  overlay.dataset.tier = tier;
+  overlay.classList.add(revealClass, tier === 'retirado' ? 'retired' : tier === 'leyenda' ? 'legend' : 'actual');
 
-  if (skipped) {
-    label.textContent = 'Jugador saltado';
-    label.style.color = 'var(--muted)';
-    revPlayerName.textContent = playerData.name;
-    revBranding.innerHTML = getPlayerBrandingHtml(playerData);
-    revBranding.style.display = revBranding.innerHTML ? 'flex' : 'none';
-    revPrice.textContent = 'Nadie ofertó';
-    revConfetti.innerHTML = '<i data-lucide="chevron-last"></i>';
-  } else {
-    label.textContent = '¡GANÓ LA SUBASTA!';
-    label.style.color = '';
-    revPlayerName.textContent = playerData.name;
-    revBranding.innerHTML = getPlayerBrandingHtml(playerData);
-    revBranding.style.display = revBranding.innerHTML ? 'flex' : 'none';
-    revPrice.textContent = `${price}M pagados`;
-    revConfetti.innerHTML = '<i data-lucide="trophy"></i>';
+  const winnerLabel = overlay.querySelector('.winner-label');
+  const textLabel = skipped ? 'Jugador salteado' : '¡GANÓ LA SUBASTA!';
+  if (winnerLabel) {
+    if (tier === 'leyenda') {
+      splitLetters(winnerLabel, textLabel);
+    } else {
+      winnerLabel.textContent = textLabel;
+    }
   }
 
-  lucide.createIcons();
-
-  const branding = document.getElementById('rev-player-branding');
-  branding.innerHTML = getPlayerBrandingHtml(playerData);
-  branding.style.display = branding.innerHTML ? 'flex' : 'none';
-
-  const wrap = document.getElementById('rev-photo-wrap');
-  wrap.innerHTML = '';
-  if (playerData.photo) {
-    const img = document.createElement('img');
-    img.src = playerData.photo; img.className = 'player-photo'; img.alt = playerData.name;
-    img.onerror = () => { wrap.textContent = '⚽'; wrap.className = 'player-photo-placeholder'; };
-    wrap.className = ''; wrap.appendChild(img);
+  // Simple static rendering (no animations)
+  if (skipped) {
+    if (tier === 'leyenda') splitLetters(revPlayerName, nameText);
+    else revPlayerName.textContent = nameText;
+    revBranding.innerHTML = brandingHtml;
+    revBranding.style.display = brandingHtml ? 'flex' : 'none';
+    revPrice.textContent = 'Nadie ofertó';
   } else {
-    wrap.className = 'player-photo-placeholder'; wrap.textContent = '⚽';
+    if (tier === 'leyenda') splitLetters(revPlayerName, nameText);
+    else revPlayerName.textContent = nameText;
+    revBranding.innerHTML = brandingHtml;
+    revBranding.style.display = brandingHtml ? 'flex' : 'none';
+    revPrice.textContent = `${price}M pagados`;
+  }
+
+  const isSkipped = winner === null;
+  const confetti = document.getElementById('rev-confetti');
+  if (confetti) {
+    confetti.innerHTML = `<i data-lucide="${isSkipped ? 'chevron-last' : 'trophy'}"></i>`;
+  }
+
+  // Photo or skip icon state
+  wrap.innerHTML = '';
+  if (isSkipped) {
+    wrap.className = 'player-photo-placeholder';
+    wrap.innerHTML = '<i data-lucide="chevron-last"></i>';
+  } else if (playerData?.photo) {
+    const img = document.createElement('img');
+    img.src = playerData.photo;
+    img.className = 'player-photo';
+    img.alt = playerData.name || 'Jugador';
+    img.onerror = () => { wrap.textContent = '⚽'; wrap.className = 'player-photo-placeholder'; };
+    wrap.className = '';
+    wrap.appendChild(img);
+  } else {
+    wrap.className = 'player-photo-placeholder';
+    wrap.textContent = '⚽';
   }
 
   overlay.classList.add('show');
-  const btn = document.getElementById('reveal-continue');
-  const handler = () => { overlay.classList.remove('show'); btn.removeEventListener('click', handler); callback(); };
-  btn.addEventListener('click', handler);
+  if (window.lucide && typeof window.lucide.createIcons === 'function') {
+    window.lucide.createIcons();
+  }
+
+  const handler = () => {
+    overlay.classList.remove('show', 'legend', 'actual', 'retirado', 'retired', 'reveal-actual', 'reveal-retirado', 'reveal-leyenda');
+    overlay.removeAttribute('data-tier');
+    revPlayerName.innerHTML = '';
+    if (btn) btn.removeEventListener('click', handler);
+    callback();
+  };
+
+  if (btn) {
+    btn.removeEventListener('click', handler);
+    btn.addEventListener('click', handler);
+  }
 }
 
 // ── Log ──
 
 function addLog(entry) {
+  if (!entry) return;
+  // record log entry and re-render
   state.auctionLog.unshift(entry);
   renderLog();
 }

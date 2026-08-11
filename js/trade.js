@@ -1,7 +1,6 @@
 // ══════════════════════════════════════════
 // TRADE.JS — Rondas de intercambio
 // ══════════════════════════════════════════
-
 function getTradeRoundLabel(round) {
   return ['Arqueros', 'Defensores', 'Mediocampistas', 'Delanteros'][round];
 }
@@ -22,60 +21,215 @@ function shouldInitiateTrade() {
   return state.currentPosIdx === tradeCheckpoints[state.tradeRound];
 }
 
-// Abre el modal de trade y construye su contenido
+function initials(name) {
+  return name.split(' ').filter(Boolean).slice(0, 2).map(word => word[0]).join('').toUpperCase();
+}
+
+let tradeSelection = {};
+
+function getTradeEntriesForPosition(posId) {
+  return state.players.flatMap((player, playerIdx) =>
+    (player.team[posId] || []).map((card, slotIdx) => ({
+      posId,
+      playerIdx,
+      slotIdx,
+      owner: player.name,
+      name: card.name,
+      club: card.club,
+      pricePaid: card.pricePaid,
+      photo: card.photo || player.photo || card.icon || player.icon,
+    }))
+  );
+}
+
+function getTradeMoneyInfo(selected, entry) {
+  const diff = entry.pricePaid - selected.pricePaid;
+  if (diff > 0) {
+    return { text: `+${diff}M`, cls: 'trade-pay' };
+  }
+  if (diff < 0) {
+    return { text: `${diff}M`, cls: 'trade-receive' };
+  }
+  return { text: '0', cls: 'trade-neutral' };
+}
+
 function openTradeModal() {
   const modal   = document.getElementById('trade-modal');
-  const title   = document.getElementById('trade-round-title');
   const content = document.getElementById('trade-content');
 
   state.tradeMode   = true;
   state.timerPaused = true;
   clearInterval(state.timerInterval);
 
-  title.textContent = 'Ronda de Intercambio: ' + getTradeRoundLabel(state.tradeRound);
-
   const positionsInRound = getPositionsForTradeRound(state.tradeRound);
-  let html = '';
+  const positionBlocks = positionsInRound
+    .map(pos => {
+      const entries = getTradeEntriesForPosition(pos);
+      if (!entries.length) return '';
+      return `
+        <div class="position-block">
+          <div class="position-head">
+            <div class="position-index">${positionsInRound.indexOf(pos) + 1}</div>
+            <div class="position-name">${getPosLabel(pos)}</div>
+            <div class="position-line"></div>
+          </div>
+          <div class="player-grid" data-pos="${pos}"></div>
+        </div>`;
+    })
+    .filter(Boolean);
 
-  positionsInRound.forEach(pos => {
-    const posLabel      = getPosLabel(pos);
-    const playersByPos  = state.players
-      .map((player, idx) => ({ playerIdx: idx, playerName: player.name, players: player.team[pos] || [] }))
-      .filter(p => p.players.length > 0);
+  let html = `
+    <div class="round-head">
+      <h2 id="trade-round-title" class="round-title">Ronda de <span>Intercambio</span>: ${getTradeRoundLabel(state.tradeRound)}</h2>
+      <div class="round-sub">Elegí primero un jugador y luego otro del mismo puesto. El jugador con mayor valor paga la diferencia.</div>
+    </div>
+    <div class="progress">${positionsInRound.map((_, idx) => `<i class="${idx <= state.tradeRound ? 'done' : ''}"></i>`).join('')}</div>
+    ${positionBlocks.join('')}`;
 
-    if (playersByPos.length === 0) return;
-
-    html += `<div style="border:1px solid rgba(255,255,255,0.16);padding:18px;border-radius:14px;background:rgba(255,255,255,0.03);">
-      <h4 style="margin:0 0 12px 0;color:var(--green);font-size:1rem;">${posLabel}</h4>
-      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;">`;
-
-    playersByPos.forEach(pData => {
-      pData.players.forEach((player, idx) => {
-        html += `
-          <div style="background:rgba(255,255,255,0.06);padding:14px;border-radius:12px;text-align:left;border:1px solid rgba(255,255,255,0.08);">
-            <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:8px;">
-              <div style="font-weight:700;font-size:1rem;">${player.name}</div>
-              <div style="padding:4px 8px;border-radius:999px;background:rgba(0,200,83,0.14);color:var(--green);font-size:0.8rem;font-weight:600;white-space:nowrap;">${state.players[pData.playerIdx].name}</div>
-            </div>
-            <div style="font-size:0.9rem;color:var(--muted);margin-bottom:8px;">${player.club}</div>
-            <div style="color:var(--green);font-family:var(--font-display);font-weight:600;font-size:1.05rem;margin-bottom:10px;">${player.pricePaid}M</div>
-            <button onclick="openTradeDialog('${pos}', ${pData.playerIdx}, ${idx})" class="btn-sm" style="width:100%;padding:10px 12px;">Intercambiar</button>
-          </div>`;
-      });
-    });
-
-    html += '</div></div>';
-  });
-
-  if (!html) {
+  if (!positionBlocks.length) {
     html = '<div style="text-align:center;color:var(--muted);">No hay jugadores disponibles para intercambio en esta ronda.</div>';
   }
 
   content.innerHTML = html;
   modal.style.display = 'flex';
 
-  // Vincula el botón "Listo" al cierre correcto
+  tradeSelection = {};
+  positionsInRound.forEach(pos => {
+    if (getTradeEntriesForPosition(pos).length) renderTradeGrid(pos);
+  });
+
   document.getElementById('trade-done-btn').onclick = closeTradModal;
+}
+
+function renderTradeGrid(posId) {
+  const grid = document.querySelector(`.player-grid[data-pos="${posId}"]`);
+  if (!grid) return;
+
+  const entries = getTradeEntriesForPosition(posId);
+  const selected = tradeSelection[posId];
+
+  grid.innerHTML = entries.map((entry, index) => {
+    const color = state.players[entry.playerIdx].color || 'var(--neon)';
+    const selectedClass = selected?.index === index ? 'picked' : '';
+    const moneyInfo = selected && selected.index !== index ? getTradeMoneyInfo(selected, entry) : null;
+    const imagePath = entry.photo && typeof encodeImagePath === 'function'
+      ? encodeImagePath(entry.photo)
+      : entry.photo;
+    const avatarHtml = imagePath
+      ? `<img src="${imagePath}" alt="${entry.name}" loading="lazy" onerror="this.remove()" />`
+      : initials(entry.name);
+
+    return `
+      <div class="p-card ${selectedClass}" data-pos="${posId}" data-index="${index}" data-player-idx="${entry.playerIdx}" data-slot-idx="${entry.slotIdx}">
+        <div class="pick-badge">Elegido</div>
+        <div class="p-card-inner">
+          <div class="p-top">
+            <div class="p-avatar" style="border-color:${color};">${avatarHtml}</div>
+            <div>
+              <div class="p-owner" style="color:${color};">${entry.owner}</div>
+              <div class="p-name">${entry.name}</div>
+            </div>
+          </div>
+          <div class="p-club">${entry.club}</div>
+          <div class="p-card-footer">
+            <div class="p-price">${entry.pricePaid}M</div>
+            ${moneyInfo ? `<div class="p-money ${moneyInfo.cls}">${moneyInfo.text}</div>` : ''}
+          </div>
+        </div>
+      </div>`;
+  }).join('');
+
+  grid.querySelectorAll('.p-card').forEach(card => {
+    card.addEventListener('click', () => {
+      const index = parseInt(card.dataset.index, 10);
+      const playerIdx = parseInt(card.dataset.playerIdx, 10);
+      const slotIdx = parseInt(card.dataset.slotIdx, 10);
+      onTradeCardClick(posId, index, playerIdx, slotIdx);
+    });
+  });
+}
+
+function onTradeCardClick(posId, index, playerIdx, slotIdx) {
+  const entries = getTradeEntriesForPosition(posId);
+  const current = tradeSelection[posId];
+  const selectedEntry = entries[index];
+
+  if (!selectedEntry) return;
+
+  if (!current) {
+    tradeSelection[posId] = {
+      index,
+      playerIdx,
+      slotIdx,
+      pricePaid: selectedEntry.pricePaid,
+    };
+    renderTradeGrid(posId);
+    return;
+  }
+
+  if (current.index === index) {
+    tradeSelection[posId] = null;
+    renderTradeGrid(posId);
+    return;
+  }
+
+  performSwap(posId, current, { index, playerIdx, slotIdx });
+}
+
+function performSwap(posId, source, target) {
+  const grid = document.querySelector(`.player-grid[data-pos="${posId}"]`);
+  if (!grid) return;
+  const cards = grid.querySelectorAll('.p-card');
+  cards[source.index]?.classList.add('swapping');
+  cards[target.index]?.classList.add('swapping');
+
+  const playerA = state.players[source.playerIdx];
+  const playerB = state.players[target.playerIdx];
+  const cardA = playerA.team[posId][source.slotIdx];
+  const cardB = playerB.team[posId][target.slotIdx];
+  const nameA = cardA.name;
+  const nameB = cardB.name;
+
+  setTimeout(() => {
+    if (source.playerIdx !== target.playerIdx) {
+      const priceDiff = cardB.pricePaid - cardA.pricePaid;
+      if (priceDiff > 0) {
+        if (playerA.balance < priceDiff) {
+          showNotif('No tienes suficiente presupuesto para este intercambio');
+          renderTradeGrid(posId);
+          return;
+        }
+        playerA.balance -= priceDiff;
+        playerB.balance += priceDiff;
+      } else if (priceDiff < 0) {
+        const amount = Math.abs(priceDiff);
+        if (playerB.balance < amount) {
+          showNotif('El otro jugador no tiene suficiente presupuesto');
+          renderTradeGrid(posId);
+          return;
+        }
+        playerB.balance -= amount;
+        playerA.balance += amount;
+      }
+    }
+
+    [playerA.team[posId][source.slotIdx], playerB.team[posId][target.slotIdx]] =
+      [playerB.team[posId][target.slotIdx], playerA.team[posId][source.slotIdx]];
+
+    state.tradeLog.push({
+      type: 'trade',
+      playerA: playerA.name,
+      playerB: playerB.name,
+      playerSwapped: nameA,
+      playerReceived: nameB,
+      pos: posId,
+    });
+
+    tradeSelection[posId] = null;
+    renderTradeGrid(posId);
+    renderBalances();
+    showNotif(`Intercambio realizado: ${nameA} ↔ ${nameB}`);
+  }, 170);
 }
 
 function closeTradModal() {
@@ -92,105 +246,4 @@ function closeTradModal() {
   loadNextPlayer();
 }
 
-// Diálogo para elegir con quién intercambiar
-function openTradeDialog(position, playerAIdx, playerIdx) {
-  const playerA        = state.players[playerAIdx];
-  const selectedPlayer = playerA.team[position][playerIdx];
 
-  const otherPlayers = state.players
-    .map((p, idx) => ({ player: p, idx, hasPos: p.team[position]?.length > 0 }))
-    .filter(p => p.idx !== playerAIdx && p.hasPos);
-
-  if (otherPlayers.length === 0) {
-    showNotif('No hay otros jugadores con esta posición para intercambiar');
-    return;
-  }
-
-  const modal = document.createElement('div');
-  modal.className = 'trade-dialog';
-  modal.style.cssText = 'position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.9);z-index:1001;display:flex;align-items:center;justify-content:center;';
-
-  const box = document.createElement('div');
-  box.style.cssText = 'background:var(--pitch-mid);border:1px solid rgba(255,255,255,0.14);border-radius:16px;padding:26px;max-width:760px;width:92%;box-shadow:0 20px 50px rgba(0,0,0,0.35);';
-
-  const titleEl = document.createElement('h3');
-  titleEl.style.marginTop = '0';
-  titleEl.textContent = 'Intercambiar ' + selectedPlayer.name;
-  box.appendChild(titleEl);
-
-  const subtitle = document.createElement('p');
-  subtitle.style.color = 'var(--muted)';
-  subtitle.textContent = 'Selecciona con quién deseas intercambiar:';
-  box.appendChild(subtitle);
-
-  const optionsContainer = document.createElement('div');
-  optionsContainer.style.cssText = 'display:grid;gap:12px;margin-bottom:20px;max-height:360px;overflow-y:auto;';
-  box.appendChild(optionsContainer);
-
-  otherPlayers.forEach(op => {
-    op.player.team[position].forEach((otherPlayer, otherIdx) => {
-      const priceDiff = otherPlayer.pricePaid - selectedPlayer.pricePaid;
-      const summary   = priceDiff > 0
-        ? `+ ${priceDiff}M a ${playerA.name}`
-        : priceDiff < 0
-          ? `+ ${Math.abs(priceDiff)}M a ${op.player.name}`
-          : 'Intercambio justo';
-
-      const btn = document.createElement('button');
-      btn.onclick = () => executeTrade(position, playerAIdx, playerIdx, op.idx, otherIdx);
-      btn.style.cssText = 'padding:14px;text-align:left;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:12px;cursor:pointer;color:var(--white);';
-      btn.innerHTML = `
-        <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:6px;">
-          <div style="font-weight:700;font-size:1rem;">${otherPlayer.name}</div>
-          <div style="padding:4px 8px;border-radius:999px;background:rgba(0,200,83,0.14);color:var(--green);font-size:0.8rem;font-weight:600;">${op.player.name}</div>
-        </div>
-        <div style="font-size:0.9rem;color:var(--muted);">${otherPlayer.club} - ${otherPlayer.pricePaid}M</div>
-        <div style="font-size:0.9rem;color:var(--green);margin-top:6px;">${summary}</div>`;
-      optionsContainer.appendChild(btn);
-    });
-  });
-
-  const cancelBtn = document.createElement('button');
-  cancelBtn.className = 'btn-sm';
-  cancelBtn.style.cssText = 'width:100%;margin-top:12px;';
-  cancelBtn.textContent = 'Cancelar';
-  cancelBtn.onclick = () => modal.remove();
-  box.appendChild(cancelBtn);
-
-  modal.appendChild(box);
-  document.body.appendChild(modal);
-}
-
-function executeTrade(position, playerAIdx, playerASlotIdx, playerBIdx, playerBSlotIdx) {
-  const playerA    = state.players[playerAIdx];
-  const playerB    = state.players[playerBIdx];
-  const playerACard = playerA.team[position][playerASlotIdx];
-  const playerBCard = playerB.team[position][playerBSlotIdx];
-  const priceDiff   = playerBCard.pricePaid - playerACard.pricePaid;
-
-  if (priceDiff > 0) {
-    if (playerA.balance < priceDiff) { showNotif('No tienes suficiente presupuesto para este intercambio'); return; }
-    playerA.balance -= priceDiff;
-    playerB.balance += priceDiff;
-  } else if (priceDiff < 0) {
-    if (playerB.balance < Math.abs(priceDiff)) { showNotif('El otro jugador no tiene suficiente presupuesto'); return; }
-    playerB.balance -= Math.abs(priceDiff);
-    playerA.balance += Math.abs(priceDiff);
-  }
-
-  [playerA.team[position][playerASlotIdx], playerB.team[position][playerBSlotIdx]] =
-  [playerB.team[position][playerBSlotIdx], playerA.team[position][playerASlotIdx]];
-
-  state.tradeLog.push({
-    type: 'trade',
-    playerA: playerA.name, playerB: playerB.name,
-    playerSwapped: playerACard.name, playerReceived: playerBCard.name,
-    priceDiff,
-  });
-
-  showNotif('Intercambio completado');
-  document.querySelectorAll('.trade-dialog').forEach(d => d.remove());
-
-  // Refresca el modal de trade
-  setTimeout(() => openTradeModal(), 300);
-}
