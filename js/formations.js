@@ -15,7 +15,7 @@ function renderFormations() {
     votingCtaContainer.innerHTML = `
       <h3 style="font-family:var(--font-display);font-size:1.6rem;margin-bottom:12px;color:var(--green);">¡La Subasta Terminó!</h3>
       <p style="color:var(--muted);margin-bottom:20px;">Todos los equipos están listos. Ahora es tiempo de votar por el mejor armado.</p>
-      <button class="btn-primary" id="start-voting-btn" style="font-size:1rem;padding:12px 32px;">🗳️ Iniciar Votaciones</button>
+      <button class="btn-primary" id="start-voting-btn" style="font-size:1rem;padding:12px 32px;">Iniciar Votaciones</button>
     `;
     grid.parentElement.insertBefore(votingCtaContainer, grid);
     

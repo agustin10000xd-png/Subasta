@@ -121,6 +121,8 @@ function renderAuction() {
   const player  = currentPlayerData();
   const pool    = currentPool();
 
+  console.log('renderAuction() ejecutado. Jugador:', player?.name, '| photo:', player?.photo);
+
   document.getElementById('curr-pos-badge').textContent =
     `${getPosLabel(pos).toUpperCase()}`;
   document.getElementById('pool-info-text').textContent =
@@ -144,6 +146,7 @@ function renderAuction() {
       if (placeholder.parentElement) placeholder.replaceWith(img);
     };
     img.onerror = () => {
+      console.warn('Foto rota:', img.src, '— jugador:', player.name);
       img.remove();
     };
     img.src = player.photo.split('/').map(encodeURIComponent).join('/');
@@ -452,7 +455,6 @@ function showReveal(winner, playerData, price, callback, skipped = false) {
     }
   }
 
-  // Simple static rendering (no animations)
   if (skipped) {
     if (tier === 'leyenda') splitLetters(revPlayerName, nameText);
     else revPlayerName.textContent = nameText;
@@ -468,24 +470,38 @@ function showReveal(winner, playerData, price, callback, skipped = false) {
   }
 
   const isSkipped = winner === null;
+
   const confetti = document.getElementById('rev-confetti');
   if (confetti) {
-    confetti.innerHTML = `<i data-lucide="${isSkipped ? 'chevron-last' : 'trophy'}"></i>`;
+    confetti.innerHTML = isSkipped ? '' : '<i data-lucide="trophy"></i>';
+  }
+
+  const skipIcon = document.getElementById('rev-skip-icon');
+  if (skipIcon) {
+    skipIcon.style.display = isSkipped ? 'flex' : 'none';
   }
 
   // Photo or skip icon state
   wrap.innerHTML = '';
-  if (isSkipped) {
-    wrap.className = 'player-photo-placeholder';
-    wrap.innerHTML = '<i data-lucide="chevron-last"></i>';
-  } else if (playerData?.photo) {
+  if (playerData?.photo) {
     const img = document.createElement('img');
-    img.src = playerData.photo;
+    img.src = playerData.photo.split('/').map(encodeURIComponent).join('/');
     img.className = 'player-photo';
     img.alt = playerData.name || 'Jugador';
-    img.onerror = () => { wrap.textContent = '⚽'; wrap.className = 'player-photo-placeholder'; };
+    img.onerror = () => {
+      console.warn('Foto rota en reveal:', img.src, '— jugador:', playerData.name);
+      wrap.innerHTML = isSkipped ? '<i data-lucide="chevron-last"></i>' : '';
+      wrap.textContent = isSkipped ? '' : '⚽';
+      wrap.className = 'player-photo-placeholder';
+      if (window.lucide && typeof window.lucide.createIcons === 'function') {
+        window.lucide.createIcons();
+      }
+    };
     wrap.className = '';
     wrap.appendChild(img);
+  } else if (isSkipped) {
+    wrap.className = 'player-photo-placeholder';
+    wrap.innerHTML = '<i data-lucide="chevron-last"></i>';
   } else {
     wrap.className = 'player-photo-placeholder';
     wrap.textContent = '⚽';
@@ -509,7 +525,6 @@ function showReveal(winner, playerData, price, callback, skipped = false) {
     btn.addEventListener('click', handler);
   }
 }
-
 // ── Log ──
 
 function addLog(entry) {
@@ -575,6 +590,7 @@ document.getElementById('skip-btn').addEventListener('click', () => {
   addLog({ type: 'skip', playerName: player.name });
   showReveal(null, player, 0, () => {
     state.currentPlayerIdx++;
+    state.currentLeader = null;
     setTimeout(loadNextPlayer, 200);
   }, true);
 });

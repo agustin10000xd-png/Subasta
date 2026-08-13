@@ -4,15 +4,15 @@ const PLAYER_ICONS = ['icon/verde.png','icon/azul.png','icon/naranja.png','icon/
 const POSITIONS_433 = [
   { key: 'Arquero',                 label: 'Arquero',                 count: 1, pitchY: 90, pitchXs: [50] },
   { key: 'LateralDerecho',          label: 'Lateral Derecho',         count: 1, pitchY: 68, pitchXs: [85] },
-  { key: 'CentralDerecho',          label: 'Central Derecho',         count: 1, pitchY: 70, pitchXs: [62] },
-  { key: 'CentralIzquierdo',        label: 'Central Izquierdo',       count: 1, pitchY: 70, pitchXs: [38] },
+  { key: 'CentralDerecho',          label: 'Central Derecho',         count: 1, pitchY: 73, pitchXs: [62] },
+  { key: 'CentralIzquierdo',        label: 'Central Izquierdo',       count: 1, pitchY: 73, pitchXs: [38] },
   { key: 'LateralIzquierdo',        label: 'Lateral Izquierdo',       count: 1, pitchY: 68, pitchXs: [15] },
-  { key: 'MediocampistaIzquierdo',  label: 'Mediocampista Izquierdo', count: 1, pitchY: 42, pitchXs: [20] },
-  { key: 'MediocampistaC',          label: 'MediocampistaCentro',     count: 1, pitchY: 42, pitchXs: [50] },
-  { key: 'MediocampistaD',          label: 'MediocampistaDerecho',    count: 1, pitchY: 42, pitchXs: [80] },
-  { key: 'ExtremoDerecho',          label: 'Extremo Derecho',         count: 1, pitchY: 18, pitchXs: [80] },
-  { key: 'ExtremoIzquierdo',        label: 'Extremo Izquierdo',       count: 1, pitchY: 18, pitchXs: [20] },
-  { key: 'DelanteroC',              label: 'DelanteroCentro',         count: 1, pitchY: 14, pitchXs: [50] }
+  { key: 'MediocampistaIzquierdo',  label: 'Mediocampista Izquierdo', count: 1, pitchY: 44, pitchXs: [20] },
+  { key: 'MediocampistaC',          label: 'MediocampistaCentro',     count: 1, pitchY: 53, pitchXs: [50] },
+  { key: 'MediocampistaD',          label: 'MediocampistaDerecho',    count: 1, pitchY: 44, pitchXs: [80] },
+  { key: 'ExtremoDerecho',          label: 'Extremo Derecho',         count: 1, pitchY: 20, pitchXs: [80] },
+  { key: 'ExtremoIzquierdo',        label: 'Extremo Izquierdo',       count: 1, pitchY: 20, pitchXs: [20] },
+  { key: 'DelanteroC',              label: 'DelanteroCentro',         count: 1, pitchY: 16, pitchXs: [50] }
 ];
 const BUDGET = 500;
 const TIMER_SECS = 2;

@@ -1,7 +1,4 @@
-.pitch-visualpitch-mid/* ── FORMATIONS ── */
-#tab-formations { margin: 0 -24px; padding: 0 24px 60px; }
-#tab-formations > div:first-child { padding: 0 0 24px; }
-
+/* ── BOTÓN IR A VOTAR ── */
 #go-to-vote-btn {
   display: block;
   width: min(520px, 100%);
@@ -17,73 +14,77 @@
   box-shadow: 0 22px 60px rgba(47,215,107,0.24);
 }
 
-.formations-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(560px, 1fr));
-  gap: 28px;
-  align-items: start;
+/* ── FORMATION HEADER ── */
+.formation-header {
+  padding: 20px 24px 14px;
+  display: flex; align-items: center; gap: 16px;
 }
-
-.formation-card {
-  background: var(--card); border: 1px solid var(--card-border);
-  border-radius: 20px; overflow: hidden;
-  width: 100%;
+.formation-header .p-dot {
+  width: 14px; height: 14px; border-radius: 50%; flex-shrink: 0;
+  background: rgba(80,255,149,0.66); box-shadow: 0 0 10px rgba(80,255,149,0.25);
 }
-.formation-card.chosen-winner { border-color: var(--gold); box-shadow: 0 0 40px rgba(255,214,0,0.3); }
-
-.formation-header { padding: 20px 26px 14px; display: flex; align-items: center; gap: 10px; }
-.formation-header .p-dot { width: 16px; height: 16px; border-radius: 50%; flex-shrink: 0; }
 .formation-player-icon {
-  width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;
-  flex-shrink: 0; border-radius: 50%; overflow: hidden; background: rgba(255,255,255,0.06);
+  width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0; border-radius: 50%; overflow: hidden;
+  background: rgba(80,255,149,0.12); border: 1px solid rgba(80,255,149,0.18);
 }
 .formation-player-icon img { width: 100%; height: 100%; object-fit: contain; display: block; }
-.formation-header .p-name-h {
-  font-family: var(--font-body); font-weight: 300; font-size: 1.35rem; flex: 1;
-}
+.formation-header .p-name-h { font-family: var(--font-display); font-size: 1.3rem; flex: 1; }
 .formation-header .p-budget {
-  font-family: var(--font-body); font-weight: 300; font-size: 0.8rem; color: var(--muted);
-  background: rgba(0,0,0,0.2); padding: 6px 14px; border-radius: 99px;
+  font-size: 0.78rem; color: var(--muted);
+  background: rgba(0,0,0,0.2); padding: 6px 10px; border-radius: 99px;
   display: flex; align-items: center; gap: 4px;
 }
-.formation-header .p-budget svg { width: 20px; height: 20px; flex-shrink: 0; }
+.formation-header .p-budget svg { width: 18px; height: 18px; flex-shrink: 0; }
 
-/* ── CANCHA ── */
-.pitch-visual {
-  position: relative; margin: 0 16px 18px;
-  width: 100%; aspect-ratio: 0.72;
-  border-radius: 14px; overflow: hidden;
-  background:
+/* ── CANCHA / PITCH MARKINGS ── */
+.pitch-visual::before {
+  content: '';
+  position: absolute;
+  inset: 4px;
+  border-radius: 12px;
+  background: linear-gradient(180deg, #0d2419 0%, #081711 100%);
+  background-image:
     repeating-linear-gradient(
       180deg,
-      #0e3d26 0 40px,
-      #0b3320 40px 80px
+      rgba(0,255,170,0.035) 0px,
+      rgba(0,255,170,0.035) 60px,
+      transparent 60px,
+      transparent 120px
     );
-  box-shadow: inset 0 0 60px rgba(0,0,0,.5);
+  box-shadow: inset 0 0 0 1px rgba(0,255,170,0.12);
+  z-index: 0;
 }
-.pitch-visual::before {
-  content: ''; position: absolute; inset: 0;
-  border: 2px solid rgba(255,255,255,.16);
-  border-radius: 14px;
-}
+.pitch-center-line { display: none; }
 .pitch-markings {
-  position: absolute; inset: 0;
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+}
+.pitch-markings .outer-rect,
+.pitch-markings .penalty-box,
+.pitch-markings .goal-box,
+.pitch-markings .half-line,
+.pitch-markings .center-circle {
+  position: absolute;
 }
 .pitch-markings .outer-rect {
-  position: absolute; inset: 8%;
-  border: 2px solid rgba(255,255,255,.16);
-  border-radius: 14px;
+  left: 10px; top: 10px; right: 10px; bottom: 10px;
+  border-radius: 10px;
+  border: 1px solid rgba(0,255,170,0.35);
 }
 .pitch-markings .half-line {
-  position: absolute; left: 0; right: 0; top: 50%;
-  height: 2px; background: rgba(255,255,255,.16);
+  left: 0; top: 50%; width: 100%; height: 2px;
+  background: rgba(0,255,170,0.45);
+  z-index: 0;
 }
 .pitch-markings .center-circle {
-  position: absolute; left: 50%; top: 50%;
-  width: 26%; aspect-ratio: 1;
-  border: 2px solid rgba(255,255,255,.16);
-  border-radius: 50%;
+  left: 50%; top: 50%; width: 120px; height: 120px;
   transform: translate(-50%, -50%);
+  border-radius: 50%;
+  border: 1px solid rgba(0,255,170,0.35);
+  box-sizing: border-box;
 }
 .pitch-markings .center-circle::after {
   content: '';
@@ -93,112 +94,183 @@
   transform: translate(-50%, -50%);
 }
 .pitch-markings .penalty-box {
-  position: absolute; left: 50%;
-  width: 64%; height: 16%;
-  border: 2px solid rgba(255,255,255,.16);
-  transform: translateX(-50%);
+  left: 27.5%; width: 45%; height: 18%;
+  border: 1px solid rgba(0,255,170,0.35);
 }
-.pitch-markings .penalty-box.top {
-  top: 6%;
-  border-bottom: none;
-}
-.pitch-markings .penalty-box.bottom {
-  bottom: 6%;
-  border-top: none;
-}
+.pitch-markings .penalty-box.top { top: 1.5%; border-radius: 0 0 10px 10px; }
+.pitch-markings .penalty-box.bottom { bottom: 1.5%; border-radius: 10px 10px 0 0; }
 .pitch-markings .goal-box {
-  position: absolute; left: 50%;
-  width: 32%; height: 7%;
-  border: 2px solid rgba(255,255,255,.16);
+  left: 50%; width: 34%; height: 10%;
   transform: translateX(-50%);
+  border: 2.5px solid rgba(0,255,170,0.65);
 }
-.pitch-markings .goal-box.top {
-  top: 18%;
-  border-bottom: none;
-}
-.pitch-markings .goal-box.bottom {
-  bottom: 18%;
-  border-top: none;
-}
-.pitch-center-line {
-  display: none;
-}
+.pitch-markings .goal-box.top { top: 1.5%; }
+.pitch-markings .goal-box.bottom { bottom: 1.5%; }
+.pitch-markings .goal-box.top::before,
+.pitch-markings .goal-box.bottom::before { display: none; }
 
-/* ── SLOTS ── */
-.pos-slot {
-  position: absolute; transform: translate(-50%, -50%);
-  display: flex; flex-direction: column;
-  align-items: center; gap: 2px;
-  text-align: center; width: 120px;
+/* ── SLOTS DE POSICIÓN ── */
+.pos-slot:hover .slot-circle {
+  transform: scale(1.06);
+  box-shadow: 0 0 16px rgba(0,255,170,0.3);
 }
 .pos-slot .slot-circle {
-  font-size: 2rem;
-  font-family: var(--font-body);
-  font-weight: 300;
-  letter-spacing: 0.04em;
-  text-align: center;
-  line-height: 1.2;
-  padding: 4px;
-  word-break: break-word;
-  white-space: normal;
-  width: 80px; height: 80px; border-radius: 50%;
-  border: 2px solid rgba(255,255,255,0.2);
-  background: rgba(255,255,255,0.05);
+  width: 64px; height: 64px; border-radius: 50%;
+  border: 2px dashed rgba(0,255,170,0.4);
+  background: rgba(0,255,170,0.06);
   display: flex; align-items: center; justify-content: center;
-  font-size: 0.9rem; color: var(--muted);
-  transition: all 0.3s; overflow: visible; position: relative;
+  text-align: center;
+  font-size: 0.85rem; color: #d8fff0;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease, background 0.15s ease;
+  overflow: hidden;
+  position: relative;
 }
 .pos-slot .slot-circle.filled {
-  border-color: var(--player-color, var(--green));
-  background: rgba(10, 46, 26, 0.85);
+  border: 2px solid #00ffaa;
+  background: radial-gradient(circle at 35% 30%, rgba(0,255,170,0.28), rgba(0,255,170,0.05));
+  box-shadow: 0 0 18px rgba(0,255,170,0.5);
+  color: #eafff5;
 }
+.pos-slot .slot-circle img { width: 100%; height: 100%; object-fit: cover; }
+.pos-slot .slot-name {
+  font-size: 0.75rem; color: rgba(180,255,179,0.85); line-height: 1.2;
+  max-width: 84px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.pos-slot .slot-name.filled-name { color: #f4ffef; font-weight: 600; }
+.pos-slot .slot-price { font-size: 0.72rem; color: var(--green); font-family: var(--font-display); }
+
+/* ── AJUSTES VARIOS ── */
+#finish-formations-grid { margin: 20px 0 28px; }
+.formation-card.chosen-winner {
+  border-color: var(--gold);
+  box-shadow: 0 0 40px rgba(255,214,0,0.3);
+}
+
+/* ══════════════════════════════════════
+   FORMATIONS FULL-WIDTH
+   (sobrescribe layout, tamaños de cancha y slots)
+   ══════════════════════════════════════ */
+
+#tab-formations {
+  margin: 0;
+  padding: 0 24px 60px;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+#tab-formations > div:first-child { padding: 0 0 24px; }
+
+/* 2 columnas grandes */
+.formations-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(560px, 1fr));
+  gap: 32px;
+  grid-auto-rows: minmax(820px, auto);
+  width: 100%;
+  max-width: 100%;
+  margin: 0 auto;
+  box-sizing: border-box;
+}
+
+.formation-card {
+  background: var(--card);
+  border: 1px solid var(--card-border);
+  border-radius: 22px;
+  overflow: hidden;
+  min-height: 820px !important;
+  height: auto !important;
+  padding: 32px 0 36px !important;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.formation-header { padding: 24px 28px 18px; }
+.formation-header .p-name-h { font-family: var(--font-display); font-size: 1.9rem; flex: 1; }
+.formation-header .p-dot { width: 16px; height: 16px; }
+.formation-header .p-budget {
+  font-size: 0.9rem;
+  padding: 6px 14px;
+  display: flex; align-items: center; gap: 4px;
+}
+.formation-header .p-budget svg { width: 20px; height: 20px; flex-shrink: 0; }
+
+/* Cancha grande */
+.pitch-visual {
+  position: relative;
+  margin: 0 16px 18px;
+  background: radial-gradient(circle at top, rgba(80,255,149,0.08), transparent 30%),
+              linear-gradient(180deg, rgba(8,20,12,0.98), rgba(7,17,11,0.96));
+  border-radius: 16px;
+  overflow: hidden;
+  height: 780px !important;
+  min-height: 780px !important;
+}
+
+/* Slots más grandes */
+.pos-slot {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  text-align: center;
+  width: 120px;
+  z-index: 2;
+}
+
+/* Círculo más grande, sin recortar la imagen */
+.pos-slot .slot-circle {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  border: 2px solid rgba(80,255,149,0.22);
+  background: rgba(14,45,22,0.88);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.9rem;
+  color: #c9ffc9;
+  transition: all 0.3s;
+  overflow: visible;
+  position: relative;
+}
+
+.pos-slot .slot-circle.filled {
+  border-color: var(--player-color, var(--green));
+  background: rgba(5, 30, 20, 0.96);
+  box-shadow: 0 0 18px rgba(80,255,149,0.22);
+  backdrop-filter: blur(8px);
+}
+
+/* La imagen flota por encima del círculo, más grande que él */
 .pos-slot .slot-circle img {
-  position: absolute; 
-  bottom: 0px; 
-  left: 50%; 
+  position: absolute;
+  bottom: -4px;
+  left: 50%;
   transform: translateX(-50%);
-  width: 100px; 
+  width: 100px;
   height: 110px;
-  object-fit: contain; 
-  object-position: bottom center; 
+  object-fit: contain;
+  object-position: bottom center;
   pointer-events: none;
 }
-/* Texto más grande en los slots */
+
 .pos-slot .slot-name {
-  font-family: 'Inter', sans-serif;
-  font-weight: 200;       
-  font-size: 1rem;
-  letter-spacing: 0em;
-  margin-top: 2px;
+  font-size: 0.88rem;
+  color: var(--muted);
+  line-height: 1.2;
   max-width: 120px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  line-height: 1.2;
-  color: var(--muted);
+  margin-top: 18px;
 }
+.pos-slot .slot-name.filled-name { color: var(--white); font-weight: 600; }
+.pos-slot .slot-price { font-size: 0.85rem; color: var(--green); font-family: var(--font-display); }
 
-.pos-slot .slot-name.filled-name {
-  color: var(--white);
-  font-weight: 600;
-}
-
-.pos-slot .slot-price {
-  font-size: 1rem;           /* era 0.85rem */
-  color: var(--green);
-  font-family: var(--font-display);
-  margin-top: 0px;
-}
-
-/* Texto dentro del círculo vacío más grande */
-.pos-slot .slot-circle {
-  font-size: 0.72rem;        
-  overflow: visible;
-  position: relative;
-  z-index: 0;
-}
-
-/* Finish grid usa misma estructura */
 #finish-formations-grid { grid-template-columns: repeat(auto-fill, minmax(560px, 1fr)); }
 
 /* ── RESPONSIVE ── */
@@ -207,9 +279,151 @@
   #finish-formations-grid { grid-template-columns: 1fr; }
 }
 @media (max-width: 900px) {
-  .pitch-visual { height: 2500px; margin: 0 0 18px; }
+  .pitch-visual { height: 460px; }
   .pos-slot { width: 90px; }
-  .pos-slot .slot-circle { width: 72px; height: 72px; }
-  .pos-slot .slot-circle img { width: 86px; height: 96px; }
-  .pos-slot .slot-name { margin-top: 6px; }
+  .pos-slot .slot-circle { width: 64px; height: 64px; }
+  .pos-slot .slot-circle img { width: 80px; height: 88px; }
+  .pos-slot .slot-name { margin-top: 12px; }
+}
+
+/* ══ CANCHA ESTILO FUT — líneas finas planas + césped a rayas ══ */
+
+.pitch-visual {
+  background: repeating-linear-gradient(
+    180deg,
+    #0e3d26 0 40px,
+    #0b3320 40px 80px
+  ) !important;
+  box-shadow: inset 0 0 60px rgba(0,0,0,.5) !important;
+  border-radius: 14px !important;
+}
+
+/* El ::before pasa a ser solo el borde exterior de la cancha, sin franjas propias */
+.pitch-visual::before {
+  background: transparent !important;
+  border: 2px solid rgba(255,255,255,.16) !important;
+  border-radius: 10px !important;
+  box-shadow: none !important;
+}
+
+/* Elimino el foco/spotlight y el glow neón anteriores si los agregaste */
+.pitch-visual::after {
+  display: none !important;
+}
+
+.pitch-markings .outer-rect {
+  border: 2px solid rgba(255,255,255,.16) !important;
+  box-shadow: none !important;
+  border-radius: 14px !important;
+}
+
+.pitch-markings .half-line {
+  background: rgba(255,255,255,.16) !important;
+  box-shadow: none !important;
+}
+
+.pitch-markings .center-circle {
+  border: 2px solid rgba(255,255,255,.16) !important;
+  box-shadow: none !important;
+}
+
+.pitch-markings .center-circle::after {
+  width: 6px !important;
+  height: 6px !important;
+  background: rgba(255,255,255,.16) !important;
+  box-shadow: none !important;
+}
+
+.pitch-markings .penalty-box {
+  border: 2px solid rgba(255,255,255,.16) !important;
+  box-shadow: none !important;
+}
+
+.pitch-markings .goal-box {
+  border: 2px solid rgba(255,255,255,.16) !important;
+  box-shadow: none !important;
+}
+
+/* Slots sin glow neón, más acordes al look flat */
+.pos-slot .slot-circle {
+  border: 2px solid rgba(255,255,255,.14) !important;
+  box-shadow: none !important;
+}
+
+.pos-slot .slot-circle.filled {
+  border-color: rgba(0,255,170,0.5) !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+}
+
+/* ══ Unificar líneas junto al arco: sacar el borde duplicado hacia afuera de la cancha ══ */
+.pitch-markings .penalty-box.top,
+.pitch-markings .goal-box.top {
+  border-top: none !important;
+}
+
+.pitch-markings .penalty-box.bottom,
+.pitch-markings .goal-box.bottom {
+  border-bottom: none !important;
+}
+
+.pitch-markings .penalty-box {
+  width: 60% !important;
+  left: 20% !important;
+}
+
+.pitch-markings .goal-box {
+  width: 40% !important;
+}
+/* ══ Arco del área (semicírculo) simulado con pseudo-elemento ══ */
+.pitch-markings .penalty-box::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  width: 22%;
+  aspect-ratio: 1;
+  border: 2px solid rgba(255,255,255,.16);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+}
+
+/* Área de abajo: el arco bulge hacia arriba (lejos del arco/goal) */
+.pitch-markings .penalty-box.bottom::after {
+  top: 0;
+  clip-path: inset(0 0 50% 0);
+}
+
+/* Área de arriba: el arco bulge hacia abajo (lejos del arco/goal) */
+.pitch-markings .penalty-box.top::after {
+  top: 100%;
+  clip-path: inset(50% 0 0 0);
+}
+
+.formation-card {
+  background: linear-gradient(160deg, rgba(8, 23, 20, 0.97), rgba(15, 46, 30, 0.98)) !important;
+}
+.pos-slot .slot-name {
+  margin-top: 6px !important;
+}
+
+.pos-slot .slot-price {
+  margin-top: 0 !important;
+}
+
+.pos-slot {
+  gap: 2px !important;
+}
+
+/*
+
+*/
+.pos-slot .slot-circle {
+  border: none !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+}
+
+.pos-slot .slot-name:not(.filled-name) {
+  display: none !important;
 }

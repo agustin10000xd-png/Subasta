@@ -1,25 +1,42 @@
 @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,wght@0,400;0,500;0,600;0,700&family=Google+Sans+Flex:opsz,wght@6..144,1..1000&family=Google+Sans:ital,opsz,wght@0,17..18,400..700;1,17..18,400..700&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
 
 :root {
-  --green: #2fd76b;
-  --green-dark: #1e8f4a;
-  --green-glow: rgba(47,215,107,0.24);
-  --pitch: linear-gradient(135deg, #0f2f1d 0%, #1b5b33 45%, #2f8b4d 100%);
-  --pitch-mid: #184c2d;
-  --pitch-light: #215d39;
+  --green: #50ff95;
+  --green-dark: #1c6b3b;
+  --green-glow: rgba(80,255,149,0.24);
+  --neon: #50ff95;
+  --neon-dark: #197141;
+  --neon-dim: #1e8c58;
+  --neon-glow: rgba(80,255,149,0.45);
+  --neon-glow-strong: rgba(80,255,149,0.65);
+  --pitch: linear-gradient(135deg, #050b06 0%, #07130a 45%, #0b1c10 100%);
+  --pitch-mid: #08120b;
+  --pitch-light: #0d1a10;
   --gold: #ffd600;
   --gold-soft: rgba(255,214,0,0.15);
   --red: #ff3d3d;
   --white: #f4f9f5;
-  --muted: rgba(244,249,245,0.45);
-  --card: rgba(255,255,255,0.04);
-  --card-border: rgba(255,255,255,0.08);
-  --radius: 14px;
-  --font-display: 'Bebas Neue', 'Google Sans', 'Google Sans Flex', 'Inter', sans-serif;
-  --font-body: 'Bebas Neue', 'Google Sans', 'Google Sans Flex', 'Inter', sans-serif;
+  --text: #EAFFF3;
+  --text-dim: #6FAF8C;
+  --bg: #050A07;
+  --bg-2: #0A1410;
+  --panel: #0D1A13;
+  --panel-border: rgba(80,255,149,0.18);
+  --hairline: rgba(80,255,149,0.15);
+  --muted: rgba(244,249,245,0.4);
+  --card: rgba(255,255,255,0.03);
+  --card-border: rgba(80,255,149,0.14);
+  --radius: 18px;
+  --font-display: 'Bebas Neue', sans-serif;
+  --font-body: 'DM Sans', sans-serif;
 }
 
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
 html { font-size: 17px; }
 
 body {
@@ -35,11 +52,13 @@ body {
 /* Pitch pattern */
 body::before {
   content: '';
-  position: fixed; inset: 0;
+  position: fixed;
+  inset: 0;
   background-image:
     repeating-linear-gradient(0deg, transparent, transparent 60px, rgba(255,255,255,0.018) 60px, rgba(255,255,255,0.018) 61px),
     repeating-linear-gradient(90deg, transparent, transparent 80px, rgba(255,255,255,0.012) 80px, rgba(255,255,255,0.012) 81px);
-  pointer-events: none; z-index: 0;
+  pointer-events: none;
+  z-index: 0;
 }
 
 ::-webkit-scrollbar { width: 4px; }

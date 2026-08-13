@@ -5,7 +5,15 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Subasta Futbolera</title>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="subasta_futbol.css">
+<link rel="stylesheet" href="css/variables.css">
+<link rel="stylesheet" href="css/base.css">
+<link rel="stylesheet" href="css/tabs.css">
+<link rel="stylesheet" href="css/lobby.css">
+<link rel="stylesheet" href="css/auction.css">
+<link rel="stylesheet" href="css/sidebar.css">
+<link rel="stylesheet" href="css/formations.css">
+<link rel="stylesheet" href="css/overlays.css">
+<link rel="stylesheet" href="css/voting.css">
 <link rel="icon" type="image/png" href="icon/logopag.png">
 <script src="https://unpkg.com/lucide@latest"></script>
 
@@ -78,7 +86,7 @@
   <div class="tab-panel" id="tab-auction">
     <div class="auction-header-row">
       <div>
-        <div class="position-badge" id="curr-pos-badge">⬤ ARQUEROS</div>
+        <div class="position-badge" id="curr-pos-badge">ARQUEROS</div>
         <div class="pool-info" id="pool-info-text" style="margin-top:6px;"></div>
       </div>
     </div>
@@ -152,7 +160,7 @@
             </svg>
             <span>Saltar jugador (nadie ofertó)</span>
           </button>
-          <button class="skip-btn" id="advance-position-btn" style="margin-top:8px;display:none;">⏭ Saltar a la siguiente posición</button>
+          <button class="skip-btn" id="advance-position-btn" style="margin-top:8px;display:none;">Saltar a la siguiente posición</button>
         </div>
       </div>
     </div>
@@ -171,9 +179,10 @@
 <!-- REVEAL OVERLAY -->
 <div class="reveal-overlay" id="reveal-overlay">
   <div class="reveal-box">
-    <div class="confetti" id="rev-confetti">🏆</div>
+    <div class="confetti" id="rev-confetti"></div>
+    <div class="skip-icon" id="rev-skip-icon"><i data-lucide="chevron-last"></i></div>
     <div class="winner-label">¡GANÓ LA SUBASTA!</div>
-    <div class="player-photo-placeholder" id="rev-photo-wrap">⚽</div>
+    <div class="player-photo-placeholder" id="rev-photo-wrap"></div>
     <div class="p-big-name" id="rev-player-name"></div>
     <div class="player-branding" id="rev-player-branding"></div>
     <div class="p-price-paid" id="rev-price-paid"></div>
@@ -193,7 +202,7 @@
     </div>
     <div class="ranking-list" id="ranking-list" style="display:none;"></div>
     <div class="formations-grid" id="finish-formations-grid" style="display:none;"></div>
-    <button class="play-again-btn" id="play-again-btn" style="display:none;">⚽ JUGAR DE NUEVO</button>
+    <button class="play-again-btn" id="play-again-btn" style="display:none;">JUGAR DE NUEVO</button>
   </div>
 </div>
 

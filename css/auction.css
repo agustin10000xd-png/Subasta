@@ -1,23 +1,18 @@
-/* ── AUCTION LAYOUT ── */
-.auction-layout {
-  display: grid;
-  grid-template-columns: minmax(300px, 400px) minmax(620px, 1fr) minmax(340px, 420px);
-  gap: 32px; align-items: start; width: 100%;
-}
-@media(max-width:1280px) { .auction-layout { grid-template-columns: 1fr; } }
+/* ── AUCTION ── */
+.auction-layout { display: grid; grid-template-columns: minmax(280px, 360px) minmax(520px, 1fr) minmax(300px, 360px); gap: 32px; align-items: stretch; width: 100%; }
+@media(max-width:1280px){ .auction-layout { grid-template-columns: 1fr; } }
 
-.auction-main { display: flex; flex-direction: column; gap: 20px; }
-.auction-right { display: flex; flex-direction: column; gap: 24px; align-items: stretch; }
-
+.auction-sidebar, .auction-right { display: flex; flex-direction: column; gap: 24px; align-items: stretch; }
+.auction-main { display: flex; flex-direction: column; gap: 24px; }
 .position-badge {
-  display: inline-flex; align-items: center; gap: 8px;
-  background: var(--gold-soft); border: 1px solid rgba(255,214,0,0.3);
-  padding: 6px 16px; border-radius: 99px;
-  font-size: 0.8rem; letter-spacing: 0.08em;
-  text-transform: uppercase; color: var(--gold);
+  display: inline-flex; align-items: center; gap: 10px;
+  background: linear-gradient(135deg, rgba(255,214,0,0.16), rgba(255,214,0,0.05));
+  border: 1px solid rgba(255,214,0,0.2);
+  padding: 10px 18px; border-radius: 99px;
+  font-size: 0.9rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--gold);
 }
 .pool-info {
-  font-size: 0.85rem; color: var(--muted);
+  font-size: 0.9rem; color: rgba(180,255,188,0.75);
   text-align: center;
 }
 .auction-header-row > div {
@@ -26,75 +21,94 @@
   align-items: center;
 }
 
-/* Cabecera de ronda */
-.auction-header-row {
-  display: flex; align-items: center;
-  justify-content: center; gap: 16px; flex-wrap: wrap;
-  margin-bottom: 20px;
-}
-
-/* ── SILHOUETTE ── */
 .silhouette-stage {
-  background: var(--card); border: 1px solid var(--card-border);
-  border-radius: 20px; padding: 48px 24px;
-  display: flex; flex-direction: column;
-  align-items: center; gap: 26px; justify-content: center;
-  position: relative; overflow: hidden;
+  background: linear-gradient(160deg, rgba(8, 23, 20, 0.97), rgba(15, 46, 30, 0.98));
+  border: 1px solid rgba(255,255,255,0.12);
+  box-shadow: 0 30px 60px rgba(0,0,0,0.25);
+  border-radius: 30px; padding: 44px 24px;
+  display: flex; flex-direction: column; align-items: center; gap: 28px;
+  justify-content: center; position: relative; overflow: hidden;
 }
 .silhouette-stage::before {
   content: '';
   position: absolute; inset: 0;
-  background: radial-gradient(ellipse at 50% 100%, rgba(0,200,83,0.06) 0%, transparent 70%);
+  background: radial-gradient(circle at 50% 20%, rgba(47,215,107,0.16), transparent 45%),
+              radial-gradient(circle at 20% 80%, rgba(255,214,0,0.12), transparent 28%);
+  pointer-events: none;
 }
-.silhouette-wrap {
-  position: relative; width: 100%;
-  display: flex; align-items: center; justify-content: center;
-}
+.silhouette-wrap { position: relative; width: 100%; display: flex; align-items: center; justify-content: center; }
 .silhouette-img {
   width: 100%; max-width: 420px; max-height: 100%;
   object-fit: contain;
   filter: brightness(0) invert(1);
   transition: filter 0.6s ease;
 }
-.silhouette-img.revealed { filter: brightness(1) invert(0); }
-.silhouette-img[src*="imagenes/"] { filter: none; }
+.silhouette-img.revealed { filter: brightness(1) invert(1); }
+/* Show actual images without filter for demo players with real photos */
+.silhouette-img[src*="imagenes/"] {
+  filter: none;
+}
 .silhouette-placeholder {
   width: 100%; max-width: 420px; aspect-ratio: 4 / 5.5;
-  background: linear-gradient(180deg, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0.08) 100%);
+  background: linear-gradient(180deg, rgba(255,255,255,0.12) 0%, rgba(255,255,255,0.04) 100%);
+  border-radius: 18px; display: flex; align-items: center; justify-content: center;
   color: #fff;
-  border-radius: 12px; display: flex; align-items: center; justify-content: center;
-  font-size: 6.5rem;
+}
+.silhouette-placeholder svg {
+  width: 56%; height: auto;
+  display: block;
 }
 
-/* Reveal de jugador */
-.player-revealed { text-align: center; display: none; animation: popIn 0.5s cubic-bezier(0.34,1.56,0.64,1); }
+.player-revealed {
+  text-align: center; display: none;
+  animation: popIn 0.45s cubic-bezier(0.34,1.56,0.64,1);
+}
 .player-revealed.show { display: block; }
-.player-revealed .p-name { font-family: var(--font-display); font-size: 2.2rem; letter-spacing: 0.05em; color: var(--gold); }
-.player-revealed .p-club { font-size: 0.9rem; color: var(--muted); }
+@keyframes popIn { from { transform: scale(0.72); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+.player-revealed .p-name { font-family: var(--font-display); font-size: 2rem; letter-spacing: 0.06em; color: #ffffff; }
+.player-revealed .p-name.legend { color: var(--gold); }
+.player-revealed .p-name.retired { color: #9aa1ad; }
+.player-revealed .p-club { font-size: 0.95rem; color: var(--muted); margin-top: 6px; }
 .player-revealed .p-rating {
-  display: inline-block; margin-top: 8px;
-  background: var(--green); color: #000;
-  font-family: var(--font-display); font-size: 1.4rem;
-  padding: 2px 16px; border-radius: 6px;
+  display: inline-flex; margin-top: 10px;
+  background: var(--green); color: #000; font-family: var(--font-display);
+  font-size: 1.3rem; padding: 6px 18px; border-radius: 999px;
 }
 
-/* ── PRECIO ── */
-.price-display { text-align: center; }
-.price-display .price-label { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); }
-.price-display .price-value { font-family: var(--font-display); font-size: 3.5rem; color: var(--white); line-height: 1.1; }
+.price-display {
+  text-align: center; position: relative;
+  padding: 22px 18px 14px;
+  background: linear-gradient(180deg, rgba(12, 46, 29, 0.95), rgba(6, 18, 11, 0.85));
+  border: 1px solid rgba(0,255,170,0.16);
+  border-radius: 28px;
+  box-shadow: 0 18px 40px rgba(0,255,170,0.12), inset 0 0 1px rgba(255,255,255,0.08);
+}
+.price-display .price-label {
+  font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.2em;
+  color: rgba(244,249,245,0.85); margin-bottom: 10px;
+}
+.price-display .price-value {
+  font-family: var(--font-display); font-size: 4.8rem; color: var(--white);
+  line-height: 0.95; letter-spacing: -0.04em; text-shadow: 0 14px 34px rgba(0,0,0,0.3);
+}
 .price-display .price-value span { color: var(--green); }
+.price-display .price-note {
+  margin-top: 12px; font-size: 0.85rem; letter-spacing: 0.16em;
+  text-transform: uppercase; color: var(--gold);
+}
 
-/* ── TIMER ── */
+/* Timer */
 .timer-ring { position: relative; width: 56px; height: 56px; }
 .timer-ring svg { transform: rotate(-90deg); }
 .timer-ring .ring-bg { fill: none; stroke: rgba(255,255,255,0.08); stroke-width: 4; }
 .timer-ring .ring-prog { fill: none; stroke: var(--green); stroke-width: 4; stroke-linecap: round; transition: stroke-dashoffset 1s linear, stroke 0.3s; }
 .timer-ring .ring-text { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-family: var(--font-display); font-size: 1.3rem; color: var(--white); }
 
-/* ── BID SECTION ── */
-.bid-section { background: var(--card); border: 1px solid var(--card-border); border-radius: var(--radius); padding: 20px; }
-.bid-section h3 { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--white); margin-bottom: 14px; font-weight: 700; }
+.auction-header-row { display: flex; align-items: center; justify-content: center; gap: 16px; flex-wrap: wrap; margin-bottom: 12px; }
 
+/* Bid buttons */
+.bid-section { background: linear-gradient(160deg, rgba(10,40,20,0.95), rgba(24,72,34,0.95)); border: 1px solid rgba(80,255,149,0.22); border-radius: var(--radius); padding: 20px; box-shadow: inset 0 0 0 1px rgba(80,255,149,0.08), 0 0 30px rgba(80,255,149,0.08); }
+.bid-section h3 { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.1em; color: #c8ffcc; margin-bottom: 14px; font-weight: 700; }
 .bidders-list { display: flex; flex-direction: column; gap: 10px; }
 .bidder-row {
   display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
@@ -102,8 +116,11 @@
   border: 1px solid transparent; transition: border-color 0.2s;
 }
 .bidder-row.leading { border-color: var(--gold); background: rgba(255,214,0,0.05); }
-.bidder-row.cant-afford { opacity: 0.4; }
-
+.bidder-row.cant-afford {
+  opacity: 1;
+  background: linear-gradient(150deg, rgba(10,16,12,0.92), rgba(22,34,26,0.78));
+  border: 1px solid rgba(80,255,149,0.1);
+}
 .bidder-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
 .bidder-icon {
   width: 24px; height: 24px; display: flex; align-items: center; justify-content: center;
@@ -115,43 +132,81 @@
 .bidder-bid-btn {
   padding: 6px 14px; border-radius: 8px; cursor: pointer;
   font-family: var(--font-body); font-size: 0.85rem; font-weight: 600;
-  border: none; transition: all 0.15s;
+  border: none; transition: transform 0.15s, box-shadow 0.15s, background 0.15s;
 }
-.bidder-bid-btn:not(:disabled) { background: var(--green); color: #000; }
-.bidder-bid-btn:not(:disabled):hover { background: #00e060; transform: scale(1.04); }
-.bidder-bid-btn:disabled { background: rgba(255,255,255,0.06); color: var(--muted); cursor: not-allowed; }
+.bidder-bid-btn:not(:disabled) {
+  background: linear-gradient(135deg, #6eff92, #29b55f);
+  color: #031706;
+  box-shadow: 0 0 16px rgba(110,255,146,0.28);
+}
+.bidder-bid-btn:not(:disabled):hover {
+  background: linear-gradient(135deg, #b9ffda, #23a24c);
+  transform: scale(1.04);
+  box-shadow: 0 0 22px rgba(110,255,146,0.4);
+}
+.bidder-bid-btn:disabled { background: rgba(255,255,255,0.06); color: var(--muted); cursor: not-allowed; box-shadow: none; }
 .bidder-current-bid { font-family: var(--font-display); font-size: 1rem; color: var(--gold); min-width: 48px; text-align: right; }
 .bidder-actions { display: flex; gap: 8px; margin-left: auto; flex-wrap: wrap; justify-content: flex-end; }
 .bidder-actions .bidder-bid-btn,
 .bidder-actions .buy-now-btn { white-space: nowrap; flex: 0 0 auto; }
 .leading-crown { font-size: 0.9rem; }
 
-/* Botón compra directa */
+.skip-btn {
+  width: 100%; padding: 12px;
+  background: rgba(255,80,80,0.14);
+  border: 1px solid rgba(255,80,80,0.45);
+  color: #fff; font-family: var(--font-body); font-size: 0.85rem;
+  border-radius: var(--radius); cursor: pointer; margin-top: 12px;
+  transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s, color 0.2s;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-weight: 600;
+  box-shadow: 0 0 16px rgba(255,80,80,0.28);
+}
+.skip-btn svg {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+}
+.skip-btn span {
+  display: inline-flex;
+  align-items: center;
+}
+.skip-btn:hover {
+  border-color: rgba(255,80,80,0.8);
+  color: #ffdcdc;
+  transform: translateY(-1px);
+  background: rgba(255,80,80,0.2);
+  box-shadow: 0 0 26px rgba(255,80,80,0.45);
+}
+.skip-btn:disabled { opacity: 0.3; cursor: not-allowed; box-shadow: none; }
+#advance-position-btn {
+  border-style: solid; border-color: rgba(255,214,0,0.35); color: var(--gold);
+  background: rgba(255,214,0,0.1);
+  box-shadow: 0 0 18px rgba(255,214,0,0.18);
+}
+#advance-position-btn:hover {
+  border-color: var(--gold); color: var(--gold);
+  box-shadow: 0 0 24px rgba(255,214,0,0.32);
+}
+
 .buy-now-btn {
   background: rgba(255, 165, 0, 0.12);
   border: 1px solid rgba(255, 165, 0, 0.4);
-  color: var(--gold); border-radius: 6px;
-  padding: 6px 12px; cursor: pointer;
-  font-size: 0.85rem; font-weight: 600;
+  color: var(--gold);
+  border-radius: 6px;
+  padding: 6px 12px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  font-weight: 600;
   transition: background 0.15s;
 }
-.buy-now-btn:hover:not(:disabled) { background: rgba(255, 165, 0, 0.25); }
-.buy-now-btn:disabled { opacity: 0.35; cursor: not-allowed; }
-
-/* Botones skip/avanzar */
-.skip-btn {
-  width: 100%; padding: 12px;
-  background: transparent; border: 1px dashed rgba(255,255,255,0.25);
-  color: var(--white); font-family: var(--font-body); font-size: 0.85rem;
-  border-radius: var(--radius); cursor: pointer; margin-top: 12px;
-  transition: all 0.2s;
-  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
-  font-weight: 600;
+.buy-now-btn:hover:not(:disabled) {
+  background: rgba(255, 165, 0, 0.25);
 }
-.skip-btn svg { width: 18px; height: 18px; flex-shrink: 0; }
-.skip-btn span { display: inline-flex; align-items: center; }
-.skip-btn:hover { border-color: var(--red); color: var(--red); }
-.skip-btn:disabled { opacity: 0.3; cursor: not-allowed; }
-
-#advance-position-btn { border-style: solid; border-color: rgba(255,214,0,0.35); color: var(--gold); }
-#advance-position-btn:hover { border-color: var(--gold); color: var(--gold); }
+.buy-now-btn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
