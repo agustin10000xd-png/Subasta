@@ -119,3 +119,17 @@
 }
 .log-item strong { color: var(--white); }
 .log-item.won { color: var(--gold); }
+
+.p-card .p-card-inner {
+  --avatar-w: 180px;
+}
+
+.p-card .p-avatar {
+  width: var(--avatar-w);
+}
+
+.p-card-footer {
+  display: flex;
+  justify-content: center;
+  width: var(--avatar-w);
+}

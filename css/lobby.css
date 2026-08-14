@@ -184,6 +184,40 @@
 .lobby-header p { color: var(--muted); margin-top: 8px; font-size: 1rem; }
 
 /* Trade modal cards */
+.trade-modal {
+  position: fixed;
+  inset: 0;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0,0,0,0.95);
+  z-index: 1000;
+}
+
+.trade-modal.is-open {
+  display: flex;
+}
+
+.trade-modal-panel {
+  background: var(--bg);
+  border-radius: 12px;
+  padding: 32px 36px;
+  width: 98vw;
+  max-width: 98vw;
+  height: 94vh;
+  max-height: 94vh;
+  overflow-y: auto;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+  box-sizing: border-box;
+}
+
+.trade-modal-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  margin-top: 24px;
+}
+
 .round-head { text-align: center; margin-bottom: 24px; }
 .round-eyebrow {
   font-size: 0.75rem; letter-spacing: 0.18em; text-transform: uppercase;
@@ -222,19 +256,27 @@
 }
 .position-line { flex: 1; height: 1px; background: rgba(255,255,255,0.08); }
 .player-grid {
-  display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px;
+  display: flex;
+  flex-wrap: nowrap;
+  gap: clamp(6px, 1vw, 16px);
+  width: 100%;
+}
+.player-grid .p-card {
+  flex: 1 1 0;
+  min-width: 0;
 }
 .p-card {
   position: relative;
   cursor: pointer; user-select: none;
   transition: transform 0.18s ease, box-shadow 0.18s ease;
+  min-width: 0;
 }
 .p-card:hover { transform: translateY(-4px); box-shadow: 0 12px 32px rgba(0,0,0,0.5); }
 .p-card .p-card-inner {
   position: relative;
   background: linear-gradient(180deg, rgba(3,6,4,0.96), rgba(6,12,8,0.96));
   border-radius: 14px;
-  padding: 18px 18px 20px;
+  padding: 14px 12px 16px;
   border: 1px solid rgba(57,255,150,0.08);
   box-shadow: 0 6px 30px rgba(80,255,149,0.04), inset 0 0 24px rgba(57,255,150,0.02);
 }
@@ -242,8 +284,9 @@
   border-color: var(--neon);
   box-shadow: 0 0 30px rgba(57,255,150,0.18), inset 0 0 18px rgba(57,255,150,0.06);
 }
+
 .p-card .pick-badge {
-  position: absolute; top: -10px; right: 12px;
+  position: absolute; top: 10px; right: 10px;
   display: block;
   opacity: 0; visibility: hidden;
   font-size: 0.78rem; letter-spacing: 0.12em; text-transform: uppercase;
@@ -251,34 +294,46 @@
   background: linear-gradient(90deg, rgba(50,240,170,1), rgba(90,230,255,0.95)); color:#04150C;
   box-shadow: 0 6px 22px rgba(57,255,150,0.18);
   transition: opacity 0.18s ease, transform 0.18s ease;
-  transform: translateY(-6px);
+  transform: translateY(0);
   z-index: 2;
 }
+
 .p-card.picked .pick-badge { opacity:1; visibility:visible; transform:translateY(0); }
-.p-card .p-top { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; }
+.p-card .p-top {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
 .p-card .p-avatar {
   position: relative;
-  width: 56px; height: 56px; border-radius: 50%;
+  width: min(100%, 132px);
+  height: 176px;
+  flex-shrink: 1;
+  border-radius: 12px;
   background: linear-gradient(135deg, rgba(20,40,30,0.8), rgba(6,12,8,0.9)); display: flex; align-items: center; justify-content: center;
-  font-family: var(--font-display); font-size: 0.95rem; font-weight: 800;
+  font-family: var(--font-display); font-size: 1.4rem; font-weight: 800;
   border: 2px solid rgba(57,255,150,0.14);
-  overflow: visible; box-shadow: 0 6px 18px rgba(57,255,150,0.06), inset 0 0 8px rgba(57,255,150,0.03);
+  overflow: hidden; box-shadow: 0 6px 18px rgba(57,255,150,0.06), inset 0 0 8px rgba(57,255,150,0.03);
 }
 .p-card .p-avatar img {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
   display: block;
-  border-radius: 50%;
-  transform: scale(1.04);
+  border-radius: 10px;
 }
+
+.p-card .p-club { display: none; }
 .p-card .p-owner { font-size: 0.78rem; letter-spacing: 0.12em; text-transform: uppercase; font-weight: 700; margin-bottom: 2px; }
 .p-card .p-name { font-weight: 700; font-size: 1rem; line-height: 1.2; }
 .p-card .p-club { font-size: 0.88rem; color: var(--muted); margin-bottom: 10px; }
 .p-card-footer {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: center;
   gap: 12px;
 }
 .p-card .p-price { font-family: var(--font-display); font-size: 1.1rem; font-weight: 700; color: var(--neon); }
@@ -479,4 +534,4 @@
   display: block;
 }
 
-
+.p-card .p-club { display: none; }

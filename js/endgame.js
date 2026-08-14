@@ -17,7 +17,6 @@ function endAuction() {
 
 function startVoting() {
   document.getElementById('finish-overlay').classList.add('show');
-  switchTab('endgame');
 }
 
 function getPositionCandidates(pos) {
@@ -65,16 +64,13 @@ function renderCurrentVotePosition() {
   headerDiv.className = 'wrap';
   headerDiv.innerHTML = `
     <div class="head">
-      <div class="trophy">🏆</div>
       <h1>¡Subasta terminada!</h1>
-      <p>Así quedaron los equipos finales — elegí cuál te pareció el mejor armado</p>
     </div>
     <div class="pos-progress">
       <div class="pos-progress-bar"><div class="pos-progress-fill" style="width:${Math.round(((state.currentVotePositionIdx + 1) / state.positionOrder.length) * 100)}%"></div></div>
       <div class="pos-progress-label"><span>Posición <b>${state.currentVotePositionIdx + 1}</b> de ${state.positionOrder.length}</span><span>${state.positionOrder.length - state.currentVotePositionIdx - 1} restantes</span></div>
     </div>
     <div class="position-title"><span>${posLabel}</span></div>
-    <div class="position-hint">Cada jugador toca <b>su propio ícono</b> sobre el jugador que le pareció mejor</div>
   `;
   voteSection.appendChild(headerDiv);
 
@@ -96,42 +92,48 @@ function renderCurrentVotePosition() {
   );
   const totalVotes = counts.reduce((sum, value) => sum + value, 0);
 
-  candidates.forEach((candidate, index) => {
-    const owner = state.players[candidate.teamIndex];
-    const count = counts[index] || 0;
-    const maxCount = totalVotes ? Math.max(...counts) : 0;
-    const pct = totalVotes ? Math.round((count / totalVotes) * 100) : 0;
-    const isLeader = totalVotes > 0 && count === maxCount && count > 0;
+candidates.forEach((candidate, index) => {
+  const owner = state.players[candidate.teamIndex];
+  const count = counts[index] || 0;
+  const maxCount = totalVotes ? Math.max(...counts) : 0;
+  const pct = totalVotes ? Math.round((count / totalVotes) * 100) : 0;
+  const isLeader = totalVotes > 0 && count === maxCount && count > 0;
 
-    const card = document.createElement('div');
-    card.className = `c-card${isLeader ? ' leader' : ''}`;
-    card.innerHTML = `
-      <div class="crown">👑</div>
-      <div class="c-card-inner">
-        <div class="c-owner-tag" style="color:${owner.color}">Elegido por ${owner.name}</div>
-        <div class="c-top">
-          <div class="c-photo">${candidate.candidate.name.split(' ').map(w => w[0]).slice(0, 2).join('')}</div>
-          <div>
-            <div class="c-name">${candidate.candidate.name}</div>
-            <div class="c-club">${candidate.candidate.club}</div>
-          </div>
-        </div>
-        <div class="c-bar"><div class="c-bar-fill" style="width:${pct}%"></div></div>
-        <div class="c-vote-row">
-          <div class="c-vote-label">${count} voto${count === 1 ? '' : 's'}</div>
-          <div class="voter-chips">
-            ${state.players.map((voter, voterIdx) => {
-              const active = state.votes[pos] && state.votes[pos][voterIdx] === candidate.teamIndex;
-              const imgPath = voter.photo && typeof encodeImagePath === 'function' ? encodeImagePath(voter.photo) : (voter.photo || '');
-              const style = active ? `background:${voter.color}; border-color:${voter.color}` : '';
-              const content = active && imgPath ? `<img src="${imgPath}" alt="${voter.name}">` : `${voter.name.slice(-1)}`;
-              const cls = `v-chip ${active ? 'active' : ''}`;
-              return `<div class="${cls}" style="${style}" data-voter="${voterIdx}" data-cand="${candidate.teamIndex}" title="${voter.name}">${content}</div>`;
-            }).join('')}
-          </div>
+  const initials = candidate.candidate.name.split(' ').map(w => w[0]).slice(0, 2).join('');
+  const candImgPath = candidate.candidate.photo ? encodeURI(candidate.candidate.photo) : '';
+  const candPhotoContent = candImgPath
+    ? `<img src="${candImgPath}" alt="${candidate.candidate.name}" onerror="this.parentElement.innerHTML='${initials}'">`
+    : initials;
+
+  const card = document.createElement('div');
+  card.className = `c-card${isLeader ? ' leader' : ''}`;
+  card.innerHTML = `
+    <div class="crown"><i data-lucide="crown"></i></div>
+    <div class="c-card-inner">
+      <div class="c-owner-tag" style="color:${owner.color}">Elegido por ${owner.name}</div>
+      <div class="c-top">
+        <div class="c-photo">${candPhotoContent}</div>
+        <div>
+          <div class="c-name">${candidate.candidate.name}</div>
+          <div class="c-club">${candidate.candidate.club}</div>
         </div>
       </div>
-    `;
+      <div class="c-bar"><div class="c-bar-fill" style="width:${pct}%"></div></div>
+      <div class="c-vote-row">
+        <div class="c-vote-label">${count} voto${count === 1 ? '' : 's'}</div>
+        <div class="voter-chips">
+          ${state.players.map((voter, voterIdx) => {
+            const active = state.votes[pos] && state.votes[pos][voterIdx] === candidate.teamIndex;
+            const imgPath = voter.photo ? encodeURI(voter.photo) : '';
+            const style = active ? `background:${voter.color}; border-color:${voter.color}` : '';
+            const content = active && imgPath ? `<img src="${imgPath}" alt="${voter.name}">` : `${voter.name.slice(-1)}`;
+            const cls = `v-chip ${active ? 'active' : ''}`;
+            return `<div class="${cls}" style="${style}" data-voter="${voterIdx}" data-cand="${candidate.teamIndex}" title="${voter.name}">${content}</div>`;
+          }).join('')}
+        </div>
+      </div>
+    </div>
+  `;
 
     card.querySelectorAll('.v-chip').forEach(chip => {
       chip.addEventListener('click', () => {
@@ -161,7 +163,7 @@ function renderCurrentVotePosition() {
   if (state.currentVotePositionIdx > 0) {
     const prevBtn = document.createElement('button');
     prevBtn.className = 'btn-primary';
-    prevBtn.textContent = '← Posición anterior';
+    prevBtn.textContent = 'Posición anterior';
     prevBtn.style.cssText = 'background:var(--green-dark);';
     prevBtn.onclick = () => {
       state.currentVotePositionIdx--;
@@ -179,7 +181,7 @@ function renderCurrentVotePosition() {
       nextBtn.style.opacity = '0.6';
       nextBtn.title = 'No puedes avanzar hasta que todos voten';
     } else {
-      nextBtn.textContent = 'Siguiente posición →';
+      nextBtn.textContent = 'Siguiente posición';
       nextBtn.onclick = () => {
         state.currentVotePositionIdx++;
         renderCurrentVotePosition();
@@ -209,6 +211,10 @@ function renderCurrentVotePosition() {
   
   // Ocultar el botón de "vote-submit-btn" original
   voteActions.style.display = 'none';
+
+  if (window.lucide && typeof window.lucide.createIcons === 'function') {
+    window.lucide.createIcons();
+  }
 }
 
 function collectVotes() {
@@ -251,6 +257,8 @@ function renderVotingResults() {
   const rankingList = document.getElementById('ranking-list');
   const finishGrid = document.getElementById('finish-formations-grid');
   const playAgain = document.getElementById('play-again-btn');
+  const prevBtn = document.getElementById('formation-prev-btn');
+  const nextBtn = document.getElementById('formation-next-btn');
 
   voteSection.style.display = 'none';
   voteActions.style.display = 'none';
@@ -258,21 +266,38 @@ function renderVotingResults() {
   votingResults.style.display = 'block';
   votingSummary.innerHTML = `
     <div class="voting-result-card">
-      <strong>Resultados de la votación</strong>
-      <div class="vote-note">Se ordenó el podio según los puntos obtenidos por cada equipo.</div>
+      <strong class="voting-result-title">Resultados de la votación</strong>
     </div>`;
 
   state.votingFinished = true;
+  state.currentFinishFormationIdx = 0;
   renderFinishRanking();
   renderFinishFormations();
 
   rankingList.style.display = 'block';
-  finishGrid.style.display = 'grid';
+  finishGrid.style.display = 'block';
   playAgain.style.display = 'block';
 
-  playAgain.onclick = () => window.location.reload();
-}
+  prevBtn.onclick = () => {
+    if (state.currentFinishFormationIdx > 0) {
+      state.currentFinishFormationIdx--;
+      renderFinishFormations();
+    }
+  };
+  nextBtn.onclick = () => {
+    const total = getPlayersByVoteOrder().length;
+    if (state.currentFinishFormationIdx < total - 1) {
+      state.currentFinishFormationIdx++;
+      renderFinishFormations();
+    }
+  };
 
+  playAgain.onclick = () => window.location.reload();
+
+  if (window.lucide && typeof window.lucide.createIcons === 'function') {
+    window.lucide.createIcons();
+  }
+}
 function getPlayersByVoteOrder() {
   if (!state.votingFinished) return state.players;
   return state.players
@@ -292,7 +317,7 @@ function renderFinishRanking() {
   rankingList.innerHTML = ordered
     .map((entry, i) => `
       <div class="ranking-item ${i === 0 ? 'rank-1' : ''}">
-        <div class="rank-num ${i === 0 ? 'gold' : ''}">${i === 0 ? '🏆' : i + 1}</div>
+        <div class="rank-num ${i === 0 ? 'gold' : ''}">${i === 0 ? '<i data-lucide="medal"></i>' : i + 1}</div>
         <div class="rank-dot" style="background:${entry.team.color}"></div>
         <div class="rank-info">
           <div class="rank-name">${entry.team.name}</div>
@@ -305,38 +330,44 @@ function renderFinishRanking() {
 
 function renderFinishFormations() {
   const grid = document.getElementById('finish-formations-grid');
+  const prevBtn = document.getElementById('formation-prev-btn');
+  const nextBtn = document.getElementById('formation-next-btn');
+  const counterEl = document.getElementById('formation-counter');
   grid.innerHTML = '';
 
   const ordered = getPlayersByVoteOrder();
+  const total = ordered.length;
+  const idx = state.currentFinishFormationIdx;
+  const entry = ordered[idx];
+  const p = entry.team;
+  const pi = entry.originalIndex;
+  const totalPlayers = Object.values(p.team).flat().length;
 
-  ordered.forEach((entry, index) => {
-    const p = entry.team;
-    const pi = entry.originalIndex;
-    const totalPlayers = Object.values(p.team).flat().length;
-    const card = document.createElement('div');
-    card.className = 'formation-card' + (index === 0 ? ' chosen-winner' : '');
-    card.innerHTML = `
-      <div class="formation-header">
-        <div class="p-dot" style="background:${p.color}"></div>
-        <div class="p-name-h">${p.name}${index === 0 ? ' 👑' : ''}</div>
-        <div class="p-budget">💰 ${p.balance}M restantes · ${totalPlayers} jug.</div>
+  const card = document.createElement('div');
+  card.className = 'formation-card' + (idx === 0 ? ' chosen-winner' : '');
+  card.innerHTML = `
+    <div class="formation-header">
+      <div class="p-dot" style="background:${p.color}"></div>
+      <div class="p-name-h">${p.name}${idx === 0 ? ' 👑' : ''}</div>
+      <div class="p-budget"><i data-lucide="circle-dollar-sign"></i> ${p.balance}M restantes · ${totalPlayers} jug.</div>
+    </div>
+    <div class="pitch-visual" id="finish-pitch-${pi}">
+      <div class="pitch-markings">
+        <div class="outer-rect"></div>
+        <div class="half-line"></div>
+        <div class="center-circle"></div>
+        <div class="penalty-box top"></div>
+        <div class="penalty-box bottom"></div>
+        <div class="goal-box top"></div>
+        <div class="goal-box bottom"></div>
       </div>
-      <div class="pitch-visual" id="finish-pitch-${pi}">
-        <div class="pitch-markings">
-          <div class="outer-rect"></div>
-          <div class="half-line"></div>
-          <div class="center-circle"></div>
-          <div class="penalty-box top"></div>
-          <div class="penalty-box bottom"></div>
-          <div class="goal-box top"></div>
-          <div class="goal-box bottom"></div>
-        </div>
-        <div class="pitch-center-line"></div>
-      </div>`;
-    grid.appendChild(card);
+      <div class="pitch-center-line"></div>
+    </div>`;
+  grid.appendChild(card);
 
-    const pitch = card.querySelector(`#finish-pitch-${pi}`);
-    buildPitchSlots(pitch, p, p.color);
-  });
+  const pitch = card.querySelector(`#finish-pitch-${pi}`);
+  buildPitchSlots(pitch, p, p.color);
 
+  if (prevBtn) prevBtn.disabled = idx === 0;
+  if (nextBtn) nextBtn.disabled = idx === total - 1;
 }

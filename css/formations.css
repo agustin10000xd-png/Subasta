@@ -427,3 +427,35 @@
 .pos-slot .slot-name:not(.filled-name) {
   display: none !important;
 }
+
+/* ── Cancha horizontal (rotada) en la pantalla final ── */
+.formation-viewer .pitch-visual {
+  width: 780px;
+  height: 480px;
+  min-height: 480px !important;
+  transform: rotate(-90deg);
+  transform-origin: center center;
+  /* como rotamos, el "ancho visual" real pasa a ser el height y viceversa */
+  margin: 150px auto;   /* compensa el espacio que ocupaba en vertical, ajustar según pruebas */
+}
+
+/* Los slots de jugador deben contra-rotar para que el texto/foto queden derechos */
+.formation-viewer .pos-slot {
+  transform: translate(-50%, -50%) rotate(90deg);
+}
+
+/* ── Cancha horizontal (rotada) solo en pantalla final ── */
+#finish-formations-grid .pitch-visual {
+  width: 780px;
+  height: 480px;
+  min-height: 480px !important;
+  transform: rotate(-90deg);
+  transform-origin: center center;
+  margin: 150px auto;   /* compensa el espacio — ajustar según se vea */
+  padding: -100000000000000000000rem 0 24px !important; 
+}
+
+/* Los jugadores contra-rotan para quedar derechos (foto y nombre legibles) */
+#finish-formations-grid .pos-slot {
+  transform: translate(-50%, -50%) rotate(90deg);
+}

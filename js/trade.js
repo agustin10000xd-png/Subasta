@@ -5,20 +5,48 @@ function getTradeRoundLabel(round) {
   return ['Arqueros', 'Defensores', 'Mediocampistas', 'Delanteros'][round];
 }
 
-function getPositionsForTradeRound(round) {
-  const roundGroups = [
+function getTradeGroups() {
+  return [
     ['Arquero'],
     ['LateralDerecho', 'CentralDerecho', 'CentralIzquierdo', 'LateralIzquierdo'],
     ['MediocampistaIzquierdo', 'MediocampistaC', 'MediocampistaD'],
     ['ExtremoDerecho', 'ExtremoIzquierdo', 'DelanteroC'],
   ];
-  return roundGroups[round] || [];
+}
+
+function getPositionsForTradeRound(round) {
+  return getTradeGroups()[round] || [];
+}
+
+function getTradeCheckpoint(round) {
+  const groups = getTradeGroups();
+  if (!Number.isInteger(round) || round < 0 || round >= groups.length) return null;
+  const group = groups[round];
+  const lastPos = group[group.length - 1];
+  return state.positionOrder.indexOf(lastPos);
 }
 
 function shouldInitiateTrade() {
-  // Índice de la ÚLTIMA posición de cada ronda (GK=0, LB=4, MedioD=7, ST=10)
-  const tradeCheckpoints = [0, 4, 7, 10];
-  return state.currentPosIdx === tradeCheckpoints[state.tradeRound];
+  const checkpoint = getTradeCheckpoint(state.tradeRound);
+  if (checkpoint === null) return false;
+  return state.currentPosIdx === checkpoint;
+}
+
+function triggerTradeIfNeeded() {
+  const checkpoint = getTradeCheckpoint(state.tradeRound);
+  console.log('[trade-check]', {
+    tradeRound: state.tradeRound,
+    currentPosIdx: state.currentPosIdx,
+    checkpoint,
+    should: checkpoint !== null && state.currentPosIdx === checkpoint,
+    tradeMode: state.tradeMode,
+    currentPos: state.positionOrder[state.currentPosIdx]
+  });
+
+  if (state.tradeMode) return false;
+  if (!shouldInitiateTrade()) return false;
+  openTradeModal();
+  return true;
 }
 
 function initials(name) {
@@ -54,12 +82,25 @@ function getTradeMoneyInfo(selected, entry) {
 }
 
 function openTradeModal() {
+  if (state.tradeMode) return;
+
   const modal   = document.getElementById('trade-modal');
   const content = document.getElementById('trade-content');
+
+  if (!modal || !content) {
+    console.warn('Trade modal no encontrado en el DOM');
+    return;
+  }
 
   state.tradeMode   = true;
   state.timerPaused = true;
   clearInterval(state.timerInterval);
+
+  modal.classList.add('is-open');
+  modal.style.display = 'flex';
+  modal.style.visibility = 'visible';
+  modal.hidden = false;
+  modal.setAttribute('aria-hidden', 'false');
 
   const positionsInRound = getPositionsForTradeRound(state.tradeRound);
   const positionBlocks = positionsInRound
@@ -233,9 +274,18 @@ function performSwap(posId, source, target) {
 }
 
 function closeTradModal() {
-  document.getElementById('trade-modal').style.display = 'none';
-  state.tradeMode   = false;
-  state.tradeRound++;
+  const modal = document.getElementById('trade-modal');
+  if (modal) {
+    modal.classList.remove('is-open');
+    modal.style.display = 'none';
+    modal.style.visibility = 'hidden';
+    modal.hidden = true;
+    modal.setAttribute('aria-hidden', 'true');
+  }
+
+  state.tradeMode = false;
+  tradeSelection = {};
+  state.tradeRound = Math.min(state.tradeRound + 1, 3);
 
   state.currentPosIdx++;
   state.currentPlayerIdx = 0;

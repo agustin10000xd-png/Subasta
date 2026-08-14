@@ -94,4 +94,6 @@ function buildPitchSlots(pitchEl, playerData, color) {
       pitchEl.appendChild(slot);
     });
   });
-}
+  }
+
+  

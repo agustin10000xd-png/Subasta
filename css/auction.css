@@ -114,6 +114,8 @@
   display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
   background: rgba(0,0,0,0.2); border-radius: 10px; padding: 10px 14px;
   border: 1px solid transparent; transition: border-color 0.2s;
+  position: relative;        /* NUEVO: para anclar el precio */
+  padding-right: 70px;       /* NUEVO: deja espacio para que no lo tape */
 }
 .bidder-row.leading { border-color: var(--gold); background: rgba(255,214,0,0.05); }
 .bidder-row.cant-afford {
@@ -128,7 +130,12 @@
 }
 .bidder-icon img { width: 100%; height: 100%; object-fit: contain; display: block; }
 .bidder-name { flex: 1 1 140px; min-width: 0; font-size: 0.9rem; font-weight: 500; }
-.bidder-balance { font-size: 0.8rem; color: var(--muted); }
+.bidder-balance {
+  font-size: 0.8rem; color: var(--muted);
+  position: absolute;        /* NUEVO */
+  top: 10px;                 /* NUEVO */
+  right: 14px;                /* NUEVO */
+}
 .bidder-bid-btn {
   padding: 6px 14px; border-radius: 8px; cursor: pointer;
   font-family: var(--font-body); font-size: 0.85rem; font-weight: 600;
@@ -146,10 +153,30 @@
 }
 .bidder-bid-btn:disabled { background: rgba(255,255,255,0.06); color: var(--muted); cursor: not-allowed; box-shadow: none; }
 .bidder-current-bid { font-family: var(--font-display); font-size: 1rem; color: var(--gold); min-width: 48px; text-align: right; }
-.bidder-actions { display: flex; gap: 8px; margin-left: auto; flex-wrap: wrap; justify-content: flex-end; }
+.bidder-actions {
+  display: flex;
+  gap: 8px;
+  margin-left: auto;
+  flex-wrap: nowrap;
+  justify-content: flex-end;
+  align-items: center;   /* NUEVO: alinea verticalmente precio, corona y botones */
+}
 .bidder-actions .bidder-bid-btn,
 .bidder-actions .buy-now-btn { white-space: nowrap; flex: 0 0 auto; }
-.leading-crown { font-size: 0.9rem; }
+.bidder-current-bid {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.leading-crown {
+  display: inline-flex;
+  align-items: center;
+}
+.leading-crown svg {
+  width: 1em;
+  height: 1em;
+  stroke: var(--gold);
+}
 
 .skip-btn {
   width: 100%; padding: 12px;
