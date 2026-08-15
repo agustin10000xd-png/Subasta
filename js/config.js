@@ -1,5 +1,5 @@
-const PLAYER_COLORS = ['#00c853','#2979ff','#ff6d00','#d500f9','#ff1744'];
-const COLOR_NAMES = ['Verde','Azul','Naranja','Violeta','Rojo'];
+const PLAYER_COLORS = ['#00c853','#2979ff','#ff6d00','#ffd600','#ff1744'];
+const COLOR_NAMES = ['Verde','Azul','Naranja','Amarillo','Rojo'];
 const PLAYER_ICONS = ['icon/verde.png','icon/azul.png','icon/naranja.png','icon/amarilla.png','icon/rojo.png'];
 const POSITIONS_433 = [
   { key: 'Arquero',                 label: 'Arquero',                 count: 1, pitchY: 90, pitchXs: [50] },
@@ -14,7 +14,10 @@ const POSITIONS_433 = [
   { key: 'ExtremoIzquierdo',        label: 'Extremo Izquierdo',       count: 1, pitchY: 20, pitchXs: [20] },
   { key: 'DelanteroC',              label: 'DelanteroCentro',         count: 1, pitchY: 16, pitchXs: [50] }
 ];
-const BUDGET = 500;
+let BUDGET = 500;
+const BUDGET_MIN = 500;
+const BUDGET_MAX = 1000;
+const BUDGET_STEP = 100;
 const TIMER_SECS = 2;
 const CIRCUMFERENCE = 2 * Math.PI * 22;
 const EXTEND_SECS = 15;

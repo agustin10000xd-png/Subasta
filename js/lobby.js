@@ -13,6 +13,15 @@ function updatePlayerCountDisplay() {
   if (plusBtn) plusBtn.disabled = state.numPlayers >= 5;
 }
 
+function updateBudgetDisplay() {
+  const valueEl = document.getElementById('budget-value');
+  const minusBtn = document.getElementById('budget-minus');
+  const plusBtn = document.getElementById('budget-plus');
+  if (valueEl) valueEl.textContent = `${BUDGET}M`;
+  if (minusBtn) minusBtn.disabled = BUDGET <= BUDGET_MIN;
+  if (plusBtn) plusBtn.disabled = BUDGET >= BUDGET_MAX;
+}
+
 function renderPlayerSetup() {
   const n = state.numPlayers;
   state.numPlayers = n;
@@ -104,6 +113,33 @@ function initLobbyEvents() {
   } else {
     console.error('lobby init: start button no encontrado');
   }
+
+  const budgetMinusBtn = document.getElementById('budget-minus');
+  const budgetPlusBtn  = document.getElementById('budget-plus');
+
+  if (budgetMinusBtn) {
+    budgetMinusBtn.addEventListener('click', () => {
+      if (BUDGET > BUDGET_MIN) {
+        BUDGET -= BUDGET_STEP;
+        updateBudgetDisplay();
+      }
+    });
+  } else {
+    console.error('lobby init: budget-minus no encontrado');
+  }
+
+  if (budgetPlusBtn) {
+    budgetPlusBtn.addEventListener('click', () => {
+      if (BUDGET < BUDGET_MAX) {
+        BUDGET += BUDGET_STEP;
+        updateBudgetDisplay();
+      }
+    });
+  } else {
+    console.error('lobby init: budget-plus no encontrado');
+  }
+
+  updateBudgetDisplay();
 
   renderPlayerSetup();
 }

@@ -50,7 +50,7 @@
   grid-auto-flow: column;
   grid-auto-columns: minmax(380px, 460px);
   justify-content: center;
-  gap: -30px;                    /* antes: 40px */
+  gap: -40px;                    /* antes: 40px */
   margin-bottom: 40px;
   align-items: start;
 }
