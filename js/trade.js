@@ -159,11 +159,11 @@ function renderTradeGrid(posId) {
     const avatarHtml = imagePath
       ? `<img src="${imagePath}" alt="${entry.name}" loading="lazy" onerror="this.remove()" />`
       : initials(entry.name);
-
-    return `
-      <div class="p-card ${selectedClass}" data-pos="${posId}" data-index="${index}" data-player-idx="${entry.playerIdx}" data-slot-idx="${entry.slotIdx}">
-        <div class="pick-badge">Elegido</div>
-        <div class="p-card-inner">
+      
+      return `
+          <div class="p-card ${selectedClass}" data-pos="${posId}" data-index="${index}" data-player-idx="${entry.playerIdx}" data-slot-idx="${entry.slotIdx}">
+          <div class="pick-badge">Elegido</div>
+          <div class="p-card-inner">
           <div class="p-top">
             <div class="p-avatar" style="border-color:${color};">${avatarHtml}</div>
             <div>

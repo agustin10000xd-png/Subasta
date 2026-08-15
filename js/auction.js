@@ -199,17 +199,23 @@ function renderBidders() {
       ${iconMarkup}
       <div class="bidder-name">${p.name}${alreadyFilled ? ' <span style="font-size:0.7rem;color:var(--muted)">(posición llena)</span>' : ''}</div>
       <div class="bidder-balance">${p.balance}M</div>
-      <div class="bidder-current-bid">${isLeader ? `${state.currentBid}M <span class="leading-crown">👑</span>` : ''}</div>
-      <div class="bidder-actions">
-        <button class="bidder-bid-btn" data-idx="${i}" ${cantBid ? 'disabled' : ''}>
-          ${isLeader ? 'Líder' : `Pujar ${nextBid}M`}
-        </button>
-        <button class="buy-now-btn" data-buy-idx="${i}" ${alreadyFilled || p.balance < buyPrice ? 'disabled' : ''}>
-          Comprar ${buyPrice}M
-        </button>
-      </div>`;
+      <div class="bidder-right-group">
+              <div class="bidder-current-bid">${isLeader ? `${state.currentBid}M <span class="leading-crown"><i data-lucide="crown"></i></span>` : ''}</div>
+              <div class="bidder-actions">
+                <button class="bidder-bid-btn" data-idx="${i}" ${cantBid ? 'disabled' : ''}>
+                  ${isLeader ? 'Líder' : `Pujar ${nextBid}M`}
+                </button>
+                <button class="buy-now-btn" data-buy-idx="${i}" ${alreadyFilled || p.balance < buyPrice ? 'disabled' : ''}>
+                  Comprar ${buyPrice}M
+                </button>
+              </div>
+            </div>`;
     list.appendChild(row);
   });
+
+  if (window.lucide && typeof window.lucide.createIcons === 'function') {
+    window.lucide.createIcons();
+  }
 
   list.querySelectorAll('.bidder-bid-btn:not(:disabled)').forEach(btn => {
     btn.addEventListener('click', () => placeBid(parseInt(btn.dataset.idx)));

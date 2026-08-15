@@ -265,33 +265,23 @@ function renderVotingResults() {
   document.getElementById('finish-overlay').scrollIntoView({ behavior: 'smooth', block: 'start' });
   votingResults.style.display = 'block';
   votingSummary.innerHTML = `
-    <div class="voting-result-card">
-      <strong class="voting-result-title">Resultados de la votación</strong>
-    </div>`;
+      <div class="voting-result-card">
+        <strong class="voting-result-title">Resultados de la votación</strong>
+      </div>
+      <div id="podium" class="podium"></div>`;
 
   state.votingFinished = true;
   state.currentFinishFormationIdx = 0;
-  renderFinishRanking();
-  renderFinishFormations();
 
-  rankingList.style.display = 'block';
-  finishGrid.style.display = 'block';
+  // Ocultamos la lista de ranking y el visor de formaciones viejo:
+  // ahora solo se usa el podio, y las formaciones se ven en el modal.
+  rankingList.style.display = 'none';
+  finishGrid.style.display = 'none';
+  const oldViewer = document.querySelector('.results-layout');
+  if (oldViewer) oldViewer.style.display = 'none';
+
+  renderPodium();
   playAgain.style.display = 'block';
-
-  prevBtn.onclick = () => {
-    if (state.currentFinishFormationIdx > 0) {
-      state.currentFinishFormationIdx--;
-      renderFinishFormations();
-    }
-  };
-  nextBtn.onclick = () => {
-    const total = getPlayersByVoteOrder().length;
-    if (state.currentFinishFormationIdx < total - 1) {
-      state.currentFinishFormationIdx++;
-      renderFinishFormations();
-    }
-  };
-
   playAgain.onclick = () => window.location.reload();
 
   if (window.lucide && typeof window.lucide.createIcons === 'function') {
@@ -329,10 +319,8 @@ function renderFinishRanking() {
 }
 
 function renderFinishFormations() {
-  const grid = document.getElementById('finish-formations-grid');
-  const prevBtn = document.getElementById('formation-prev-btn');
-  const nextBtn = document.getElementById('formation-next-btn');
-  const counterEl = document.getElementById('formation-counter');
+  const grid = document.getElementById('modal-finish-formations-grid');
+  if (!grid) return;
   grid.innerHTML = '';
 
   const ordered = getPlayersByVoteOrder();
@@ -348,7 +336,7 @@ function renderFinishFormations() {
   card.innerHTML = `
     <div class="formation-header">
       <div class="p-dot" style="background:${p.color}"></div>
-      <div class="p-name-h">${p.name}${idx === 0 ? ' 👑' : ''}</div>
+      <div class="p-name-h">${p.name}${idx === 0 ? ' <span class="winner-crown"><i data-lucide="crown"></i></span>' : ''}</div>
       <div class="p-budget"><i data-lucide="circle-dollar-sign"></i> ${p.balance}M restantes · ${totalPlayers} jug.</div>
     </div>
     <div class="pitch-visual" id="finish-pitch-${pi}">
@@ -368,6 +356,98 @@ function renderFinishFormations() {
   const pitch = card.querySelector(`#finish-pitch-${pi}`);
   buildPitchSlots(pitch, p, p.color);
 
-  if (prevBtn) prevBtn.disabled = idx === 0;
-  if (nextBtn) nextBtn.disabled = idx === total - 1;
+  if (window.lucide && typeof window.lucide.createIcons === 'function') {
+    window.lucide.createIcons();
+  }
+}
+
+// ── Podio adaptable ──
+
+function selectFinishFormation(idx) {
+  openFormationModal(idx);
+}
+
+// Devuelve el orden de rangos (1-based) izquierda→derecha, imitando el
+// patrón clásico de podio: pares a la izquierda, impares a la derecha,
+// el 1° siempre en el centro.
+function getPodiumDisplayOrder(total) {
+  const ranks = Array.from({ length: total }, (_, i) => i + 1);
+  const left  = ranks.filter(r => r % 2 === 0);           // 2,4,6...
+  const right = ranks.filter(r => r % 2 === 1 && r !== 1); // 3,5,7...
+  return [...left.slice().reverse(), 1, ...right];
+}
+
+function getPodiumHeight(rank) {
+  return Math.max(160, 380 - (rank - 1) * 46);
+}
+
+function renderPodium() {
+  const container = document.getElementById('podium');
+  if (!container) return;
+
+  const ordered = getPlayersByVoteOrder(); // índice 0 = rango 1
+  const total = ordered.length;
+  if (total === 0) { container.innerHTML = ''; return; }
+
+  const displayRanks = getPodiumDisplayOrder(total);
+  container.style.gridTemplateColumns = `repeat(${total}, minmax(140px, 200px))`;
+
+  container.innerHTML = displayRanks.map((rank, colIdx) => {
+    const entry = ordered[rank - 1];
+    const p = entry.team;
+    const height = getPodiumHeight(rank);
+    const tierClass = rank === 1 ? 'podium-gold'
+                     : rank === 2 ? 'podium-silver'
+                     : rank === 3 ? 'podium-bronze'
+                     : 'podium-other';
+    const col = colIdx + 1;
+
+    return `
+      <div class="podium-block ${tierClass}" style="grid-column:${col}; height:${height}px;">
+        <div class="podium-rank-num">${rank}</div>
+      </div>
+      <div class="podium-info" style="grid-column:${col};">
+        <div class="podium-dot" style="background:${p.color}"></div>
+        <div class="podium-team-name" title="${p.name}">${p.name}</div>
+        <div class="podium-points">${entry.votePoints} pt${entry.votePoints === 1 ? '' : 's'}</div>
+        <button class="podium-formation-btn" onclick="selectFinishFormation(${rank - 1})">Ver formación</button>
+      </div>`;
+  }).join('');
+}
+
+// ── Modal de formación ──
+
+function ensureFormationModal() {
+  if (document.getElementById('formation-modal-overlay')) return;
+
+  const modal = document.createElement('div');
+  modal.id = 'formation-modal-overlay';
+  modal.className = 'formation-modal-overlay';
+  modal.innerHTML = `
+    <div class="formation-modal">
+      <button class="formation-modal-close" id="formation-modal-close" aria-label="Cerrar">
+        <i data-lucide="x"></i>
+      </button>
+      <div id="modal-finish-formations-grid" class="modal-formation-grid"></div>
+    </div>`;
+  document.body.appendChild(modal);
+
+  document.getElementById('formation-modal-close').addEventListener('click', closeFormationModal);
+  modal.addEventListener('click', (e) => {
+    if (e.target === modal) closeFormationModal();
+  });
+}
+function openFormationModal(idx) {
+  ensureFormationModal();
+  state.currentFinishFormationIdx = idx;
+  renderFinishFormations();
+  document.getElementById('formation-modal-overlay').classList.add('show');
+  if (window.lucide && typeof window.lucide.createIcons === 'function') {
+    window.lucide.createIcons();
+  }
+}
+
+function closeFormationModal() {
+  const modal = document.getElementById('formation-modal-overlay');
+  if (modal) modal.classList.remove('show');
 }
