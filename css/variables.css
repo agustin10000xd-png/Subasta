@@ -37,11 +37,12 @@
   padding: 0;
 }
 
-html { font-size: 17px; }
+/* Base más grande: de 17px a 20px, escala todo lo que use rem/em en cascada */
+html { font-size: 20px; }
 
 body {
   font-family: var(--font-body);
-  font-size: 1.05rem;
+  font-size: 1.1rem;
   font-weight: 300;
   background: var(--pitch);
   color: var(--white);
@@ -61,6 +62,6 @@ body::before {
   z-index: 0;
 }
 
-::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar { width: 5px; }
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: var(--card-border); border-radius: 99px; }

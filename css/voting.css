@@ -406,6 +406,29 @@
   .podium-formation-btn { padding: 8px 12px; font-size: 0.85rem; }
 }
 
+@media (max-width: 600px) {
+  .head { margin-top: 24px; }
+  .head h1, .voting-result-title { font-size: 2rem; }
+  .pos-progress { margin-top: 28px; }
+  .pos-progress-label { font-size: 0.82rem; }
+  .position-title span { font-size: 2rem; }
+
+  .candidates {
+    grid-auto-flow: row;
+    grid-template-columns: minmax(0, 1fr);
+    grid-auto-columns: auto;
+    gap: 14px;
+    margin-bottom: 24px;
+  }
+  .c-card { min-width: 0; max-width: none; width: 100%; }
+  .c-card-inner { min-height: 0; padding: 20px 16px 24px; }
+  .c-photo { width: 132px; height: 174px; }
+  .c-name { font-size: 1.2rem; }
+  .c-club { font-size: 0.9rem; }
+  .legend { gap: 12px; margin-bottom: 20px; }
+  .legend-item { font-size: 0.85rem; }
+}
+
 /* ── MODAL DE FORMACIÓN ── */
 .formation-modal-overlay {
   position: fixed;

@@ -1,5 +1,5 @@
 /* ── AUCTION ── */
-.auction-layout { display: grid; grid-template-columns: minmax(280px, 360px) minmax(520px, 1fr) minmax(300px, 360px); gap: 32px; align-items: stretch; width: 100%; }
+.auction-layout { display: grid; grid-template-columns: minmax(320px, 420px) minmax(560px, 1fr) minmax(340px, 420px); gap: 36px; align-items: stretch; width: 100%; }
 @media(max-width:1280px){ .auction-layout { grid-template-columns: 1fr; } }
 
 .auction-sidebar, .auction-right { display: flex; flex-direction: column; gap: 24px; align-items: stretch; }
@@ -12,7 +12,7 @@
   font-size: 0.9rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--gold);
 }
 .pool-info {
-  font-size: 0.9rem; color: rgba(180,255,188,0.75);
+  font-size: 1rem; color: rgba(180,255,188,0.75);
   text-align: center;
 }
 .auction-header-row > div {
@@ -108,7 +108,7 @@
 
 /* Bid buttons */
 .bid-section { background: linear-gradient(160deg, rgba(10,40,20,0.95), rgba(24,72,34,0.95)); border: 1px solid rgba(80,255,149,0.22); border-radius: var(--radius); padding: 20px; box-shadow: inset 0 0 0 1px rgba(80,255,149,0.08), 0 0 30px rgba(80,255,149,0.08); }
-.bid-section h3 { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.1em; color: #c8ffcc; margin-bottom: 14px; font-weight: 700; }
+.bid-section h3 { font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.1em; color: #c8ffcc; margin-bottom: 14px; font-weight: 700; }
 .bidders-list { display: flex; flex-direction: column; gap: 10px; }
 .bidder-row {
   display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
@@ -216,6 +216,35 @@
 #advance-position-btn:hover {
   border-color: var(--gold); color: var(--gold);
   box-shadow: 0 0 24px rgba(255,214,0,0.32);
+}
+
+@media (max-width: 600px) {
+  .auction-header-row { margin-bottom: 8px; }
+  .position-badge { max-width: 100%; padding: 8px 13px; font-size: 0.78rem; }
+  .pool-info { font-size: 0.82rem; }
+
+  .auction-layout { gap: 16px; }
+  .auction-sidebar, .auction-right, .auction-main { gap: 14px; }
+  .sidebar-card { padding: 13px; }
+  .sidebar-card h4 { margin-bottom: 9px; }
+  .balance-bar-wrap { width: 54px; }
+  .balance-item .b-name, .pool-pos-row { font-size: 0.88rem; }
+
+  .silhouette-stage { border-radius: 20px; padding: 22px 14px; gap: 18px; }
+  .silhouette-placeholder { max-width: 230px; }
+  .price-display { width: 100%; padding: 16px 12px 12px; border-radius: 18px; }
+  .price-display .price-value { font-size: clamp(3rem, 15vw, 4rem); }
+  .price-display .price-note { font-size: 0.72rem; letter-spacing: 0.1em; }
+  .player-revealed .p-name { font-size: 1.6rem; }
+
+  .bid-section { padding: 15px 12px; }
+  .bidder-row { gap: 8px; padding: 10px; padding-right: 10px; }
+  .bidder-name { flex-basis: calc(100% - 46px); }
+  .bidder-balance { position: static; order: 3; width: 100%; padding-left: 32px; }
+  .bidder-right-group { width: 100%; margin-left: 0; justify-content: flex-end; }
+  .bidder-actions { flex-wrap: wrap; justify-content: flex-end; }
+  .bidder-bid-btn, .buy-now-btn { min-height: 38px; }
+  .skip-btn { font-size: 0.78rem; padding: 11px 8px; }
 }
 
 .buy-now-btn {

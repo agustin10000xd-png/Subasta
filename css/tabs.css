@@ -77,6 +77,7 @@
 }
 
 .tab-panel { display: none; }
+.tab-panel:not(.active) { display: none !important; }
 .tab-panel.active {
   display: block;
   animation: fadeIn 0.3s ease;
@@ -85,4 +86,26 @@
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(8px); }
   to   { opacity: 1; transform: translateY(0); }
+}
+
+@media (max-width: 600px) {
+  #app { padding: 10px 12px 36px; }
+
+  .tab-bar {
+    width: 100%;
+    gap: 5px;
+    padding: 6px;
+    margin-bottom: 22px;
+  }
+
+  .tab-btn {
+    flex: 1 1 0;
+    min-width: 0;
+    min-height: 42px;
+    gap: 6px;
+    padding: 9px 6px;
+    font-size: 0.9rem;
+  }
+
+  .tab-btn svg { width: 16px; height: 16px; }
 }

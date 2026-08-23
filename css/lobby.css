@@ -5,17 +5,17 @@
   border: none;
   border-radius: 0;
   clip-path: polygon(
-    24px 0, calc(100% - 24px) 0, 100% 24px,
-    100% calc(100% - 24px), calc(100% - 24px) 100%, 24px 100%,
-    0 calc(100% - 24px), 0 24px
+    28px 0, calc(100% - 28px) 0, 100% 28px,
+    100% calc(100% - 28px), calc(100% - 28px) 100%, 28px 100%,
+    0 calc(100% - 28px), 0 28px
   );
-  padding: 28px 24px 24px;
+  padding: 34px 28px 28px;
   display: flex;
   flex-direction: column;
-  gap: 18px;
-  flex: 0 1 280px;
-  max-width: 320px;
-  min-width: 240px;
+  gap: 22px;
+  flex: 0 1 340px;
+  max-width: 380px;
+  min-width: 280px;
   align-items: stretch;
   overflow: hidden;
   font-family: 'DM Sans', sans-serif;
@@ -48,7 +48,7 @@
 
 .player-card-setup .num {
   font-family: var(--font-display);
-  font-size: 3.4rem;
+  font-size: 4.2rem;
   color: var(--green);
   line-height: 1;
   font-weight: 800;
@@ -58,12 +58,12 @@
 }
 
 .player-card-setup .field-group {
-  gap: 10px;
+  gap: 12px;
   width: 100%;
 }
 
 .player-card-setup .field-group label {
-  font-size: 0.72rem;
+  font-size: 0.85rem;
   text-transform: uppercase;
   letter-spacing: 0.16em;
   color: rgba(255, 255, 255, 0.65);
@@ -72,7 +72,7 @@
 
 .player-card-setup .card-num {
   font-family: var(--font-display);
-  font-size: 3.4rem;
+  font-size: 4.2rem;
   color: var(--green);
   line-height: 1;
   font-weight: 800;
@@ -82,15 +82,15 @@
 }
 
 .player-card-setup .card-rule {
-  width: 36px;
-  height: 1.5px;
+  width: 44px;
+  height: 2px;
   background: rgba(255, 255, 255, 0.12);
-  margin: 12px auto 20px;
+  margin: 14px auto 24px;
   box-shadow: 0 0 8px rgba(47, 215, 107, 0.25);
 }
 
 .player-card-setup .field-label {
-  font-size: 0.72rem;
+  font-size: 0.85rem;
   text-transform: uppercase;
   letter-spacing: 0.16em;
   color: rgba(255, 255, 255, 0.65);
@@ -105,9 +105,9 @@
   background: rgba(255, 255, 255, 0.05);
   border: 1px solid rgba(255, 255, 255, 0.12);
   color: var(--white);
-  padding: 16px 18px;
-  border-radius: 18px;
-  font-size: 1rem;
+  padding: 19px 22px;
+  border-radius: 20px;
+  font-size: 1.2rem;
   font-weight: 600;
   transition: all 0.2s ease;
   outline: none;
@@ -128,14 +128,14 @@
 
 .player-card-setup .icons {
   display: flex;
-  gap: 9px;
+  gap: 11px;
   justify-content: center;
   flex-wrap: wrap;
 }
 
 .player-card-setup .icon-ball {
-  width: 32px !important;
-  height: 32px !important;
+  width: 40px !important;
+  height: 40px !important;
   flex-shrink: 0;
   overflow: hidden;
 }
@@ -156,16 +156,39 @@
   object-fit: contain;
 }
 
+@media (max-width: 600px) {
+  .lobby-header { padding: 28px 0 24px; }
+  .lobby-header h1 { font-size: clamp(2.8rem, 15vw, 4.4rem); }
+  .lobby-header p { font-size: 1rem; }
+
+  .config-row { gap: 14px; margin-bottom: 26px; }
+  .field-group { width: 100%; }
+  .player-count-picker { width: min(100%, 220px); }
+
+  .players-grid { gap: 16px; margin-bottom: 28px; }
+  .player-card-setup {
+    flex-basis: 100%;
+    min-width: 0;
+    max-width: 100%;
+    padding: 26px 20px 22px;
+    gap: 18px;
+  }
+  .player-card-setup .field-input,
+  .player-card-setup input[type=text] { padding: 15px 16px; font-size: 1rem; }
+
+  .trade-modal-panel { width: 100%; max-width: 100%; height: 100dvh; max-height: 100dvh; padding: 24px 14px; border-radius: 0; }
+}
+
 /* Forzar DM Sans en el tab de auction también */
 .btn-primary,
 #tab-auction,
 #tab-auction * { font-family: 'DM Sans', sans-serif; }
 
 /* ── LOBBY ── */
-.lobby-header { text-align: center; padding: 40px 0 32px; }
+.lobby-header { text-align: center; padding: 52px 0 40px; }
 .lobby-header h1 {
   font-family: var(--font-display);
-  font-size: 4rem;
+  font-size: 5.5rem;
   letter-spacing: 0.04em;
   line-height: 1;
   color: #ffffff;
@@ -181,7 +204,7 @@
     0 0 4px rgba(156,255,142,0.75),
     0 0 16px rgba(156,255,142,0.45);
 }
-.lobby-header p { color: var(--muted); margin-top: 8px; font-size: 1rem; }
+.lobby-header p { color: var(--muted); margin-top: 12px; font-size: 1.25rem; }
 
 /* Trade modal cards */
 .trade-modal {
@@ -200,8 +223,8 @@
 
 .trade-modal-panel {
   background: var(--bg);
-  border-radius: 12px;
-  padding: 32px 36px;
+  border-radius: 14px;
+  padding: 40px 44px;
   width: 98vw;
   max-width: 98vw;
   height: 94vh;
@@ -213,52 +236,52 @@
 
 .trade-modal-actions {
   display: flex;
-  gap: 12px;
+  gap: 14px;
   justify-content: center;
-  margin-top: 24px;
+  margin-top: 28px;
 }
 
-.round-head { text-align: center; margin-bottom: 24px; }
+.round-head { text-align: center; margin-bottom: 28px; }
 .round-eyebrow {
-  font-size: 0.75rem; letter-spacing: 0.18em; text-transform: uppercase;
-  color: var(--text-dim); margin-bottom: 10px;
+  font-size: 0.9rem; letter-spacing: 0.18em; text-transform: uppercase;
+  color: var(--text-dim); margin-bottom: 12px;
 }
 .round-title {
-  font-family: var(--font-display); font-size: 2rem; letter-spacing: 0.05em;
+  font-family: var(--font-display); font-size: 2.6rem; letter-spacing: 0.05em;
   text-transform: uppercase; line-height: 1.05;
 }
 .round-title span { color: var(--neon); }
 .round-sub {
-  color: var(--muted); font-size: 0.95rem; margin-top: 8px;
+  color: var(--muted); font-size: 1.1rem; margin-top: 10px;
 }
 .progress {
-  display: flex; justify-content: center; gap: 8px; margin-bottom: 26px;
+  display: flex; justify-content: center; gap: 10px; margin-bottom: 30px;
 }
 .progress i {
-  width: 28px; height: 4px; border-radius: 999px;
+  width: 34px; height: 5px; border-radius: 999px;
   background: var(--neon-dim); transition: background 0.2s ease;
 }
 .progress i.done { background: var(--neon); }
 .position-block {
   background: var(--card); border: 1px solid var(--card-border);
-  border-radius: 22px; padding: 22px; margin-bottom: 20px;
+  border-radius: 26px; padding: 28px; margin-bottom: 24px;
 }
-.position-head { display: flex; align-items: center; gap: 12px; margin-bottom: 18px; }
+.position-head { display: flex; align-items: center; gap: 14px; margin-bottom: 22px; }
 .position-index {
-  width: 28px; height: 28px; border-radius: 10px;
+  width: 34px; height: 34px; border-radius: 12px;
   background: rgba(80,255,149,0.08); border: 1px solid rgba(80,255,149,0.16);
   display: flex; align-items: center; justify-content: center;
-  font-family: var(--font-display); font-size: 0.85rem; font-weight: 700; color: var(--neon);
+  font-family: var(--font-display); font-size: 1.05rem; font-weight: 700; color: var(--neon);
 }
 .position-name {
-  font-family: var(--font-display); font-size: 1rem; font-weight: 700;
+  font-family: var(--font-display); font-size: 1.25rem; font-weight: 700;
   text-transform: uppercase; letter-spacing: 0.05em;
 }
 .position-line { flex: 1; height: 1px; background: rgba(255,255,255,0.08); }
 .player-grid {
   display: flex;
   flex-wrap: nowrap;
-  gap: clamp(6px, 1vw, 16px);
+  gap: clamp(8px, 1.2vw, 20px);
   width: 100%;
 }
 .player-grid .p-card {
@@ -275,8 +298,8 @@
 .p-card .p-card-inner {
   position: relative;
   background: linear-gradient(180deg, rgba(3,6,4,0.96), rgba(6,12,8,0.96));
-  border-radius: 14px;
-  padding: 14px 12px 16px;
+  border-radius: 16px;
+  padding: 18px 15px 20px;
   border: 1px solid rgba(57,255,150,0.08);
   box-shadow: 0 6px 30px rgba(80,255,149,0.04), inset 0 0 24px rgba(57,255,150,0.02);
 }
@@ -286,11 +309,11 @@
 }
 
 .p-card .pick-badge {
-  position: absolute; top: 10px; right: 10px;
+  position: absolute; top: 12px; right: 12px;
   display: block;
   opacity: 0; visibility: hidden;
-  font-size: 0.78rem; letter-spacing: 0.12em; text-transform: uppercase;
-  padding: 6px 12px; border-radius: 999px; font-weight: 800;
+  font-size: 0.92rem; letter-spacing: 0.12em; text-transform: uppercase;
+  padding: 7px 14px; border-radius: 999px; font-weight: 800;
   background: linear-gradient(90deg, rgba(50,240,170,1), rgba(90,230,255,0.95)); color:#04150C;
   box-shadow: 0 6px 22px rgba(57,255,150,0.18);
   transition: opacity 0.18s ease, transform 0.18s ease;
@@ -303,18 +326,18 @@
   display: flex;
   flex-direction: row;
   align-items: center;
-  gap: 12px;
-  margin-bottom: 10px;
+  gap: 14px;
+  margin-bottom: 12px;
 }
 
 .p-card .p-avatar {
   position: relative;
-  width: min(100%, 132px);
-  height: 176px;
+  width: min(100%, 164px);
+  height: 218px;
   flex-shrink: 1;
-  border-radius: 12px;
+  border-radius: 14px;
   background: linear-gradient(135deg, rgba(20,40,30,0.8), rgba(6,12,8,0.9)); display: flex; align-items: center; justify-content: center;
-  font-family: var(--font-display); font-size: 1.4rem; font-weight: 800;
+  font-family: var(--font-display); font-size: 1.7rem; font-weight: 800;
   border: 2px solid rgba(57,255,150,0.14);
   overflow: hidden; box-shadow: 0 6px 18px rgba(57,255,150,0.06), inset 0 0 8px rgba(57,255,150,0.03);
 }
@@ -323,24 +346,24 @@
   height: 100%;
   object-fit: contain;
   display: block;
-  border-radius: 10px;
+  border-radius: 12px;
 }
 
 .p-card .p-club { display: none; }
-.p-card .p-owner { font-size: 0.78rem; letter-spacing: 0.12em; text-transform: uppercase; font-weight: 700; margin-bottom: 2px; }
-.p-card .p-name { font-weight: 700; font-size: 1rem; line-height: 1.2; }
-.p-card .p-club { font-size: 0.88rem; color: var(--muted); margin-bottom: 10px; }
+.p-card .p-owner { font-size: 0.92rem; letter-spacing: 0.12em; text-transform: uppercase; font-weight: 700; margin-bottom: 3px; }
+.p-card .p-name { font-weight: 700; font-size: 1.2rem; line-height: 1.2; }
+.p-card .p-club { font-size: 1.05rem; color: var(--muted); margin-bottom: 12px; }
 .p-card-footer {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 12px;
+  gap: 14px;
 }
-.p-card .p-price { font-family: var(--font-display); font-size: 1.1rem; font-weight: 700; color: var(--neon); }
+.p-card .p-price { font-family: var(--font-display); font-size: 1.35rem; font-weight: 700; color: var(--neon); }
 .p-card .p-money {
-  position: absolute; top: 12px; right: 12px;
+  position: absolute; top: 14px; right: 14px;
   display: inline-flex; align-items:center; justify-content:center;
-  width: 52px; height:52px; font-size:0.95rem; font-weight:800; border-radius:50%;
+  width: 62px; height:62px; font-size:1.1rem; font-weight:800; border-radius:50%;
   white-space:nowrap; box-shadow:0 10px 30px rgba(57,255,150,0.08), inset 0 0 10px rgba(57,255,150,0.06);
   border: 1px solid rgba(57,255,150,0.12);
   background: linear-gradient(180deg, rgba(20,40,30,0.9), rgba(6,12,10,0.95)); color:var(--neon);
@@ -351,21 +374,21 @@
 .p-card.swapping .p-card-inner { opacity: 0.35; transform: scale(0.98); }
 
 /* ── CONFIG ROW / SELECTOR DE JUGADORES ── */
-.config-row { display: flex; gap: 16px; align-items: flex-end; margin-bottom: 32px; justify-content: center; flex-wrap: wrap; }
+.config-row { display: flex; gap: 20px; align-items: flex-end; margin-bottom: 40px; justify-content: center; flex-wrap: wrap; }
 .field-group {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 8px;
   align-items: center;
   text-align: center;
 }
-.field-group label { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); }
+.field-group label { font-size: 0.92rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); }
 .player-count-picker {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
-  padding: 6px 10px;
+  gap: 10px;
+  padding: 8px 13px;
   border: 1px solid var(--card-border);
   border-radius: 999px;
   background: rgba(255,255,255,0.04);
@@ -374,14 +397,14 @@
   box-sizing: border-box;
 }
 .count-btn {
-  width: 30px;
-  height: 30px;
+  width: 38px;
+  height: 38px;
   border: none;
   border-radius: 50%;
   background: linear-gradient(135deg, rgba(110,255,146,0.95), rgba(37,146,70,0.92));
   color: #031706;
   box-shadow: 0 0 18px rgba(110,255,146,0.42);
-  font-size: 1rem;
+  font-size: 1.25rem;
   font-weight: 700;
 
   cursor: pointer;
@@ -398,19 +421,19 @@
 }
 .count-btn:disabled { opacity: 0.4; cursor: not-allowed; }
 .count-value {
-  min-width: 24px;
+  min-width: 30px;
   text-align: center;
   font-family: var(--font-display);
-  font-size: 1rem;
+  font-size: 1.25rem;
   color: var(--white);
   line-height: 1;
 }
 .field-group select, .field-group input[type=text] {
   background: var(--card); border: 1px solid var(--card-border);
-  color: var(--white); border-radius: 8px; padding: 10px 14px;
-  font-family: var(--font-body); font-size: 0.95rem;
+  color: var(--white); border-radius: 10px; padding: 13px 18px;
+  font-family: var(--font-body); font-size: 1.1rem;
   outline: none; transition: border-color 0.2s;
-  min-width: 120px;
+  min-width: 150px;
   text-align: left;
 }
 .field-group select:focus, .field-group input[type=text]:focus { border-color: var(--green); }
@@ -420,15 +443,15 @@
 .players-grid {
   display: flex;
   flex-wrap: wrap;
-  gap: 22px;
-  margin: 0 auto 36px;
+  gap: 28px;
+  margin: 0 auto 44px;
   max-width: 100%;
   align-items: stretch;
   justify-content: center;
   overflow: hidden;
 }
 .players-grid::-webkit-scrollbar {
-  height: 10px;
+  height: 12px;
 }
 .players-grid::-webkit-scrollbar-thumb {
   background: rgba(80,255,149,0.24);
@@ -436,12 +459,12 @@
 }
 .card-frame {
   background: linear-gradient(160deg, var(--neon) 0%, var(--neon-dim) 55%, #0C4A2F 100%);
-  clip-path: polygon(28px 0, calc(100% - 28px) 0, 100% 28px, 100% calc(100% - 28px), calc(100% - 28px) 100%, 28px 100%, 0 calc(100% - 28px), 0 28px);
+  clip-path: polygon(32px 0, calc(100% - 32px) 0, 100% 32px, 100% calc(100% - 32px), calc(100% - 32px) 100%, 32px 100%, 0 calc(100% - 32px), 0 32px);
   padding: 2px;
   border: 1px solid rgba(57,255,150,0.35);
   box-shadow: 0 0 26px rgba(57,255,150,0.35);
-  flex: 0 0 260px;
-  min-width: 240px;
+  flex: 0 0 320px;
+  min-width: 290px;
 }
 .card-frame:hover {
   box-shadow: 0 0 30px rgba(57,255,150,0.42);
@@ -450,15 +473,15 @@
   background:
     radial-gradient(circle at top left, rgba(80,255,149,0.16) 0%, transparent 34%),
     linear-gradient(145deg, rgba(9, 23, 16, 0.98) 0%, rgba(10, 32, 20, 0.96) 45%, rgba(3, 12, 8, 0.98) 100%);
-  clip-path: polygon(27px 0, calc(100% - 27px) 0, 100% 27px, 100% calc(100% - 27px), calc(100% - 27px) 100%, 27px 100%, 0 calc(100% - 27px), 0 27px);
-  padding: 30px 20px 24px;
+  clip-path: polygon(31px 0, calc(100% - 31px) 0, 100% 31px, 100% calc(100% - 31px), calc(100% - 31px) 100%, 31px 100%, 0 calc(100% - 31px), 0 31px);
+  padding: 36px 24px 28px;
   text-align: center;
   border: 1px solid rgba(80,255,149,0.18);
   box-shadow: inset 0 0 0 1px rgba(255,255,255,0.03), inset 0 0 18px rgba(80,255,149,0.08);
 }
 .card-num {
   font-family: var(--font-display);
-  font-size: 2.3rem;
+  font-size: 2.8rem;
   font-weight: 700;
   color: var(--neon);
   line-height: 1;
@@ -466,30 +489,30 @@
   text-shadow: 0 0 16px rgba(80,255,149,0.85), 0 0 34px rgba(80,255,149,0.4);
 }
 .card-rule {
-  width: 42px;
-  height: 1.5px;
+  width: 50px;
+  height: 2px;
   background: var(--neon-dim);
   box-shadow: 0 0 8px rgba(80,255,149,0.6);
-  margin: 12px auto 18px;
+  margin: 14px auto 22px;
 }
 .field-label {
-  font-size: 0.7rem;
+  font-size: 0.85rem;
   letter-spacing: 0.16em;
   text-transform: uppercase;
   color: var(--text-dim);
-  margin-bottom: 8px;
+  margin-bottom: 10px;
 }
 .field-input {
   width: 100%;
   background: linear-gradient(180deg, rgba(8, 16, 12, 0.95), rgba(4, 9, 7, 0.96));
   border: 1px solid rgba(80,255,149,0.16);
-  border-radius: 10px;
-  padding: 10px 12px;
+  border-radius: 12px;
+  padding: 13px 15px;
   color: var(--text);
-  font-size: 0.95rem;
+  font-size: 1.1rem;
   font-family: var(--font-body);
   text-align: center;
-  margin-bottom: 18px;
+  margin-bottom: 22px;
   box-shadow: inset 0 0 10px rgba(80,255,149,0.06);
 }
 .field-input::placeholder {
@@ -502,20 +525,20 @@
 }
 .icons {
   display: flex;
-  gap: 9px;
+  gap: 11px;
   justify-content: center;
   flex-wrap: wrap;
 }
 .icon-ball {
-  width: 34px;
-  height: 34px;
+  width: 42px;
+  height: 42px;
   border-radius: 50%;
   background: rgba(5, 10, 7, 0.86);
   border: 1px solid var(--panel-border);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 14px;
+  font-size: 17px;
   cursor: pointer;
   transition: all 0.2s ease;
   box-shadow: inset 0 0 0 1px rgba(255,255,255,0.02);

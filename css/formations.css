@@ -286,6 +286,21 @@
   .pos-slot .slot-name { margin-top: 12px; }
 }
 
+@media (max-width: 600px) {
+  #tab-formations > div:first-child { padding-bottom: 16px; }
+  #tab-formations h2 { font-size: 1.7rem !important; }
+  .formations-grid, #finish-formations-grid { grid-template-columns: minmax(0, 1fr); gap: 16px; }
+  .formation-card { min-height: 0 !important; padding: 18px 0 22px !important; border-radius: 16px; }
+  .formation-header { padding: 16px 18px 14px; }
+  .formation-header .p-name-h { font-size: 1.45rem; }
+  .pitch-visual { height: 500px !important; min-height: 500px !important; margin: 0 10px 14px; }
+  .pos-slot { width: 74px; gap: 4px; }
+  .pos-slot .slot-circle { width: 52px; height: 52px; }
+  .pos-slot .slot-circle img { width: 66px; height: 74px; }
+  .pos-slot .slot-name { max-width: 84px; margin-top: 8px; font-size: 0.72rem; }
+  .pos-slot .slot-price { font-size: 0.72rem; }
+}
+
 /* ══ CANCHA ESTILO FUT — líneas finas planas + césped a rayas ══ */
 
 .pitch-visual {
@@ -458,4 +473,20 @@
 /* Los jugadores contra-rotan para quedar derechos (foto y nombre legibles) */
 #finish-formations-grid .pos-slot {
   transform: translate(-50%, -50%) rotate(90deg);
+}
+
+@media (max-width: 600px) {
+  .formations-grid, #finish-formations-grid {
+    grid-auto-rows: minmax(0, auto);
+  }
+
+  .formation-card {
+    min-height: 0 !important;
+    height: auto !important;
+  }
+
+  .formations-grid .pitch-visual {
+    height: 420px !important;
+    min-height: 420px !important;
+  }
 }
