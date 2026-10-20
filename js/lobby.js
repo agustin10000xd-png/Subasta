@@ -10,7 +10,7 @@ function updatePlayerCountDisplay() {
   const plusBtn = document.getElementById('count-plus');
   if (valueEl) valueEl.textContent = state.numPlayers;
   if (minusBtn) minusBtn.disabled = state.numPlayers <= 2;
-  if (plusBtn) plusBtn.disabled = state.numPlayers >= 5;
+  if (plusBtn) plusBtn.disabled = state.numPlayers >= MAX_PLAYERS;
 }
 
 function updateBudgetDisplay() {
@@ -44,7 +44,7 @@ function renderPlayerSetup() {
         <input class="field-input" type="text" id="p-name-${i}" placeholder="Jugador ${i + 1}" value="Jugador ${i + 1}" />
         <div class="field-label">Icono</div>
         <div class="icons">
-          ${PLAYER_ICONS.map((iconPath, ci) => `
+          ${PLAYER_ICONS.slice(0, getIconCount(n)).map((iconPath, ci) => `
             <div class="icon-ball ${ci === i ? 'sel' : ''}"
                  data-player="${i}" data-icon="${ci}"
                  title="${COLOR_NAMES[ci]}">
@@ -98,7 +98,7 @@ function initLobbyEvents() {
 
   if (plusBtn) {
     plusBtn.addEventListener('click', () => {
-      if (state.numPlayers < 5) {
+      if (state.numPlayers < MAX_PLAYERS) {
         state.numPlayers += 1;
         renderPlayerSetup();
       }
@@ -140,12 +140,40 @@ function initLobbyEvents() {
   }
 
   updateBudgetDisplay();
-
+  renderModePicker();
   renderPlayerSetup();
 }
 
 window.addEventListener('DOMContentLoaded', initLobbyEvents);
 window.addEventListener('load', initLobbyEvents);
+
+
+function modeFilter() {
+  return GAME_MODES[state.gameMode]?.filter || null;
+}
+
+function buildPool(pos, needed) {
+  let all = [...getDemoPlayersForPosition(pos)];
+  const f = modeFilter();
+  if (f) all = all.filter(f);
+  return shuffleArray(all).slice(0, needed).map(p => ({ ...p, basePrice: basePrice() }));
+}
+
+function renderModePicker() {
+  const box = document.getElementById('game-mode-options');
+  if (!box) return;
+  box.innerHTML = Object.entries(GAME_MODES).map(([key, m]) => `
+    <button type="button" class="mode-chip ${state.gameMode === key ? 'sel' : ''}" data-mode="${key}">
+      ${m.label}
+    </button>`).join('');
+
+  box.querySelectorAll('.mode-chip').forEach(btn => {
+    btn.addEventListener('click', () => {
+      state.gameMode = btn.dataset.mode;
+      renderModePicker();
+    });
+  });
+}
 
 
 async function startGame() {
@@ -160,7 +188,17 @@ async function startGame() {
     const leagueId      = leagueSelect ? leagueSelect.value : 'all';
     const season        = seasonSelect ? seasonSelect.value : '2024';
     const apiKey        = apiKeyInput  ? apiKeyInput.value.trim() : '';
-    const useDemoMode   = !apiKey || state.demoMode;
+    const useDemoMode   = !apiKey || state.demoMode || state.gameMode !== 'normal';
+
+    const f = modeFilter();
+    if (f) {
+      const faltan = state.positionOrder.filter(pos =>
+        getDemoPlayersForPosition(pos).filter(f).length < needed);
+      if (faltan.length) {
+        showNotif(`Faltan jugadores (mín. ${needed}) en: ${faltan.map(getPosLabel).join(', ')}`, 5000);
+        return;
+      }
+    }
 
     // Construir jugadores
     const setupGrid = document.getElementById('players-setup');
@@ -195,8 +233,7 @@ async function startGame() {
     loadMsg.textContent = 'Cargando jugadores de demo...';
     state.pool = {};
     for (const pos of state.positionOrder) {
-      const all = shuffleArray([...getDemoPlayersForPosition(pos)]);
-      state.pool[pos] = all.slice(0, needed).map(p => ({ ...p, basePrice: basePrice() }));
+      state.pool[pos] = buildPool(pos, needed);
     }
     loadMsg.textContent = '✓ ¡Listo!';
     setTimeout(() => { loadMsg.style.display = 'none'; launchAuction(); }, 400);

@@ -24,6 +24,7 @@ let state = {
   votePoints: [],
   votingFinished: false,
   currentVotePositionIdx: 0,
+  gameMode: 'normal',
 };
 
 // Accesores

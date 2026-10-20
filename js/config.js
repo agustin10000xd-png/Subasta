@@ -1,6 +1,6 @@
-const PLAYER_COLORS = ['#00c853','#2979ff','#ff6d00','#ffd600','#ff1744'];
-const COLOR_NAMES = ['Verde','Azul','Naranja','Amarillo','Rojo'];
-const PLAYER_ICONS = ['icon/verde.png','icon/azul.png','icon/naranja.png','icon/amarilla.png','icon/rojo.png'];
+const PLAYER_COLORS = ['#00c853','#2979ff','#ff6d00','#ffd600','#ff1744','#aa00ff','#00e5ff','#ff8585','#c6ff00', '#ff4081'];
+const COLOR_NAMES   = ['Verde','Azul','Naranja','Amarillo','Rojo','Morado','Lima','Celeste','Naranja','Rosa'];
+const PLAYER_ICONS  = ['icon/verde.png','icon/azul.png','icon/naranja.png','icon/amarilla.png','icon/rojo.png','icon/morada.png','icon/lima.png','icon/celeste.png','icon/blanca.png','icon/rosa.png'];
 const POSITIONS_433 = [
   { key: 'Arquero',                 label: 'Arquero',                 count: 1, pitchY: 90, pitchXs: [50] },
   { key: 'LateralDerecho',          label: 'Lateral Derecho',         count: 1, pitchY: 68, pitchXs: [85] },
@@ -23,6 +23,17 @@ const CIRCUMFERENCE = 2 * Math.PI * 22;
 const EXTEND_SECS = 15;
 const MAX_EXTENSIONS = 2;
 const BUY_NOW_PREMIUM = 0;
+const MIN_PLAYERS = 2;
+const MAX_PLAYERS = 10;
+
+const GAME_MODES = {
+  normal:   { label: 'Normal',          filter: null },
+  icono:   { label: 'iconos', filter: p => Number(p.rat) === 100 },
+};
+
+function getIconCount(numPlayers) {
+  return numPlayers <= 5 ? 5 : 10;
+}
 
 // Position order matching data.js keys
 const POSITION_KEYS = ['Arquero', 'LateralDerecho', 'CentralDerecho', 'CentralIzquierdo', 'LateralIzquierdo', 'MediocampistaIzquierdo', 'MediocampistaC', 'MediocampistaD', 'ExtremoDerecho', 'ExtremoIzquierdo', 'DelanteroC'];

@@ -558,3 +558,49 @@
 }
 
 .p-card .p-club { display: none; }
+
+/* ── SELECTOR DE MODO DE JUEGO (misma fila que jugadores y presupuesto) ── */
+.mode-options {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 8px 13px;
+  border: 1px solid var(--card-border);
+  border-radius: 999px;
+  background: rgba(255,255,255,0.04);
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.mode-chip {
+  height: 38px;
+  padding: 0 22px;
+  border: none;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--muted);
+  font-family: var(--font-display);
+  font-size: 1.2rem;
+  letter-spacing: 0.06em;
+  line-height: 1;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s, background 0.2s, color 0.2s;
+}
+
+.mode-chip:hover {
+  color: var(--white);
+  transform: translateY(-1px);
+}
+
+.mode-chip.sel {
+  background: linear-gradient(135deg, rgba(110,255,146,0.95), rgba(37,146,70,0.92));
+  color: #031706;
+  box-shadow: 0 0 18px rgba(110,255,146,0.42);
+}
+
+@media (max-width: 600px) {
+  .mode-options { width: min(100%, 220px); }
+  .mode-chip { flex: 1; padding: 0 14px; }
+}
