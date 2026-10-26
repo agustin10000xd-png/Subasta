@@ -51,7 +51,7 @@ const MEDIOCAMPISTA_DERECHO = [
     { id:1000, name:'Gennaro Gattuso', club:'AC Milan', nat:'Italia', rat:100, liga:'Serie A', tipo:'Leyenda', photo:'Imagenes/Jugadores/Mediocampista Derecho/Gennaro Gattuso.png' },
     { id:1001, name:'Mesut Özil', club:'Arsenal', nat:'Alemania', rat:100, liga:'Premier League', tipo:'Leyenda', photo:'Imagenes/Jugadores/Mediocampista Derecho/Mesut Özil.png' },
     { id:1002, name:'Paul Scholes', club:'Manchester United', nat:'Inglaterra', rat:100, liga:'Premier League', tipo:'Leyenda', photo:'Imagenes/Jugadores/Mediocampista Derecho/Paul Scholes.png' },
-    { id:1003, name:'Toni Kroos', club:'Real Betis', nat:'Alemania', rat:100, liga:'La Liga', tipo:'Leyenda', photo:'Imagenes/Jugadores/Mediocampista Derecho/Toni Kroos.png' },
+    { id:1003, name:'Toni Kroos', club:'Real Madrid', nat:'Alemania', rat:100, liga:'La Liga', tipo:'Leyenda', photo:'Imagenes/Jugadores/Mediocampista Derecho/Toni Kroos.png' },
     { id:1004, name:'Wesley Sneijder', club:'Inter de Milán', nat:'Holanda', rat:100, liga:'Serie A', tipo:'Leyenda', photo:'Imagenes/Jugadores/Mediocampista Derecho/Wesley Sneijder.png' },
     { id:1005, name:'Xabi Alonso', club:'Real Madrid', nat:'España', rat:100, liga:'La Liga', tipo:'Leyenda', photo:'Imagenes/Jugadores/Mediocampista Derecho/Xabi Alonso.png' },
     { id:1006, name:'Michael Ballack', club:'Bayer Leverkusen', nat:'Alemania', rat:100, liga:'Bundesliga', tipo:'Retirado', photo:'Imagenes/Jugadores/Mediocampista Derecho/Michael Ballack.png' },
