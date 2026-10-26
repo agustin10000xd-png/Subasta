@@ -337,8 +337,8 @@ function getClubShieldPath(clubName) {
   const clubImageAliases = {
     'Atletico de Madrid': 'Atlético de Madrid',
     'AS Roma': 'Roma',
-    'AC Milan': 'Milan',
-    'A. C. Milan': 'Milan',
+    'AC Milan': 'AC Milan',
+    'A. C. Milan': 'AC Milan',
     'Newcastle United': 'Newcastle',
     'NewCastle': 'Newcastle',
     'Porto': 'FC Porto',
